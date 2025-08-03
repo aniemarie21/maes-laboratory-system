@@ -1,448 +1,135 @@
-# MEGH Laboratory Management System - Complete Setup Guide
+# MAES Laboratory Management System - Complete Setup Guide
 
-## 🚀 Quick Start Overview
+## 🏥 About MAES Laboratory
 
-This guide will help you set up the Maria Estrella General Hospital Laboratory Management System on your local machine using VS Code, Firebase, and Next.js.
+Maria Estrella General Hospital Laboratory Management System is a comprehensive, AI-powered healthcare platform designed to streamline laboratory operations, patient management, and diagnostic services.
 
-## 📋 Prerequisites
+## 🚀 Quick Start
 
-Before starting, ensure you have:
-- A computer with Windows, macOS, or Linux
-- Internet connection
-- Google account (for Firebase)
-- Basic familiarity with using a terminal/command prompt
+### Prerequisites
 
-## 🛠️ Step 1: Install Required Software
+Before you begin, ensure you have the following installed:
 
-### 1.1 Install Node.js
-1. Go to [https://nodejs.org/](https://nodejs.org/)
-2. Download the **LTS version** (recommended)
-3. Run the installer and follow the setup wizard
-4. Verify installation by opening terminal/command prompt and typing:
+- **Node.js** (v18.0.0 or later)
+- **npm** or **yarn** package manager
+- **Git** for version control
+- **VS Code** (recommended) with extensions
+
+### Installation
+
+1. **Clone the repository**
    \`\`\`bash
-   node --version
-   npm --version
+   git clone https://github.com/your-username/maes-laboratory-system.git
+   cd maes-laboratory-system
    \`\`\`
 
-### 1.2 Install Git
-1. Go to [https://git-scm.com/downloads](https://git-scm.com/downloads)
-2. Download for your operating system
-3. Install with default settings
-4. Verify installation:
+2. **Install dependencies**
    \`\`\`bash
-   git --version
+   npm install
+   # or
+   yarn install
    \`\`\`
 
-### 1.3 Install VS Code
-1. Go to [https://code.visualstudio.com/](https://code.visualstudio.com/)
-2. Download and install VS Code
-3. Launch VS Code after installation
-
-## 🔧 Step 2: VS Code Extensions Setup
-
-Install these essential extensions in VS Code:
-
-### Required Extensions:
-1. **ES7+ React/Redux/React-Native snippets** - `dsznajder.es7-react-js-snippets`
-2. **Tailwind CSS IntelliSense** - `bradlc.vscode-tailwindcss`
-3. **TypeScript Importer** - `pmneo.tsimporter`
-4. **Auto Rename Tag** - `formulahendry.auto-rename-tag`
-5. **Bracket Pair Colorizer** - `coenraads.bracket-pair-colorizer`
-6. **GitLens** - `eamodio.gitlens`
-7. **Prettier - Code formatter** - `esbenp.prettier-vscode`
-8. **ESLint** - `dbaeumer.vscode-eslint`
-
-### Firebase Extensions:
-9. **Firebase** - `toba.vsfire`
-10. **Firebase Explorer** - `jsayol.firebase-explorer`
-
-### How to Install Extensions:
-1. Open VS Code
-2. Click the Extensions icon (⬜) in the sidebar or press `Ctrl+Shift+X`
-3. Search for each extension by name
-4. Click "Install" for each one
-
-## 🔥 Step 3: Firebase Setup
-
-### 3.1 Create Firebase Project
-1. Go to [https://console.firebase.google.com/](https://console.firebase.google.com/)
-2. Sign in with your Google account
-3. Click "Create a project"
-4. Enter project name: `megh-laboratory-system`
-5. Enable Google Analytics (recommended)
-6. Click "Create project"
-
-### 3.2 Enable Authentication
-1. In your Firebase console, click "Authentication" in the left sidebar
-2. Click "Get started"
-3. Go to "Sign-in method" tab
-4. Enable these providers:
-   - **Email/Password**: Click → Enable → Save
-   - **Google**: Click → Enable → Add your email as authorized domain → Save
-
-### 3.3 Create Firestore Database
-1. Click "Firestore Database" in the left sidebar
-2. Click "Create database"
-3. Choose "Start in test mode" (for development)
-4. Select your preferred location (closest to you)
-5. Click "Done"
-
-### 3.4 Set Up Storage
-1. Click "Storage" in the left sidebar
-2. Click "Get started"
-3. Keep default security rules for now
-4. Choose same location as Firestore
-5. Click "Done"
-
-### 3.5 Get Firebase Configuration
-1. Click the gear icon ⚙️ next to "Project Overview"
-2. Select "Project settings"
-3. Scroll down to "Your apps" section
-4. Click the web icon `</>`
-5. Enter app nickname: `megh-lab-web`
-6. Check "Also set up Firebase Hosting"
-7. Click "Register app"
-8. **IMPORTANT**: Copy the Firebase configuration object - you'll need this later!
-
-Example configuration (yours will be different):
-\`\`\`javascript
-const firebaseConfig = {
-  apiKey: "your-api-key-here",
-  authDomain: "your-project.firebaseapp.com",
-  projectId: "your-project-id",
-  storageBucket: "your-project.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "your-app-id"
-};
-\`\`\`
-
-## 💻 Step 4: Project Setup
-
-### 4.1 Create Project Directory
-1. Open VS Code
-2. Open terminal in VS Code: `View → Terminal` or `Ctrl+\``
-3. Navigate to where you want to create the project:
+3. **Set up environment variables**
    \`\`\`bash
-   cd Desktop  # or wherever you prefer
+   cp .env.example .env.local
    \`\`\`
 
-### 4.2 Create Next.js Project
-\`\`\`bash
-npx create-next-app@latest megh-laboratory-system --typescript --tailwind --eslint --app --src-dir --import-alias "@/*"
-\`\`\`
+4. **Start the development server**
+   \`\`\`bash
+   npm run dev
+   # or
+   yarn dev
+   \`\`\`
 
-### 4.3 Navigate to Project
-\`\`\`bash
-cd megh-laboratory-system
-\`\`\`
+5. **Open your browser**
+   Navigate to `http://localhost:3000`
 
-### 4.4 Install Additional Dependencies
-\`\`\`bash
-npm install firebase
-npm install @radix-ui/react-accordion @radix-ui/react-alert-dialog @radix-ui/react-avatar @radix-ui/react-checkbox @radix-ui/react-dialog @radix-ui/react-dropdown-menu @radix-ui/react-label @radix-ui/react-radio-group @radix-ui/react-select @radix-ui/react-separator @radix-ui/react-slot @radix-ui/react-tabs @radix-ui/react-toast @radix-ui/react-tooltip
-npm install class-variance-authority clsx tailwind-merge
-npm install lucide-react
-npm install recharts
-npm install date-fns
-npm install react-hook-form @hookform/resolvers zod
-\`\`\`
+## 🔧 Environment Variables
 
-### 4.5 Install shadcn/ui
-\`\`\`bash
-npx shadcn@latest init
-\`\`\`
-
-When prompted, choose:
-- TypeScript: Yes
-- Style: Default
-- Base color: Slate
-- CSS variables: Yes
-
-### 4.6 Add shadcn/ui Components
-\`\`\`bash
-npx shadcn@latest add button card input label textarea select checkbox radio-group badge alert accordion tabs toast tooltip progress separator
-\`\`\`
-
-## 🔧 Step 5: Configure Firebase in Your Project
-
-### 5.1 Create Firebase Configuration File
-1. In VS Code, create a new file: `lib/firebase-config.ts`
-2. Add your Firebase configuration:
-
-\`\`\`typescript
-import { initializeApp } from 'firebase/app'
-import { getAuth } from 'firebase/auth'
-import { getFirestore } from 'firebase/firestore'
-import { getStorage } from 'firebase/storage'
-
-const firebaseConfig = {
-  // Replace with your actual Firebase config
-  apiKey: "your-api-key-here",
-  authDomain: "your-project.firebaseapp.com",
-  projectId: "your-project-id",
-  storageBucket: "your-project.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "your-app-id"
-}
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig)
-
-// Initialize Firebase services
-export const auth = getAuth(app)
-export const db = getFirestore(app)
-export const storage = getStorage(app)
-
-export default app
-\`\`\`
-
-### 5.2 Create Environment Variables
-1. Create a file named `.env.local` in your project root
-2. Add your Firebase configuration as environment variables:
+Create a `.env.local` file in the root directory:
 
 \`\`\`env
-NEXT_PUBLIC_FIREBASE_API_KEY=your-api-key-here
+# Firebase Configuration
+NEXT_PUBLIC_FIREBASE_API_KEY=your-api-key
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
 NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
 NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=123456789
 NEXT_PUBLIC_FIREBASE_APP_ID=your-app-id
+
+# Optional: Analytics
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-XXXXXXXXXX
 \`\`\`
 
-### 5.3 Update Firebase Config to Use Environment Variables
-Update `lib/firebase-config.ts`:
+## 🔥 Firebase Setup
 
-\`\`\`typescript
-import { initializeApp } from 'firebase/app'
-import { getAuth } from 'firebase/auth'
-import { getFirestore } from 'firebase/firestore'
-import { getStorage } from 'firebase/storage'
+### 1. Create Firebase Project
 
-const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
-}
+1. Go to [Firebase Console](https://console.firebase.google.com/)
+2. Click "Create a project"
+3. Enter project name: `maes-laboratory-system`
+4. Enable Google Analytics (optional)
+5. Click "Create project"
 
-const app = initializeApp(firebaseConfig)
+### 2. Enable Authentication
 
-export const auth = getAuth(app)
-export const db = getFirestore(app)
-export const storage = getStorage(app)
+1. In Firebase Console, go to **Authentication**
+2. Click **Get started**
+3. Go to **Sign-in method** tab
+4. Enable the following providers:
+   - **Email/Password**
+   - **Google** (optional)
 
-export default app
-\`\`\`
+### 3. Create Firestore Database
 
-## 📁 Step 6: Add Project Files
+1. Go to **Firestore Database**
+2. Click **Create database**
+3. Choose **Start in test mode** (for development)
+4. Select your preferred location
+5. Click **Done**
 
-### 6.1 Create Required Directories
-In VS Code terminal, create the following directories:
-\`\`\`bash
-mkdir -p app/admin/dashboard app/patient/dashboard app/auth/login app/auth/register
-mkdir -p components/ui
-mkdir -p public/images
-\`\`\`
+### 4. Set up Storage
 
-### 6.2 Add Images
-1. Create a folder `public/images` in your project
-2. Add the hospital logo as `maes-logo.avif`
-3. Add the hospital building image as `hospital-building.jpg`
+1. Go to **Storage**
+2. Click **Get started**
+3. Choose **Start in test mode**
+4. Select the same location as Firestore
+5. Click **Done**
 
-You can use placeholder images for now or download appropriate images.
+### 5. Get Configuration
 
-## 🎨 Step 7: Configure Tailwind CSS
+1. Go to **Project Settings** (gear icon)
+2. Scroll down to **Your apps**
+3. Click **Web app** icon (`</>`)
+4. Register your app with name: `MAES Laboratory`
+5. Copy the configuration object
+6. Add the values to your `.env.local` file
 
-Update `tailwind.config.ts`:
+## 💻 VS Code Setup
 
-\`\`\`typescript
-import type { Config } from 'tailwindcss'
+### Recommended Extensions
 
-const config: Config = {
-  darkMode: ["class"],
-  content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
-  ],
-  theme: {
-    container: {
-      center: true,
-      padding: "2rem",
-      screens: {
-        "2xl": "1400px",
-      },
-    },
-    extend: {
-      colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
-        primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
-        },
-        secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
-        },
-        destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
-        },
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
-        },
-        accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
-        },
-        popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
-        },
-        card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
-        },
-      },
-      borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
-      },
-      keyframes: {
-        "accordion-down": {
-          from: { height: "0" },
-          to: { height: "var(--radix-accordion-content-height)" },
-        },
-        "accordion-up": {
-          from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: "0" },
-        },
-      },
-      animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
-      },
-    },
-  },
-  plugins: [require("tailwindcss-animate")],
-}
+Install these VS Code extensions for the best development experience:
 
-export default config
-\`\`\`
-
-## 🚀 Step 8: Run the Development Server
-
-### 8.1 Start the Development Server
-\`\`\`bash
-npm run dev
-\`\`\`
-
-### 8.2 Open in Browser
-1. Open your web browser
-2. Go to `http://localhost:3000`
-3. You should see your application running!
-
-## 🔐 Step 9: Set Up Authentication Rules
-
-### 9.1 Configure Firestore Security Rules
-1. Go to Firebase Console → Firestore Database → Rules
-2. Replace the default rules with:
-
-\`\`\`javascript
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    // Users can read and write their own data
-    match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-    }
-    
-    // Appointments - users can read/write their own, admins can read all
-    match /appointments/{appointmentId} {
-      allow read, write: if request.auth != null && 
-        (request.auth.uid == resource.data.userId || 
-         request.auth.token.admin == true);
-    }
-    
-    // Admin-only collections
-    match /admin/{document=**} {
-      allow read, write: if request.auth != null && request.auth.token.admin == true;
-    }
-    
-    // Public read access for services and pricing
-    match /services/{serviceId} {
-      allow read: if true;
-      allow write: if request.auth != null && request.auth.token.admin == true;
-    }
-  }
-}
-\`\`\`
-
-### 9.2 Configure Storage Security Rules
-1. Go to Firebase Console → Storage → Rules
-2. Replace with:
-
-\`\`\`javascript
-rules_version = '2';
-service firebase.storage {
-  match /b/{bucket}/o {
-    match /users/{userId}/{allPaths=**} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-    }
-    
-    match /admin/{allPaths=**} {
-      allow read, write: if request.auth != null && request.auth.token.admin == true;
-    }
-    
-    match /public/{allPaths=**} {
-      allow read: if true;
-      allow write: if request.auth != null && request.auth.token.admin == true;
-    }
-  }
-}
-\`\`\`
-
-## 📊 Step 10: Set Up Initial Data
-
-### 10.1 Create Sample Data in Firestore
-1. Go to Firebase Console → Firestore Database
-2. Click "Start collection"
-3. Create these collections with sample documents:
-
-**Collection: `services`**
 \`\`\`json
 {
-  "id": "cbc",
-  "name": "Complete Blood Count",
-  "category": "Hematology",
-  "price": 450,
-  "description": "Basic blood test to check overall health",
-  "duration": "15 mins"
+  "recommendations": [
+    "bradlc.vscode-tailwindcss",
+    "esbenp.prettier-vscode",
+    "ms-vscode.vscode-typescript-next",
+    "formulahendry.auto-rename-tag",
+    "christian-kohler.path-intellisense",
+    "ms-vscode.vscode-json",
+    "ms-vscode.vscode-eslint",
+    "firebase.vscode-firebase-explorer",
+    "ms-vscode.vscode-react-native"
+  ]
 }
 \`\`\`
 
-**Collection: `settings`**
-\`\`\`json
-{
-  "id": "payment",
-  "gcashNumber": "09123456789",
-  "bankAccount": "1234567890",
-  "bankName": "BDO Unibank"
-}
-\`\`\`
+### VS Code Settings
 
-## 🔧 Step 11: VS Code Configuration
-
-### 11.1 Create VS Code Settings
 Create `.vscode/settings.json`:
 
 \`\`\`json
@@ -460,149 +147,236 @@ Create `.vscode/settings.json`:
 }
 \`\`\`
 
-### 11.2 Create Prettier Configuration
-Create `.prettierrc`:
+## 🗄️ Database Schema
 
-\`\`\`json
-{
-  "semi": false,
-  "trailingComma": "es5",
-  "singleQuote": true,
-  "tabWidth": 2,
-  "useTabs": false
-}
+### Collections Structure
+
+\`\`\`
+users/
+├── {userId}/
+    ├── email: string
+    ├── firstName: string
+    ├── lastName: string
+    ├── role: "patient" | "admin"
+    ├── createdAt: timestamp
+    └── updatedAt: timestamp
+
+appointments/
+├── {appointmentId}/
+    ├── userId: string
+    ├── services: string[]
+    ├── appointmentDate: timestamp
+    ├── status: "pending" | "approved" | "completed"
+    ├── amount: number
+    └── createdAt: timestamp
+
+test_results/
+├── {resultId}/
+    ├── userId: string
+    ├── appointmentId: string
+    ├── testType: string
+    ├── results: object
+    ├── aiAnalysis: object
+    └── createdAt: timestamp
+
+notifications/
+├── {notificationId}/
+    ├── userId: string
+    ├── title: string
+    ├── message: string
+    ├── type: "info" | "success" | "warning" | "error"
+    ├── read: boolean
+    └── createdAt: timestamp
 \`\`\`
 
-## 🚀 Step 12: Deploy to Firebase Hosting
+## 🔐 Security Rules
 
-### 12.1 Install Firebase CLI
-\`\`\`bash
-npm install -g firebase-tools
-\`\`\`
+### Firestore Rules
 
-### 12.2 Login to Firebase
-\`\`\`bash
-firebase login
-\`\`\`
-
-### 12.3 Initialize Firebase Hosting
-\`\`\`bash
-firebase init hosting
-\`\`\`
-
-Choose:
-- Use existing project
-- Select your project
-- Public directory: `out`
-- Single-page app: Yes
-- Overwrite index.html: No
-
-### 12.4 Update package.json
-Add these scripts to `package.json`:
-
-\`\`\`json
-{
-  "scripts": {
-    "build": "next build",
-    "export": "next export",
-    "deploy": "npm run build && npm run export && firebase deploy"
+\`\`\`javascript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users can read and write their own data
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Appointments - users can read/write their own, admins can read all
+    match /appointments/{appointmentId} {
+      allow read, write: if request.auth != null && 
+        (request.auth.uid == resource.data.userId || 
+         request.auth.token.admin == true);
+    }
+    
+    // Test results - users can read their own, admins can read/write all
+    match /test_results/{resultId} {
+      allow read: if request.auth != null && 
+        (request.auth.uid == resource.data.userId || 
+         request.auth.token.admin == true);
+      allow write: if request.auth != null && request.auth.token.admin == true;
+    }
+    
+    // Admin-only collections
+    match /admin/{document=**} {
+      allow read, write: if request.auth != null && request.auth.token.admin == true;
+    }
   }
 }
 \`\`\`
 
-### 12.5 Deploy
-\`\`\`bash
-npm run deploy
+### Storage Rules
+
+\`\`\`javascript
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // User files - users can only access their own files
+    match /users/{userId}/{allPaths=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Test results - users can read their own, admins can read/write all
+    match /test_results/{userId}/{allPaths=**} {
+      allow read: if request.auth != null && 
+        (request.auth.uid == userId || request.auth.token.admin == true);
+      allow write: if request.auth != null && request.auth.token.admin == true;
+    }
+  }
+}
 \`\`\`
 
-## 🎯 Step 13: Testing Your Application
+## 🧪 Testing
 
-### 13.1 Test Patient Portal
-1. Go to `http://localhost:3000`
-2. Click "Patient Portal"
-3. Register a new account or login
-4. Test booking an appointment
-5. Test viewing dashboard
+### Run Tests
 
-### 13.2 Test Admin Portal
-1. Go to `http://localhost:3000`
-2. Click "Admin Portal"
-3. Login with admin credentials
-4. Test dashboard functionality
-5. Test approving appointments
+\`\`\`bash
+# Run all tests
+npm test
 
-### 13.3 Test Firebase Integration
-1. Check if data is being saved to Firestore
-2. Test file uploads to Storage
-3. Verify authentication is working
+# Run tests in watch mode
+npm run test:watch
 
-## 🔍 Troubleshooting
+# Run tests with coverage
+npm run test:coverage
+\`\`\`
 
-### Common Issues:
+### Test Structure
 
-**1. Firebase Configuration Error**
-- Double-check your Firebase config in `.env.local`
-- Ensure all environment variables are prefixed with `NEXT_PUBLIC_`
+\`\`\`
+__tests__/
+├── components/
+├── pages/
+├── utils/
+└── setup.js
+\`\`\`
 
-**2. Module Not Found Errors**
-- Run `npm install` to ensure all dependencies are installed
-- Check import paths are correct
+## 🚀 Deployment
 
-**3. Build Errors**
-- Check TypeScript errors in VS Code
-- Ensure all required props are passed to components
+### Deploy to Vercel
 
-**4. Authentication Issues**
-- Verify Firebase Authentication is enabled
-- Check security rules in Firebase Console
+1. **Install Vercel CLI**
+   \`\`\`bash
+   npm i -g vercel
+   \`\`\`
 
-**5. Styling Issues**
-- Ensure Tailwind CSS is properly configured
-- Check if shadcn/ui components are installed
+2. **Login to Vercel**
+   \`\`\`bash
+   vercel login
+   \`\`\`
 
-## 📚 Additional Resources
+3. **Deploy**
+   \`\`\`bash
+   vercel --prod
+   \`\`\`
 
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Firebase Documentation](https://firebase.google.com/docs)
-- [Tailwind CSS Documentation](https://tailwindcss.com/docs)
-- [shadcn/ui Documentation](https://ui.shadcn.com/)
+### Environment Variables in Production
 
-## 🎉 Congratulations!
+Add these environment variables in Vercel dashboard:
 
-You have successfully set up the MEGH Laboratory Management System! Your application should now be running with:
+- `NEXT_PUBLIC_FIREBASE_API_KEY`
+- `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`
+- `NEXT_PUBLIC_FIREBASE_PROJECT_ID`
+- `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`
+- `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`
+- `NEXT_PUBLIC_FIREBASE_APP_ID`
 
-✅ Complete patient and admin portals
-✅ Firebase authentication and database
-✅ Responsive design with Tailwind CSS
-✅ Modern UI components with shadcn/ui
-✅ Real-time notifications
-✅ Secure payment processing
-✅ File upload capabilities
-✅ Comprehensive dashboard analytics
+## 📱 Features
 
-## 🔄 Next Steps
+### Patient Portal
+- ✅ User registration and authentication
+- ✅ Appointment booking system
+- ✅ Test result viewing with AI analysis
+- ✅ Medical certificate requests
+- ✅ Payment management
+- ✅ Real-time notifications
+- ✅ AI-powered chatbot support
 
-1. Customize the branding and colors to match your needs
-2. Add more laboratory services and tests
-3. Configure email notifications
-4. Set up automated backups
-5. Add more advanced features as needed
+### Admin Portal
+- ✅ Patient management
+- ✅ Appointment approval system
+- ✅ Test result management
+- ✅ Payment tracking
+- ✅ Analytics dashboard
+- ✅ User management
+- ✅ System notifications
 
-## 💡 Tips for Success
+### AI Features
+- ✅ Intelligent test result analysis
+- ✅ Predictive health insights
+- ✅ Automated report generation
+- ✅ Smart appointment scheduling
+- ✅ Chatbot with medical knowledge
 
-- Always test changes in development before deploying
-- Keep your Firebase security rules updated
-- Regularly backup your data
-- Monitor your Firebase usage to stay within limits
-- Use VS Code extensions to improve productivity
+## 🔧 Troubleshooting
 
-## 🆘 Getting Help
+### Common Issues
 
-If you encounter any issues:
-1. Check the browser console for errors
-2. Review the Firebase Console for any issues
-3. Ensure all dependencies are properly installed
-4. Verify your environment variables are correct
+1. **Firebase connection errors**
+   - Check your environment variables
+   - Ensure Firebase project is properly configured
+   - Verify API keys are correct
 
-Happy coding! 🚀
+2. **Build errors**
+   - Clear node_modules: `rm -rf node_modules && npm install`
+   - Clear Next.js cache: `rm -rf .next`
+   - Check TypeScript errors: `npm run type-check`
+
+3. **Authentication issues**
+   - Verify Firebase Auth is enabled
+   - Check security rules
+   - Ensure proper user roles are set
+
+### Getting Help
+
+- 📧 Email: support@maes-laboratory.com
+- 📞 Phone: (043) 286-2531
+- 🌐 Website: https://maes-laboratory.vercel.app
+- 📚 Documentation: https://docs.maes-laboratory.com
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Commit your changes: `git commit -m 'Add amazing feature'`
+4. Push to the branch: `git push origin feature/amazing-feature`
+5. Open a Pull Request
+
+## 🙏 Acknowledgments
+
+- Maria Estrella General Hospital
+- Next.js team for the amazing framework
+- Firebase team for the backend services
+- Tailwind CSS for the styling system
+- shadcn/ui for the component library
+
+---
+
+**MAES Laboratory Management System** - Revolutionizing healthcare through technology 🏥✨
+\`\`\`
+
 \`\`\`

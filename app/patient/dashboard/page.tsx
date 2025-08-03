@@ -8,501 +8,461 @@ import { Progress } from "@/components/ui/progress"
 import {
   Calendar,
   FileText,
-  Bell,
-  CreditCard,
-  MessageSquare,
   Activity,
-  CheckCircle,
-  AlertCircle,
-  Heart,
-  Clock,
   TrendingUp,
-  Download,
-  Stethoscope,
+  Clock,
+  CheckCircle,
+  Heart,
+  Brain,
+  Plus,
+  ArrowRight,
+  Star,
+  Award,
+  Target,
 } from "lucide-react"
 import Link from "next/link"
 import PatientLayout from "@/components/patient-layout"
-import ChatSupport from "@/components/chat-support"
-import { useNotifications, NotificationProvider } from "@/components/notification-system"
 import {
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  AreaChart,
+  Area,
   PieChart,
   Pie,
   Cell,
 } from "recharts"
 
-function PatientDashboardContent() {
-  const [userEmail, setUserEmail] = useState("")
-  const [showChat, setShowChat] = useState(false)
-  const { addNotification } = useNotifications()
+// Sample data for charts
+const healthTrendData = [
+  { month: "Jan", score: 85, cholesterol: 180, bloodPressure: 120 },
+  { month: "Feb", score: 87, cholesterol: 175, bloodPressure: 118 },
+  { month: "Mar", score: 90, cholesterol: 170, bloodPressure: 115 },
+  { month: "Apr", score: 92, cholesterol: 165, bloodPressure: 112 },
+  { month: "May", score: 94, cholesterol: 160, bloodPressure: 110 },
+  { month: "Jun", score: 96, cholesterol: 155, bloodPressure: 108 },
+]
 
-  const [notifications] = useState([
-    { id: 1, message: "Your blood test results are ready for download", type: "success", time: "2 hours ago" },
-    { id: 2, message: "Appointment reminder: Tomorrow at 10:00 AM", type: "info", time: "1 day ago" },
-    { id: 3, message: "Payment confirmation received for CBC test", type: "success", time: "3 days ago" },
-    { id: 4, message: "Medical certificate request approved", type: "success", time: "5 days ago" },
-  ])
+const testResultsData = [
+  { name: "Blood Count", value: 95, color: "#10b981" },
+  { name: "Cholesterol", value: 88, color: "#3b82f6" },
+  { name: "Blood Sugar", value: 92, color: "#8b5cf6" },
+  { name: "Liver Function", value: 90, color: "#f59e0b" },
+]
 
-  const [recentAppointments] = useState([
-    {
-      id: 1,
-      service: "Complete Blood Count",
-      date: "2024-01-15",
-      time: "10:00 AM",
-      status: "completed",
-      amount: "₱450",
-      results: "Available",
-    },
-    {
-      id: 2,
-      service: "Blood Chemistry Panel",
-      date: "2024-01-20",
-      time: "2:00 PM",
-      status: "approved",
-      amount: "₱1,200",
-      results: "Pending",
-    },
-    {
-      id: 3,
-      service: "Urinalysis",
-      date: "2024-01-25",
-      time: "9:00 AM",
-      status: "scheduled",
-      amount: "₱300",
-      results: "Pending",
-    },
-  ])
+const upcomingTests = [
+  { name: "Lipid Profile", date: "2024-01-15", time: "10:00 AM", status: "confirmed" },
+  { name: "Thyroid Function", date: "2024-01-20", time: "2:00 PM", status: "pending" },
+]
 
-  const [healthData] = useState([
-    { month: "Jan", tests: 2, spending: 750, healthScore: 85 },
-    { month: "Feb", tests: 1, spending: 450, healthScore: 87 },
-    { month: "Mar", tests: 3, spending: 1950, healthScore: 82 },
-    { month: "Apr", tests: 2, spending: 1200, healthScore: 88 },
-    { month: "May", tests: 1, spending: 300, healthScore: 90 },
-    { month: "Jun", tests: 2, spending: 900, healthScore: 92 },
-  ])
+const recentResults = [
+  { test: "Complete Blood Count", date: "2024-01-05", status: "normal", aiScore: 95 },
+  { test: "Blood Chemistry", date: "2024-01-03", status: "normal", aiScore: 88 },
+  { test: "Urinalysis", date: "2023-12-28", status: "normal", aiScore: 92 },
+]
 
-  const [testCategories] = useState([
-    { name: "Blood Tests", value: 60, count: 8, color: "#10b981" },
-    { name: "Imaging", value: 25, count: 3, color: "#3b82f6" },
-    { name: "Cardiology", value: 15, count: 2, color: "#f59e0b" },
-  ])
+const healthInsights = [
+  {
+    title: "Excellent Progress",
+    description: "Your health score has improved by 11% over the last 6 months",
+    type: "positive",
+    icon: TrendingUp,
+    action: "View Trends",
+  },
+  {
+    title: "Cholesterol Improvement",
+    description: "Your cholesterol levels have decreased by 25mg/dL since January",
+    type: "positive",
+    icon: Heart,
+    action: "View Details",
+  },
+  {
+    title: "Upcoming Checkup",
+    description: "Your annual comprehensive health screening is due next month",
+    type: "info",
+    icon: Calendar,
+    action: "Schedule Now",
+  },
+]
+
+export default function PatientDashboard() {
+  const [healthScore, setHealthScore] = useState(94)
+  const [userName, setUserName] = useState("John")
 
   useEffect(() => {
-    const email = localStorage.getItem("userEmail")
-    if (email) {
-      setUserEmail(email)
-    }
-
-    // Simulate real-time notifications
-    const interval = setInterval(() => {
-      const notifications = [
-        {
-          title: "Test Results Ready",
-          message: "Your CBC test results are now available for download",
-          type: "success" as const,
-          category: "result" as const,
-          persistent: true,
-          actionUrl: "/patient/results",
-          actionText: "View Results",
-        },
-        {
-          title: "Appointment Reminder",
-          message: "You have an appointment tomorrow at 10:00 AM",
-          type: "info" as const,
-          category: "appointment" as const,
-          actionUrl: "/patient/appointments",
-          actionText: "View Details",
-        },
-        {
-          title: "Payment Confirmed",
-          message: "Your payment of ₱1,200 has been successfully processed",
-          type: "success" as const,
-          category: "payment" as const,
-        },
-      ]
-
-      if (Math.random() > 0.7) {
-        const randomNotification = notifications[Math.floor(Math.random() * notifications.length)]
-        addNotification(randomNotification)
-      }
-    }, 30000)
-
-    return () => clearInterval(interval)
-  }, [addNotification])
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "completed":
-        return "bg-emerald-100 text-emerald-800"
-      case "approved":
-        return "bg-blue-100 text-blue-800"
-      case "scheduled":
-        return "bg-yellow-100 text-yellow-800"
-      default:
-        return "bg-gray-100 text-gray-800"
-    }
-  }
-
-  const getNotificationIcon = (type: string) => {
-    switch (type) {
-      case "success":
-        return <CheckCircle className="w-4 h-4 text-emerald-600" />
-      case "info":
-        return <Bell className="w-4 h-4 text-blue-600" />
-      case "warning":
-        return <AlertCircle className="w-4 h-4 text-yellow-600" />
-      default:
-        return <Bell className="w-4 h-4 text-gray-600" />
-    }
-  }
+    const name = localStorage.getItem("userName") || "Patient"
+    setUserName(name)
+  }, [])
 
   return (
     <PatientLayout>
       <div className="space-y-8">
-        {/* Welcome Section */}
-        <div className="bg-gradient-to-r from-emerald-600 to-green-700 rounded-xl p-6 sm:p-8 text-white">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
-            <div className="mb-4 sm:mb-0">
-              <h1 className="text-2xl sm:text-3xl font-bold mb-2">Welcome back, John!</h1>
-              <p className="text-emerald-100 text-base sm:text-lg mb-4">
-                Your health journey continues here. Book laboratory tests, view results, and manage your appointments.
-              </p>
-              <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-6">
-                <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-green-300 rounded-full animate-pulse"></div>
-                  <span className="text-emerald-100 text-sm">Account Active</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Clock className="w-4 h-4" />
-                  <span className="text-emerald-100 text-sm">Last visit: Jan 15, 2024</span>
-                </div>
-              </div>
-            </div>
-            <div className="hidden sm:block">
-              <Heart className="w-16 sm:w-20 h-16 sm:h-20 text-emerald-200" />
-            </div>
-          </div>
-        </div>
+        {/* Welcome Header */}
+        <div className="bg-gradient-to-r from-emerald-600 via-blue-600 to-purple-600 rounded-3xl p-8 text-white relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full blur-2xl"></div>
 
-        {/* Quick Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-          <Card className="border-emerald-200 hover:shadow-lg transition-shadow">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs sm:text-sm font-medium text-emerald-800">Total Tests</CardTitle>
-              <Calendar className="h-4 sm:h-5 w-4 sm:w-5 text-emerald-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl sm:text-3xl font-bold text-emerald-700">13</div>
-              <p className="text-xs text-emerald-600 flex items-center mt-1">
-                <TrendingUp className="w-3 h-3 mr-1" />
-                +2 from last month
-              </p>
-              <Progress value={75} className="mt-2 h-2" />
-            </CardContent>
-          </Card>
-
-          <Card className="border-emerald-200 hover:shadow-lg transition-shadow">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs sm:text-sm font-medium text-emerald-800">Pending Results</CardTitle>
-              <FileText className="h-4 sm:h-5 w-4 sm:w-5 text-emerald-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl sm:text-3xl font-bold text-emerald-700">2</div>
-              <p className="text-xs text-emerald-600">1 ready for pickup</p>
-              <div className="mt-2">
-                <Badge className="bg-yellow-100 text-yellow-800 text-xs">Processing</Badge>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-emerald-200 hover:shadow-lg transition-shadow">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs sm:text-sm font-medium text-emerald-800">This Month</CardTitle>
-              <CreditCard className="h-4 sm:h-5 w-4 sm:w-5 text-emerald-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl sm:text-3xl font-bold text-emerald-700">₱2,450</div>
-              <p className="text-xs text-emerald-600">Total spent</p>
-              <Progress value={60} className="mt-2 h-2" />
-            </CardContent>
-          </Card>
-
-          <Card className="border-emerald-200 hover:shadow-lg transition-shadow">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs sm:text-sm font-medium text-emerald-800">Health Score</CardTitle>
-              <Activity className="h-4 sm:h-5 w-4 sm:w-5 text-emerald-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl sm:text-3xl font-bold text-emerald-700">92%</div>
-              <p className="text-xs text-emerald-600">Excellent</p>
-              <div className="mt-2">
-                <Badge className="bg-emerald-100 text-emerald-800 text-xs">Healthy</Badge>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Health Trends */}
-          <Card className="border-emerald-200">
-            <CardHeader className="flex flex-row items-center justify-between">
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-6">
               <div>
-                <CardTitle className="text-emerald-800 flex items-center text-base sm:text-lg">
-                  <TrendingUp className="w-4 sm:w-5 h-4 sm:h-5 mr-2" />
-                  Health Activity & Spending
-                </CardTitle>
-                <CardDescription className="text-xs sm:text-sm">
-                  Your test history and health score trends
-                </CardDescription>
+                <h1 className="text-4xl font-bold mb-2">Welcome back, {userName}! 👋</h1>
+                <p className="text-xl text-emerald-100">Your health journey continues with AI-powered insights</p>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-emerald-600 text-emerald-600 hover:bg-emerald-50 bg-transparent text-xs"
-              >
-                <Download className="w-3 sm:w-4 h-3 sm:h-4 mr-1 sm:mr-2" />
-                Export
-              </Button>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={200}>
-                <LineChart data={healthData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip
-                    formatter={(value, name) => [
-                      name === "spending" ? `₱${value}` : name === "healthScore" ? `${value}%` : value,
-                      name === "spending" ? "Spending" : name === "healthScore" ? "Health Score" : "Tests",
-                    ]}
-                  />
-                  <Line type="monotone" dataKey="tests" stroke="#10b981" strokeWidth={3} name="tests" />
-                  <Line type="monotone" dataKey="healthScore" stroke="#3b82f6" strokeWidth={2} name="healthScore" />
-                </LineChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
+              <div className="text-right">
+                <div className="text-3xl font-bold mb-1">{healthScore}%</div>
+                <div className="text-emerald-200">Health Score</div>
+              </div>
+            </div>
 
-          {/* Test Categories */}
-          <Card className="border-emerald-200">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                <div className="flex items-center space-x-3 mb-3">
+                  <div className="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center">
+                    <Calendar className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold">2</div>
+                    <div className="text-emerald-100">Upcoming Tests</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                <div className="flex items-center space-x-3 mb-3">
+                  <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center">
+                    <FileText className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold">3</div>
+                    <div className="text-blue-100">Recent Results</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                <div className="flex items-center space-x-3 mb-3">
+                  <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center">
+                    <Brain className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold">5</div>
+                    <div className="text-purple-100">AI Insights</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <Link href="/patient/book-appointment">
+            <Card className="hover:shadow-xl transition-all duration-300 transform hover:scale-105 cursor-pointer border-emerald-200 bg-gradient-to-br from-emerald-50 to-green-50">
+              <CardContent className="p-6 text-center">
+                <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-green-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                  <Plus className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="font-bold text-emerald-800 mb-2">Book Test</h3>
+                <p className="text-sm text-emerald-600">Schedule your next laboratory test</p>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href="/patient/results">
+            <Card className="hover:shadow-xl transition-all duration-300 transform hover:scale-105 cursor-pointer border-blue-200 bg-gradient-to-br from-blue-50 to-cyan-50">
+              <CardContent className="p-6 text-center">
+                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                  <FileText className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="font-bold text-blue-800 mb-2">View Results</h3>
+                <p className="text-sm text-blue-600">Check your latest test results</p>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href="/patient/medical-certificate">
+            <Card className="hover:shadow-xl transition-all duration-300 transform hover:scale-105 cursor-pointer border-purple-200 bg-gradient-to-br from-purple-50 to-pink-50">
+              <CardContent className="p-6 text-center">
+                <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                  <Award className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="font-bold text-purple-800 mb-2">Medical Certificate</h3>
+                <p className="text-sm text-purple-600">Request medical certificates</p>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href="/patient/chat">
+            <Card className="hover:shadow-xl transition-all duration-300 transform hover:scale-105 cursor-pointer border-orange-200 bg-gradient-to-br from-orange-50 to-yellow-50">
+              <CardContent className="p-6 text-center">
+                <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                  <Brain className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="font-bold text-orange-800 mb-2">AI Assistant</h3>
+                <p className="text-sm text-orange-600">Get instant health guidance</p>
+              </CardContent>
+            </Card>
+          </Link>
+        </div>
+
+        {/* Health Score and Trends */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <Card className="lg:col-span-2 border-0 shadow-xl">
             <CardHeader>
-              <CardTitle className="text-emerald-800 flex items-center text-base sm:text-lg">
-                <Activity className="w-4 sm:w-5 h-4 sm:h-5 mr-2" />
-                Test Categories
+              <CardTitle className="flex items-center space-x-2">
+                <Activity className="w-5 h-5 text-emerald-600" />
+                <span>Health Trends</span>
               </CardTitle>
-              <CardDescription className="text-xs sm:text-sm">Distribution of your laboratory tests</CardDescription>
+              <CardDescription>Your health metrics over the past 6 months</CardDescription>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={200}>
-                <PieChart>
-                  <Pie
-                    data={testCategories}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={60}
-                    fill="#8884d8"
-                    dataKey="value"
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={healthTrendData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" />
+                    <YAxis />
+                    <Tooltip />
+                    <Area
+                      type="monotone"
+                      dataKey="score"
+                      stroke="#10b981"
+                      fill="#10b981"
+                      fillOpacity={0.3}
+                      name="Health Score"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="space-y-6">
+            <Card className="border-0 shadow-xl">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Target className="w-5 h-5 text-blue-600" />
+                  <span>Health Score</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center">
+                  <div className="text-6xl font-bold text-emerald-600 mb-4">{healthScore}%</div>
+                  <Progress value={healthScore} className="mb-4" />
+                  <div className="flex items-center justify-center space-x-2 text-emerald-600">
+                    <TrendingUp className="w-4 h-4" />
+                    <span className="text-sm font-medium">+11% from last month</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-0 shadow-xl">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Star className="w-5 h-5 text-yellow-600" />
+                  <span>Achievement</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Award className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="font-bold text-gray-900 mb-2">Health Champion</h3>
+                  <p className="text-sm text-gray-600">Maintained excellent health for 6 months</p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Test Results Overview */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <Card className="border-0 shadow-xl">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <FileText className="w-5 h-5 text-blue-600" />
+                <span>Recent Test Results</span>
+              </CardTitle>
+              <CardDescription>Your latest laboratory test results with AI analysis</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {recentResults.map((result, index) => (
+                  <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                        <CheckCircle className="w-5 h-5 text-green-600" />
+                      </div>
+                      <div>
+                        <div className="font-medium text-gray-900">{result.test}</div>
+                        <div className="text-sm text-gray-500">{result.date}</div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <Badge className="bg-green-100 text-green-800 mb-1">Normal</Badge>
+                      <div className="text-xs text-gray-500">AI Score: {result.aiScore}%</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <Link href="/patient/results">
+                <Button className="w-full mt-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                  View All Results
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-xl">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Calendar className="w-5 h-5 text-emerald-600" />
+                <span>Upcoming Tests</span>
+              </CardTitle>
+              <CardDescription>Your scheduled laboratory appointments</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {upcomingTests.map((test, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between p-4 bg-emerald-50 rounded-xl border border-emerald-200"
                   >
-                    {testCategories.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
+                        <Clock className="w-5 h-5 text-emerald-600" />
+                      </div>
+                      <div>
+                        <div className="font-medium text-gray-900">{test.name}</div>
+                        <div className="text-sm text-gray-500">
+                          {test.date} at {test.time}
+                        </div>
+                      </div>
+                    </div>
+                    <Badge
+                      className={
+                        test.status === "confirmed" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"
+                      }
+                    >
+                      {test.status}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+              <Link href="/patient/book-appointment">
+                <Button className="w-full mt-4 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700">
+                  Book New Test
+                  <Plus className="w-4 h-4 ml-2" />
+                </Button>
+              </Link>
             </CardContent>
           </Card>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Recent Appointments */}
-          <div className="lg:col-span-2">
-            <Card className="border-emerald-200">
-              <CardHeader className="flex flex-row items-center justify-between">
-                <div>
-                  <CardTitle className="text-emerald-800 text-base sm:text-lg">Recent Appointments</CardTitle>
-                  <CardDescription className="text-xs sm:text-sm">
-                    Your latest laboratory services and appointments
-                  </CardDescription>
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-emerald-600 text-emerald-600 hover:bg-emerald-50 bg-transparent text-xs"
+        {/* AI Health Insights */}
+        <Card className="border-0 shadow-xl">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Brain className="w-5 h-5 text-purple-600" />
+              <span>AI Health Insights</span>
+            </CardTitle>
+            <CardDescription>Personalized recommendations based on your health data</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {healthInsights.map((insight, index) => (
+                <div
+                  key={index}
+                  className="p-6 bg-gradient-to-br from-gray-50 to-white rounded-2xl border border-gray-200 hover:shadow-lg transition-all duration-300"
                 >
-                  <Download className="w-3 sm:w-4 h-3 sm:h-4 mr-1 sm:mr-2" />
-                  Export
-                </Button>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {recentAppointments.map((appointment) => (
+                  <div className="flex items-center space-x-3 mb-4">
                     <div
-                      key={appointment.id}
-                      className="flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-6 border border-emerald-100 rounded-xl hover:shadow-md transition-shadow space-y-3 sm:space-y-0"
+                      className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                        insight.type === "positive"
+                          ? "bg-green-100"
+                          : insight.type === "info"
+                            ? "bg-blue-100"
+                            : "bg-yellow-100"
+                      }`}
                     >
-                      <div className="flex items-center space-x-4">
-                        <div className="w-10 sm:w-12 h-10 sm:h-12 bg-gradient-to-br from-emerald-100 to-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                          <FileText className="w-5 sm:w-6 h-5 sm:h-6 text-emerald-600" />
-                        </div>
-                        <div className="min-w-0">
-                          <h4 className="font-semibold text-emerald-800 text-sm sm:text-base">{appointment.service}</h4>
-                          <p className="text-xs sm:text-sm text-gray-600">
-                            {appointment.date} at {appointment.time}
-                          </p>
-                          <p className="text-xs text-emerald-600">Results: {appointment.results}</p>
-                        </div>
-                      </div>
-                      <div className="text-left sm:text-right">
-                        <Badge className={`${getStatusColor(appointment.status)} text-xs`}>{appointment.status}</Badge>
-                        <p className="text-sm font-semibold text-emerald-700 mt-1">{appointment.amount}</p>
-                        {appointment.results === "Available" && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="mt-2 border-emerald-600 text-emerald-600 hover:bg-emerald-50 bg-transparent text-xs"
-                          >
-                            <Download className="w-3 h-3 mr-1" />
-                            Download
-                          </Button>
-                        )}
-                      </div>
+                      <insight.icon
+                        className={`w-6 h-6 ${
+                          insight.type === "positive"
+                            ? "text-green-600"
+                            : insight.type === "info"
+                              ? "text-blue-600"
+                              : "text-yellow-600"
+                        }`}
+                      />
                     </div>
-                  ))}
-                </div>
-                <div className="mt-6">
-                  <Link href="/patient/appointments">
-                    <Button
-                      variant="outline"
-                      className="w-full border-emerald-600 text-emerald-600 hover:bg-emerald-50 bg-transparent"
-                    >
-                      View All Appointments
-                    </Button>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Notifications & Quick Actions */}
-          <div className="space-y-6">
-            {/* Notifications */}
-            <Card className="border-emerald-200">
-              <CardHeader>
-                <CardTitle className="text-emerald-800 flex items-center text-base sm:text-lg">
-                  <Bell className="w-4 sm:w-5 h-4 sm:h-5 mr-2" />
-                  Notifications
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {notifications.slice(0, 3).map((notification) => (
-                    <div key={notification.id} className="flex items-start space-x-3 p-3 bg-emerald-50 rounded-lg">
-                      {getNotificationIcon(notification.type)}
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs sm:text-sm text-emerald-800">{notification.message}</p>
-                        <p className="text-xs text-emerald-600 mt-1">{notification.time}</p>
-                      </div>
+                    <div>
+                      <h3 className="font-bold text-gray-900">{insight.title}</h3>
                     </div>
-                  ))}
+                  </div>
+                  <p className="text-gray-600 mb-4">{insight.description}</p>
+                  <Button variant="outline" size="sm" className="w-full bg-transparent">
+                    {insight.action}
+                  </Button>
                 </div>
-                <div className="mt-4">
-                  <Link href="/patient/notifications">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="w-full border-emerald-600 text-emerald-600 hover:bg-emerald-50 bg-transparent text-xs"
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Test Results Distribution */}
+        <Card className="border-0 shadow-xl">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Activity className="w-5 h-5 text-indigo-600" />
+              <span>Test Results Distribution</span>
+            </CardTitle>
+            <CardDescription>Overview of your recent test performance</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={testResultsData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={100}
+                      paddingAngle={5}
+                      dataKey="value"
                     >
-                      View All Notifications
-                    </Button>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Quick Actions */}
-            <Card className="border-emerald-200">
-              <CardHeader>
-                <CardTitle className="text-emerald-800 text-base sm:text-lg">Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Link href="/patient/book-appointment">
-                  <Button className="w-full bg-gradient-to-r from-emerald-600 to-green-700 hover:from-emerald-700 hover:to-green-800 justify-start text-xs sm:text-sm">
-                    <Calendar className="w-3 sm:w-4 h-3 sm:h-4 mr-2" />
-                    Book New Test
-                  </Button>
-                </Link>
-                <Link href="/patient/results">
-                  <Button
-                    variant="outline"
-                    className="w-full border-emerald-600 text-emerald-600 hover:bg-emerald-50 justify-start bg-transparent text-xs sm:text-sm"
-                  >
-                    <FileText className="w-3 sm:w-4 h-3 sm:h-4 mr-2" />
-                    View Test Results
-                  </Button>
-                </Link>
-                <Link href="/patient/medical-certificate">
-                  <Button
-                    variant="outline"
-                    className="w-full border-emerald-600 text-emerald-600 hover:bg-emerald-50 justify-start bg-transparent text-xs sm:text-sm"
-                  >
-                    <Stethoscope className="w-3 sm:w-4 h-3 sm:h-4 mr-2" />
-                    Request Med Certificate
-                  </Button>
-                </Link>
-                <Button
-                  variant="outline"
-                  className="w-full border-emerald-600 text-emerald-600 hover:bg-emerald-50 justify-start bg-transparent text-xs sm:text-sm"
-                  onClick={() => setShowChat(true)}
-                >
-                  <MessageSquare className="w-3 sm:w-4 h-3 sm:h-4 mr-2" />
-                  Chat with Support
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Health Tips */}
-            <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-green-50">
-              <CardHeader>
-                <CardTitle className="text-emerald-800 flex items-center text-base sm:text-lg">
-                  <Heart className="w-4 sm:w-5 h-4 sm:h-5 mr-2" />
-                  Health Tip
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-xs sm:text-sm text-emerald-700 mb-3">
-                  Regular health checkups can help detect potential issues early. Consider scheduling your annual
-                  physical exam and routine blood work.
-                </p>
-                <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-xs">
-                  Learn More
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+                      {testResultsData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="space-y-4">
+                {testResultsData.map((test, index) => (
+                  <div key={index} className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-4 h-4 rounded-full" style={{ backgroundColor: test.color }}></div>
+                      <span className="font-medium text-gray-900">{test.name}</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-2xl font-bold text-gray-900">{test.value}%</span>
+                      <CheckCircle className="w-5 h-5 text-green-500" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
-
-      {/* Chat Support */}
-      <ChatSupport isOpen={showChat} onClose={() => setShowChat(false)} userType="patient" userName="John Doe" />
     </PatientLayout>
-  )
-}
-
-export default function PatientDashboard() {
-  return (
-    <NotificationProvider>
-      <PatientDashboardContent />
-    </NotificationProvider>
   )
 }

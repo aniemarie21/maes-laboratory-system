@@ -1,0 +1,247 @@
+{% extends 'base.html' %}
+
+{% block title %}Book Appointment - MAES Laboratory{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-calendar-plus me-2"></i>
+                        Book Laboratory Appointment
+                    </h3>
+                </div>
+                
+                <div class="card-body p-4">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <!-- Patient Information -->
+                        <div class="mb-4">
+                            <h5 class="fw-bold mb-3">
+                                <i class="fas fa-user me-2 text-primary"></i>
+                                Patient Information
+                            </h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">Full Name</label>
+                                        <input type="text" class="form-control" value="{{ user.get_full_name }}" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">Email</label>
+                                        <input type="email" class="form-control" value="{{ user.email }}" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Laboratory Services -->
+                        <div class="mb-4">
+                            <h5 class="fw-bold mb-3">
+                                <i class="fas fa-flask me-2 text-primary"></i>
+                                Select Laboratory Services
+                            </h5>
+                            
+                            {% for category, services in services_by_category.items %}
+                            <div class="mb-4">
+                                <h6 class="text-primary fw-bold">{{ category }}</h6>
+                                <div class="row">
+                                    {% for service in services %}
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card service-selection">
+                                            <div class="card-body">
+                                                <div class="form-check">
+                                                    <input class="form-check-input service-checkbox" 
+                                                           type="checkbox" 
+                                                           name="services" 
+                                                           value="{{ service.id }}" 
+                                                           id="service_{{ service.id }}"
+                                                           data-price="{{ service.price }}">
+                                                    <label class="form-check-label w-100" for="service_{{ service.id }}">
+                                                        <div class="d-flex justify-content-between align-items-start">
+                                                            <div>
+                                                                <h6 class="mb-1">{{ service.name }}</h6>
+                                                                <small class="text-muted">{{ service.description|truncatewords:10 }}</small>
+                                                                {% if service.requires_fasting %}
+                                                                <br><small class="text-warning">
+                                                                    <i class="fas fa-exclamation-triangle me-1"></i>Fasting required
+                                                                </small>
+                                                                {% endif %}
+                                                            </div>
+                                                            <div class="text-end">
+                                                                <span class="badge bg-primary">₱{{ service.price }}</span>
+                                                                <br><small class="text-muted">{{ service.duration_hours }}h</small>
+                                                            </div>
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- Appointment Date & Time -->
+                        <div class="mb-4">
+                            <h5 class="fw-bold mb-3">
+                                <i class="fas fa-calendar me-2 text-primary"></i>
+                                Appointment Date & Time
+                            </h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="appointment_date" class="form-label">Preferred Date</label>
+                                    <input type="date" class="form-control" id="appointment_date" name="appointment_date" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="appointment_time" class="form-label">Preferred Time</label>
+                                    <select class="form-control" id="appointment_time" name="appointment_time" required>
+                                        <option value="">Select Time</option>
+                                        <option value="07:00">7:00 AM</option>
+                                        <option value="08:00">8:00 AM</option>
+                                        <option value="09:00">9:00 AM</option>
+                                        <option value="10:00">10:00 AM</option>
+                                        <option value="11:00">11:00 AM</option>
+                                        <option value="13:00">1:00 PM</option>
+                                        <option value="14:00">2:00 PM</option>
+                                        <option value="15:00">3:00 PM</option>
+                                        <option value="16:00">4:00 PM</option>
+                                        <option value="17:00">5:00 PM</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Payment Method -->
+                        <div class="mb-4">
+                            <h5 class="fw-bold mb-3">
+                                <i class="fas fa-credit-card me-2 text-primary"></i>
+                                Payment Method
+                            </h5>
+                            <div class="row">
+                                {% for method_code, method_name in payment_methods %}
+                                <div class="col-md-4 mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="payment_method" 
+                                               id="payment_{{ method_code }}" value="{{ method_code }}" 
+                                               {% if method_code == 'cash' %}checked{% endif %}>
+                                        <label class="form-check-label" for="payment_{{ method_code }}">
+                                            <i class="fas fa-{% if method_code == 'cash' %}money-bill-wave{% elif method_code == 'gcash' %}mobile-alt{% elif method_code == 'credit_card' %}credit-card{% else %}university{% endif %} me-2"></i>
+                                            {{ method_name }}
+                                        </label>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <!-- Additional Notes -->
+                        <div class="mb-4">
+                            <h5 class="fw-bold mb-3">
+                                <i class="fas fa-sticky-note me-2 text-primary"></i>
+                                Additional Notes (Optional)
+                            </h5>
+                            <textarea class="form-control" name="notes" rows="3" 
+                                      placeholder="Any special instructions or medical conditions we should know about..."></textarea>
+                        </div>
+                        
+                        <!-- Total Amount -->
+                        <div class="mb-4">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">Total Amount:</h5>
+                                        <h4 class="mb-0 text-primary" id="total-amount">₱0.00</h4>
+                                    </div>
+                                    <small class="text-muted">Selected services will be calculated automatically</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Submit Button -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-calendar-check me-2"></i>
+                                Book Appointment
+                            </button>
+                            <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>
+                                Back to Home
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Set minimum date to today
+    document.getElementById('appointment_date').min = new Date().toISOString().split('T')[0];
+    
+    // Calculate total amount
+    function calculateTotal() {
+        let total = 0;
+        const checkboxes = document.querySelectorAll('.service-checkbox:checked');
+        
+        checkboxes.forEach(checkbox => {
+            total += parseFloat(checkbox.dataset.price);
+        });
+        
+        document.getElementById('total-amount').textContent = '₱' + total.toFixed(2);
+    }
+    
+    // Add event listeners to service checkboxes
+    document.querySelectorAll('.service-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', calculateTotal);
+    });
+    
+    // Form validation
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const selectedServices = document.querySelectorAll('.service-checkbox:checked');
+        
+        if (selectedServices.length === 0) {
+            e.preventDefault();
+            alert('Please select at least one laboratory service.');
+            return false;
+        }
+        
+        const appointmentDate = document.getElementById('appointment_date').value;
+        const appointmentTime = document.getElementById('appointment_time').value;
+        
+        if (!appointmentDate || !appointmentTime) {
+            e.preventDefault();
+            alert('Please select both date and time for your appointment.');
+            return false;
+        }
+        
+        return true;
+    });
+</script>
+
+<style>
+    .service-selection {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .service-selection:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .service-checkbox:checked + .form-check-label {
+        background-color: rgba(16, 185, 129, 0.1);
+        border-radius: 8px;
+        padding: 10px;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,327 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}MAES Laboratory - Maria Estrella General Hospital{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">
+                    Welcome to MAES Laboratory
+                </h1>
+                <p class="lead mb-4">
+                    Maria Estrella General Hospital - Your trusted partner in healthcare diagnostics. 
+                    We provide accurate, reliable, and timely laboratory services with modern technology 
+                    and professional care.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="{% url 'book_appointment' %}" class="btn btn-light btn-lg">
+                        <i class="fas fa-calendar-plus me-2"></i>Book Appointment
+                    </a>
+                    <a href="{% url 'services' %}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-flask me-2"></i>Our Services
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <div class="hero-image">
+                    <i class="fas fa-hospital-alt" style="font-size: 200px; opacity: 0.3;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5 bg-primary text-white">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="display-5 fw-bold mb-3">Why Choose MAES Hospital?</h2>
+                <p class="lead text-muted">
+                    We combine cutting-edge technology with compassionate care to deliver exceptional healthcare services.
+                </p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-primary text-white rounded-circle mx-auto mb-3">
+                            <i class="fas fa-robot fa-2x"></i>
+                        </div>
+                        <h5 class="card-title">AI-Powered Analysis</h5>
+                        <p class="card-text text-muted">
+                            Advanced artificial intelligence provides accurate test result analysis and health insights.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-success text-white rounded-circle mx-auto mb-3">
+                            <i class="fas fa-clock fa-2x"></i>
+                        </div>
+                        <h5 class="card-title">Fast Results</h5>
+                        <p class="card-text text-muted">
+                            Get your test results quickly with our efficient laboratory processes and digital delivery.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-info text-white rounded-circle mx-auto mb-3">
+                            <i class="fas fa-shield-alt fa-2x"></i>
+                        </div>
+                        <h5 class="card-title">Secure & Private</h5>
+                        <p class="card-text text-muted">
+                            Your health data is protected with enterprise-grade security and privacy measures.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="display-5 fw-bold mb-3">Our Laboratory Services</h2>
+                <p class="lead text-muted">
+                    Comprehensive diagnostic services with {{ total_services }} different tests available.
+                </p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            {% for service in featured_services %}
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="service-icon bg-primary text-white rounded me-3">
+                                <i class="fas fa-flask"></i>
+                            </div>
+                            <h5 class="card-title mb-0">{{ service.name }}</h5>
+                        </div>
+                        <p class="card-text text-muted">{{ service.description|truncatewords:15 }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-primary fw-bold">₱{{ service.price }}</span>
+                            <small class="text-muted">{{ service.duration_hours }}h result</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{% url 'services' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-list me-2"></i>View All Services
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Statistics Section -->
+<section class="py-5" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="stats-card">
+                    <div class="stats-number">25+</div>
+                    <div class="stats-label">Years of Service</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="stats-card">
+                    <div class="stats-number">{{ total_services }}+</div>
+                    <div class="stats-label">Laboratory Tests</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="stats-card">
+                    <div class="stats-number">10K+</div>
+                    <div class="stats-label">Patients Served</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="stats-card">
+                    <div class="stats-number">24/7</div>
+                    <div class="stats-label">Emergency Service</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Operating Hours Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title mb-4">
+                            <i class="fas fa-clock me-2 text-primary"></i>
+                            Operating Hours
+                        </h3>
+                        
+                        <div class="row">
+                            <div class="col-sm-6 mb-3">
+                                <h6 class="fw-bold">Laboratory Services</h6>
+                                <ul class="list-unstyled">
+                                    <li><strong>Weekdays:</strong> {{ operating_hours.weekdays }}</li>
+                                    <li><strong>Saturday:</strong> {{ operating_hours.saturday }}</li>
+                                    <li><strong>Sunday:</strong> {{ operating_hours.sunday }}</li>
+                                </ul>
+                            </div>
+                            <div class="col-sm-6 mb-3">
+                                <h6 class="fw-bold">Emergency Services</h6>
+                                <ul class="list-unstyled">
+                                    <li><strong>Emergency:</strong> {{ operating_hours.emergency }}</li>
+                                    <li><strong>Urgent Tests:</strong> Available</li>
+                                    <li><strong>On-call Staff:</strong> 24/7</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title mb-4">
+                            <i class="fas fa-phone me-2 text-primary"></i>
+                            Contact Information
+                        </h3>
+                        
+                        <div class="contact-info">
+                            <div class="mb-3">
+                                <i class="fas fa-map-marker-alt me-2 text-primary"></i>
+                                <strong>Address:</strong><br>
+                                <span class="ms-4">{{ hospital_address }}</span>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <i class="fas fa-phone me-2 text-primary"></i>
+                                <strong>Phone:</strong>
+                                <a href="tel:{{ hospital_phone }}" class="text-decoration-none ms-2">{{ hospital_phone }}</a>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <i class="fas fa-envelope me-2 text-primary"></i>
+                                <strong>Email:</strong>
+                                <a href="mailto:{{ hospital_email }}" class="text-decoration-none ms-2">{{ hospital_email }}</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="py-5" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.9), rgba(59, 130, 246, 0.9));">
+    <div class="container text-center">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h2 class="display-5 fw-bold text-white mb-3">Ready to Get Started?</h2>
+                <p class="lead text-white mb-4">
+                    Book your appointment today and experience professional healthcare diagnostics 
+                    with MAES Laboratory. Your health is our priority.
+                </p>
+                <div class="d-flex flex-wrap justify-content-center gap-3">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'book_appointment' %}" class="btn btn-light btn-lg">
+                            <i class="fas fa-calendar-plus me-2"></i>Book Appointment Now
+                        </a>
+                        <a href="{% url 'dashboard' %}" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard
+                        </a>
+                    {% else %}
+                        <a href="{% url 'register' %}" class="btn btn-light btn-lg">
+                            <i class="fas fa-user-plus me-2"></i>Register Now
+                        </a>
+                        <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Auto-start chat for new visitors
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if user has visited before
+    if (!localStorage.getItem('maes_visited')) {
+        setTimeout(function() {
+            // Show welcome message in chat
+            if (typeof toggleChat === 'function') {
+                toggleChat();
+                addMessage('bot', 'Welcome to MAES Laboratory! 👋 How can I help you today?');
+            }
+            localStorage.setItem('maes_visited', 'true');
+        }, 3000);
+    }
+});
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.hero-section {
+    background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
+}
+
+.feature-icon {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.service-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+}
+
+.stats-card {
+    padding: 2rem 0;
+    text-align: center;
+}
+
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
+}
+</style>
+{% endblock %}

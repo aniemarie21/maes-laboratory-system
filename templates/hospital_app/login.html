@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - MAES Laboratory{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-5 col-md-7">
+            <div class="card">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-hospital-alt fa-3x text-primary mb-3"></i>
+                        <h2 class="fw-bold">Welcome Back</h2>
+                        <p class="text-muted">Sign in to your MAES Laboratory account</p>
+                    </div>
+                    
+                    <!-- User Type Toggle -->
+                    <div class="btn-group w-100 mb-4" role="group">
+                        <input type="radio" class="btn-check" name="user_type" id="patient_type" value="patient" checked>
+                        <label class="btn btn-outline-primary" for="patient_type">
+                            <i class="fas fa-user me-2"></i>Patient
+                        </label>
+                        
+                        <input type="radio" class="btn-check" name="user_type" id="admin_type" value="admin">
+                        <label class="btn btn-outline-primary" for="admin_type">
+                            <i class="fas fa-user-shield me-2"></i>Admin
+                        </label>
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="user_type" id="selected_user_type" value="patient">
+                        
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username or Email</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-user"></i>
+                                </span>
+                                <input type="text" class="form-control" id="username" name="username" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()">
+                                    <i class="fas fa-eye" id="password-toggle-icon"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="remember_me">
+                            <label class="form-check-label" for="remember_me">
+                                Remember me
+                            </label>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100 mb-3">
+                            <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                        </button>
+                    </form>
+                    
+                    <div class="text-center">
+                        <p class="mb-2">
+                            <a href="#" class="text-decoration-none">Forgot your password?</a>
+                        </p>
+                        <p class="mb-0">
+                            Don't have an account? 
+                            <a href="{% url 'register' %}" class="text-decoration-none fw-bold">Register here</a>
+                        </p>
+                    </div>
+                    
+                    <!-- Demo Credentials -->
+                    <div class="mt-4 p-3 bg-light rounded">
+                        <h6 class="fw-bold mb-2">Demo Credentials:</h6>
+                        <div class="row">
+                            <div class="col-6">
+                                <small class="text-muted">
+                                    <strong>Patient:</strong><br>
+                                    Username: patient<br>
+                                    Password: patient123
+                                </small>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted">
+                                    <strong>Admin:</strong><br>
+                                    Username: admin<br>
+                                    Password: admin123
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // User type toggle functionality
+    document.querySelectorAll('input[name="user_type"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            document.getElementById('selected_user_type').value = this.value;
+        });
+    });
+    
+    // Password visibility toggle
+    function togglePassword() {
+        const passwordInput = document.getElementById('password');
+        const toggleIcon = document.getElementById('password-toggle-icon');
+        
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            toggleIcon.classList.remove('fa-eye');
+            toggleIcon.classList.add('fa-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            toggleIcon.classList.remove('fa-eye-slash');
+            toggleIcon.classList.add('fa-eye');
+        }
+    }
+</script>
+{% endblock %}

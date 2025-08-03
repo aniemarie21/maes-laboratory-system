@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MAES Laboratory - Maria Estrella General Hospital{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #10b981;
+            --secondary-color: #3b82f6;
+            --accent-color: #8b5cf6;
+            --dark-color: #1f2937;
+            --light-color: #f8fafc;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .navbar-brand {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.95);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: 10px;
+            padding: 12px 30px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.9), rgba(59, 130, 246, 0.9));
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+        }
+        
+        .service-card {
+            transition: all 0.3s ease;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .footer {
+            background: var(--dark-color);
+            color: white;
+            padding: 50px 0 30px;
+        }
+        
+        .chatbot-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        .chatbot-toggle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .chatbot-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 35px rgba(16, 185, 129, 0.4);
+        }
+        
+        .chatbot-window {
+            width: 350px;
+            height: 500px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            display: none;
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+        }
+        
+        .chat-header {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 15px;
+            border-radius: 15px 15px 0 0;
+            font-weight: 600;
+        }
+        
+        .chat-messages {
+            height: 350px;
+            overflow-y: auto;
+            padding: 15px;
+        }
+        
+        .chat-input {
+            padding: 15px;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: 15px;
+            max-width: 80%;
+        }
+        
+        .message.user {
+            background: var(--primary-color);
+            color: white;
+            margin-left: auto;
+            text-align: right;
+        }
+        
+        .message.bot {
+            background: #f3f4f6;
+            color: var(--dark-color);
+        }
+        
+        .loading-dots {
+            display: inline-block;
+        }
+        
+        .loading-dots::after {
+            content: '';
+            animation: dots 1.5s steps(5, end) infinite;
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: ''; }
+            40% { content: '.'; }
+            60% { content: '..'; }
+            80%, 100% { content: '...'; }
+        }
+        
+        .alert {
+            border-radius: 10px;
+            border: none;
+        }
+        
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e5e7eb;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(16, 185, 129, 0.25);
+        }
+        
+        .stats-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+        
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .stats-label {
+            color: var(--dark-color);
+            font-weight: 500;
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: rgba(31, 41, 55, 0.95); backdrop-filter: blur(10px);">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <i class="fas fa-hospital-alt me-2"></i>
+                MAES Laboratory
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">
+                            <i class="fas fa-home me-1"></i>Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'services' %}">
+                            <i class="fas fa-flask me-1"></i>Services
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'about' %}">
+                            <i class="fas fa-info-circle me-1"></i>About
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'contact' %}">
+                            <i class="fas fa-phone me-1"></i>Contact
+                        </a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user me-1"></i>{{ user.get_full_name|default:user.username }}
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'dashboard' %}">
+                                    <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'book_appointment' %}">
+                                    <i class="fas fa-calendar-plus me-2"></i>Book Appointment
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'view_appointments' %}">
+                                    <i class="fas fa-calendar-check me-2"></i>My Appointments
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'view_test_results' %}">
+                                    <i class="fas fa-file-medical me-2"></i>Test Results
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'logout' %}">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                </a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">
+                                <i class="fas fa-sign-in-alt me-1"></i>Login
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'register' %}">
+                                <i class="fas fa-user-plus me-1"></i>Register
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+        <div class="container mt-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-triangle{% elif message.tags == 'warning' %}exclamation-circle{% else %}info-circle{% endif %} me-2"></i>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h5 class="mb-3">
+                        <i class="fas fa-hospital-alt me-2"></i>
+                        MAES Laboratory
+                    </h5>
+                    <p class="mb-3">Maria Estrella General Hospital - Your trusted partner in healthcare diagnostics with modern technology and professional service.</p>
+                    <div class="d-flex">
+                        <a href="#" class="text-white me-3"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-2 mb-4">
+                    <h6 class="mb-3">Quick Links</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'home' %}" class="text-white-50 text-decoration-none">Home</a></li>
+                        <li><a href="{% url 'services' %}" class="text-white-50 text-decoration-none">Services</a></li>
+                        <li><a href="{% url 'about' %}" class="text-white-50 text-decoration-none">About</a></li>
+                        <li><a href="{% url 'contact' %}" class="text-white-50 text-decoration-none">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-3 mb-4">
+                    <h6 class="mb-3">Services</h6>
+                    <ul class="list-unstyled">
+                        <li><span class="text-white-50">Complete Blood Count</span></li>
+                        <li><span class="text-white-50">Blood Chemistry</span></li>
+                        <li><span class="text-white-50">Urinalysis</span></li>
+                        <li><span class="text-white-50">X-Ray Services</span></li>
+                        <li><span class="text-white-50">ECG</span></li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-3 mb-4">
+                    <h6 class="mb-3">Contact Info</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-map-marker-alt me-2"></i>
+                            <span class="text-white-50">115 Strong Republic Nautical Highway, Calapan, MIMAROPA</span>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-phone me-2"></i>
+                            <span class="text-white-50">(043) 286-2531</span>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-envelope me-2"></i>
+                            <span class="text-white-50">mariaestrellageneralhospital@gmail.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <hr class="my-4">
+            
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="mb-0 text-white-50">&copy; 2024 MAES Laboratory. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <span class="text-white-50">Powered by Django + Firebase</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Chatbot -->
+    <div class="chatbot-container">
+        <div class="chatbot-window" id="chatbotWindow">
+            <div class="chat-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-robot me-2"></i>MAES Assistant</span>
+                    <button class="btn btn-sm text-white" onclick="toggleChatbot()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages">
+                <div class="message bot">
+                    <i class="fas fa-robot me-2"></i>
+                    Hello! I'm your MAES Laboratory assistant. How can I help you today?
+                </div>
+            </div>
+            
+            <div class="chat-input">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="chatInput" placeholder="Type your message..." onkeypress="handleChatKeyPress(event)">
+                    <button class="btn btn-primary" onclick="sendChatMessage()">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <button class="chatbot-toggle" onclick="toggleChatbot()">
+            <i class="fas fa-comments"></i>
+        </button>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Chatbot JavaScript -->
+    <script>
+        let chatbotOpen = false;
+        let sessionId = null;
+        
+        function toggleChatbot() {
+            const chatWindow = document.getElementById('chatbotWindow');
+            chatbotOpen = !chatbotOpen;
+            chatWindow.style.display = chatbotOpen ? 'block' : 'none';
+            
+            if (chatbotOpen && !sessionId) {
+                sessionId = 'session_' + Date.now();
+            }
+        }
+        
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendChatMessage();
+            }
+        }
+        
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Add user message to chat
+            addMessageToChat(message, 'user');
+            input.value = '';
+            
+            // Show typing indicator
+            addTypingIndicator();
+            
+            // Send message to backend
+            fetch('{% url "chatbot_api" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    message: message,
+                    session_id: sessionId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                removeTypingIndicator();
+                addMessageToChat(data.response, 'bot');
+            })
+            .catch(error => {
+                removeTypingIndicator();
+                addMessageToChat('Sorry, I encountered an error. Please try again or contact us at (043) 286-2531.', 'bot');
+            });
+        }
+        
+        function addMessageToChat(message, sender) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            if (sender === 'bot') {
+                messageDiv.innerHTML = `<i class="fas fa-robot me-2"></i>${message.replace(/\n/g, '<br>')}`;
+            } else {
+                messageDiv.innerHTML = message;
+            }
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        function addTypingIndicator() {
+            const messagesContainer = document.getElementById('chatMessages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message bot typing-indicator';
+            typingDiv.innerHTML = '<i class="fas fa-robot me-2"></i><span class="loading-dots">Typing</span>';
+            messagesContainer.appendChild(typingDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        function removeTypingIndicator() {
+            const typingIndicator = document.querySelector('.typing-indicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+        
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

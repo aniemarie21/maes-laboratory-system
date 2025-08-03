@@ -1,722 +1,716 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Badge } from "@/components/ui/badge"
-import { Checkbox } from "@/components/ui/checkbox"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import {
-  Calendar,
-  Clock,
-  FileText,
-  CreditCard,
-  Upload,
-  CheckCircle,
-  AlertCircle,
-  Phone,
-  Mail,
-  User,
-  Heart,
-  Shield,
-} from "lucide-react"
-import PatientLayout from "@/components/patient-layout"
-import PaymentFlow from "@/components/payment-flow"
-import { useNotifications, NotificationProvider } from "@/components/notification-system"
-import { Alert, AlertDescription } from "@/components/ui/alert"
+import Link from "next/link"
+import { ArrowLeft, Calendar, TestTube, CreditCard, User, Check, Clock, Star, Shield } from 'lucide-react'
 
-function BookAppointmentContent() {
-  const [step, setStep] = useState<"services" | "details" | "payment" | "confirmation">("services")
-  const [selectedServices, setSelectedServices] = useState<string[]>([])
-  const [appointmentData, setAppointmentData] = useState<any>({})
-  const [documents, setDocuments] = useState<File[]>([])
-  const [paymentMethod, setPaymentMethod] = useState("")
-  const [financialAssistance, setFinancialAssistance] = useState("")
-  const [notificationPreference, setNotificationPreference] = useState("email")
-  const { addNotification } = useNotifications()
+export default function BookAppointmentPage() {
+  const [currentStep, setCurrentStep] = useState(1)
+  const [isLoading, setIsLoading] = useState(false)
+  const [formData, setFormData] = useState({
+    // Personal Information
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    address: "",
+    dateOfBirth: "",
 
-  const services = [
+    // Test Selection
+    selectedTests: [] as string[],
+
+    // Date & Time
+    selectedDate: "",
+    selectedTime: "",
+
+    // Payment
+    paymentMethod: "",
+
+    // Additional
+    notes: "",
+  })
+
+  const laboratoryTests = [
     {
+      id: "cbc",
+      name: "Complete Blood Count (CBC)",
+      price: 350,
+      description: "Comprehensive blood analysis including white blood cells, red blood cells, and platelets",
+      duration: "2-4 hours",
+      popular: true,
       category: "Hematology",
-      tests: [
-        {
-          name: "Complete Blood Count (CBC)",
-          price: 450,
-          description: "Basic blood test to check overall health",
-          duration: "15 mins",
-        },
-        {
-          name: "Hemoglobin A1c",
-          price: 800,
-          description: "Measures blood sugar control over time",
-          duration: "10 mins",
-        },
-        {
-          name: "Coagulation Profile",
-          price: 1200,
-          description: "Evaluates blood clotting function",
-          duration: "20 mins",
-        },
-        { name: "Blood Typing", price: 300, description: "Determines ABO and Rh blood type", duration: "10 mins" },
-      ],
     },
     {
-      category: "Chemistry",
-      tests: [
-        {
-          name: "Blood Chemistry Panel",
-          price: 1200,
-          description: "Comprehensive metabolic panel",
-          duration: "20 mins",
-        },
-        { name: "Lipid Profile", price: 800, description: "Cholesterol and triglyceride levels", duration: "15 mins" },
-        {
-          name: "Kidney Function Test",
-          price: 950,
-          description: "Evaluates kidney health and function",
-          duration: "15 mins",
-        },
-        { name: "Liver Function Test", price: 1100, description: "Assesses liver health", duration: "15 mins" },
-      ],
+      id: "fbs",
+      name: "Fasting Blood Sugar (FBS)",
+      price: 150,
+      description: "Blood glucose level test for diabetes screening and monitoring",
+      duration: "1-2 hours",
+      popular: true,
+      category: "Clinical Chemistry",
     },
     {
+      id: "lipid",
+      name: "Lipid Profile",
+      price: 450,
+      description: "Cholesterol and triglyceride levels for cardiovascular health assessment",
+      duration: "2-4 hours",
+      popular: false,
+      category: "Clinical Chemistry",
+    },
+    {
+      id: "urinalysis",
+      name: "Complete Urinalysis",
+      price: 120,
+      description: "Comprehensive urine analysis for kidney function and urinary tract health",
+      duration: "1-2 hours",
+      popular: true,
+      category: "Clinical Microscopy",
+    },
+    {
+      id: "hbsag",
+      name: "Hepatitis B Surface Antigen",
+      price: 250,
+      description: "Screening test for Hepatitis B infection",
+      duration: "2-4 hours",
+      popular: false,
       category: "Serology",
-      tests: [
-        { name: "Hepatitis Panel", price: 2000, description: "Hepatitis A, B, C screening", duration: "25 mins" },
-        { name: "Thyroid Function Test", price: 1500, description: "TSH, T3, T4 levels", duration: "20 mins" },
-        {
-          name: "COVID-19 Antibody",
-          price: 1800,
-          description: "Detects previous COVID-19 infection",
-          duration: "15 mins",
-        },
-        { name: "HIV Screening", price: 1200, description: "HIV antibody test", duration: "15 mins" },
-      ],
     },
     {
-      category: "Imaging",
-      tests: [
-        { name: "Chest X-Ray", price: 600, description: "Chest imaging for lung health", duration: "10 mins" },
-        { name: "Abdominal Ultrasound", price: 1800, description: "Imaging of abdominal organs", duration: "30 mins" },
-        { name: "ECG", price: 500, description: "Heart rhythm and electrical activity", duration: "15 mins" },
-        { name: "Echocardiogram", price: 2500, description: "Heart ultrasound", duration: "45 mins" },
-      ],
+      id: "thyroid",
+      name: "Thyroid Function Test",
+      price: 800,
+      description: "TSH, T3, T4 levels for thyroid health evaluation",
+      duration: "4-6 hours",
+      popular: false,
+      category: "Endocrinology",
+    },
+    {
+      id: "creatinine",
+      name: "Serum Creatinine",
+      price: 180,
+      description: "Kidney function assessment test",
+      duration: "2-4 hours",
+      popular: false,
+      category: "Clinical Chemistry",
+    },
+    {
+      id: "uric-acid",
+      name: "Uric Acid",
+      price: 160,
+      description: "Gout and kidney function evaluation",
+      duration: "2-4 hours",
+      popular: false,
+      category: "Clinical Chemistry",
     },
   ]
 
-  const getTotalAmount = () => {
-    return services
-      .flatMap((category) => category.tests)
-      .filter((test) => selectedServices.includes(test.name))
-      .reduce((total, test) => total + test.price, 0)
+  const timeSlots = [
+    "08:00 AM",
+    "08:30 AM",
+    "09:00 AM",
+    "09:30 AM",
+    "10:00 AM",
+    "10:30 AM",
+    "11:00 AM",
+    "11:30 AM",
+    "01:00 PM",
+    "01:30 PM",
+    "02:00 PM",
+    "02:30 PM",
+    "03:00 PM",
+    "03:30 PM",
+    "04:00 PM",
+    "04:30 PM",
+  ]
+
+  const paymentMethods = [
+    {
+      id: "gcash",
+      name: "GCash",
+      description: "Pay via GCash mobile wallet",
+      icon: "💳",
+      popular: true,
+    },
+    {
+      id: "paymaya",
+      name: "PayMaya",
+      description: "Pay via PayMaya digital wallet",
+      icon: "💰",
+      popular: true,
+    },
+    {
+      id: "bank",
+      name: "Bank Transfer",
+      description: "Direct bank transfer payment",
+      icon: "🏦",
+      popular: false,
+    },
+    {
+      id: "cash",
+      name: "Cash on Visit",
+      description: "Pay when you arrive at the laboratory",
+      icon: "💵",
+      popular: false,
+    },
+  ]
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target
+    setFormData({ ...formData, [name]: value })
   }
 
-  const getDiscountedAmount = () => {
-    const total = getTotalAmount()
-    let discount = 0
+  const handleTestSelection = (testId: string) => {
+    const updatedTests = formData.selectedTests.includes(testId)
+      ? formData.selectedTests.filter((id) => id !== testId)
+      : [...formData.selectedTests, testId]
 
-    if (financialAssistance === "senior-discount") discount = 0.2
-    else if (financialAssistance === "pwd-discount") discount = 0.2
-    else if (financialAssistance === "student-discount") discount = 0.1
-
-    return total - total * discount
+    setFormData({ ...formData, selectedTests: updatedTests })
   }
 
-  const handleServiceToggle = (serviceName: string) => {
-    setSelectedServices((prev) =>
-      prev.includes(serviceName) ? prev.filter((s) => s !== serviceName) : [...prev, serviceName],
-    )
+  const calculateTotal = () => {
+    return formData.selectedTests.reduce((total, testId) => {
+      const test = laboratoryTests.find((t) => t.id === testId)
+      return total + (test?.price || 0)
+    }, 0)
   }
 
-  const handleNextStep = () => {
-    if (step === "services" && selectedServices.length === 0) {
-      addNotification({
-        title: "No Services Selected",
-        message: "Please select at least one laboratory service to continue.",
-        type: "warning",
-        category: "appointment",
-      })
-      return
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsLoading(true)
+
+    // Simulate booking process
+    setTimeout(() => {
+      setIsLoading(false)
+      setCurrentStep(5) // Success step
+    }, 2000)
+  }
+
+  const nextStep = () => {
+    if (currentStep < 4) {
+      setCurrentStep(currentStep + 1)
     }
-
-    if (step === "services") setStep("details")
-    else if (step === "details") setStep("payment")
   }
 
-  const handleFormSubmit = (formData: any) => {
-    setAppointmentData(formData)
-
-    // Validate required fields
-    if (!formData.firstName || !formData.lastName || !formData.email || !formData.phone || !formData.appointmentDate) {
-      addNotification({
-        title: "Missing Information",
-        message: "Please fill in all required fields to continue.",
-        type: "error",
-        category: "appointment",
-      })
-      return
+  const prevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1)
     }
-
-    addNotification({
-      title: "Information Saved",
-      message: "Your appointment details have been saved. Proceeding to payment...",
-      type: "success",
-      category: "appointment",
-    })
-
-    setStep("payment")
   }
 
-  const handlePaymentComplete = (paymentData: any) => {
-    setStep("confirmation")
+  const steps = [
+    { number: 1, title: "Personal Info", icon: User },
+    { number: 2, title: "Select Tests", icon: TestTube },
+    { number: 3, title: "Date & Time", icon: Calendar },
+    { number: 4, title: "Payment", icon: CreditCard },
+  ]
 
-    addNotification({
-      title: "Appointment Booked Successfully!",
-      message: `Your appointment for ${appointmentData.appointmentDate} has been confirmed. You will receive a confirmation email shortly.`,
-      type: "success",
-      category: "appointment",
-      persistent: true,
-      actionUrl: "/patient/appointments",
-      actionText: "View Appointments",
-    })
+  const isStepValid = (step: number) => {
+    switch (step) {
+      case 1:
+        return formData.firstName && formData.lastName && formData.email && formData.phone && formData.dateOfBirth
+      case 2:
+        return formData.selectedTests.length > 0
+      case 3:
+        return formData.selectedDate && formData.selectedTime
+      case 4:
+        return formData.paymentMethod
+      default:
+        return false
+    }
   }
 
-  const handleDocumentUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || [])
-    setDocuments((prev) => [...prev, ...files])
-
-    addNotification({
-      title: "Documents Uploaded",
-      message: `${files.length} document(s) uploaded successfully.`,
-      type: "success",
-      category: "system",
-    })
-  }
-
-  if (step === "confirmation") {
+  if (currentStep === 5) {
     return (
-      <PatientLayout>
-        <div className="max-w-2xl mx-auto">
-          <Card className="border-emerald-200">
-            <CardContent className="p-8 text-center">
-              <CheckCircle className="w-16 h-16 text-emerald-600 mx-auto mb-6" />
-              <h2 className="text-3xl font-bold text-emerald-800 mb-4">Appointment Confirmed!</h2>
-              <p className="text-gray-600 mb-8 text-lg">
-                Your laboratory appointment has been successfully booked. We'll send you a confirmation email with all
-                the details.
-              </p>
-
-              <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-6 mb-8 text-left">
-                <h3 className="font-bold text-emerald-800 mb-4">Appointment Summary</h3>
-                <div className="space-y-3 text-sm">
-                  <div className="flex justify-between">
-                    <span>Patient:</span>
-                    <span className="font-medium">
-                      {appointmentData.firstName} {appointmentData.lastName}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Date & Time:</span>
-                    <span className="font-medium">
-                      {appointmentData.appointmentDate} at {appointmentData.appointmentTime}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Services:</span>
-                    <span className="font-medium">{selectedServices.length} test(s)</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Total Amount:</span>
-                    <span className="font-bold text-emerald-700">₱{getDiscountedAmount().toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Notification:</span>
-                    <span className="font-medium">{notificationPreference === "email" ? "Email" : "SMS"}</span>
-                  </div>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-emerald-50 flex items-center justify-center py-12 px-4">
+        <div className="max-w-md w-full text-center">
+          <div className="card">
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Check className="w-10 h-10 text-green-600" />
+            </div>
+            <h2 className="font-heading font-bold text-2xl text-gray-900 mb-4">Booking Confirmed!</h2>
+            <p className="text-gray-600 mb-6">
+              Your laboratory appointment has been successfully booked. You will receive a confirmation email shortly with all the details.
+            </p>
+            
+            <div className="bg-gray-50 rounded-lg p-4 mb-6 text-left">
+              <h3 className="font-semibold text-gray-900 mb-3">Appointment Details:</h3>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Patient:</span>
+                  <span className="font-medium">{formData.firstName} {formData.lastName}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Date:</span>
+                  <span className="font-medium">{formData.selectedDate}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Time:</span>
+                  <span className="font-medium">{formData.selectedTime}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Tests:</span>
+                  <span className="font-medium">{formData.selectedTests.length} test(s)</span>
+                </div>
+                <div className="flex justify-between border-t pt-2 mt-2">
+                  <span className="text-gray-600">Total Amount:</span>
+                  <span className="font-bold text-primary-600">₱{calculateTotal()}</span>
                 </div>
               </div>
+            </div>
 
-              <Alert className="bg-blue-50 border-blue-200 mb-6">
-                <AlertCircle className="h-4 w-4 text-blue-600" />
-                <AlertDescription className="text-blue-700">
-                  Please arrive 15 minutes before your appointment time. Bring a valid ID and any required documents.
-                </AlertDescription>
-              </Alert>
-
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button
-                  className="flex-1 bg-emerald-600 hover:bg-emerald-700"
-                  onClick={() => (window.location.href = "/patient/appointments")}
-                >
-                  View My Appointments
-                </Button>
-                <Button
-                  variant="outline"
-                  className="flex-1 border-emerald-600 text-emerald-600 hover:bg-emerald-50 bg-transparent"
-                  onClick={() => (window.location.href = "/patient/dashboard")}
-                >
-                  Back to Dashboard
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+            <div className="space-y-4">
+              <Link href="/patient/dashboard" className="btn-primary w-full">
+                View My Appointments
+              </Link>
+              <Link href="/" className="btn-secondary w-full">
+                Back to Home
+              </Link>
+            </div>
+          </div>
         </div>
-      </PatientLayout>
-    )
-  }
-
-  if (step === "payment") {
-    return (
-      <PatientLayout>
-        <div className="max-w-4xl mx-auto">
-          <PaymentFlow
-            appointmentId={`APT${Date.now()}`}
-            amount={getDiscountedAmount()}
-            services={selectedServices}
-            onPaymentComplete={handlePaymentComplete}
-            onCancel={() => setStep("details")}
-          />
-        </div>
-      </PatientLayout>
+      </div>
     )
   }
 
   return (
-    <PatientLayout>
-      <div className="max-w-6xl mx-auto space-y-8">
-        {/* Progress Indicator */}
-        <div className="flex items-center justify-center space-x-4 mb-8">
-          {[
-            { key: "services", label: "Select Services", icon: FileText },
-            { key: "details", label: "Appointment Details", icon: User },
-            { key: "payment", label: "Payment", icon: CreditCard },
-          ].map((stepItem, index) => (
-            <div key={stepItem.key} className="flex items-center">
-              <div
-                className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${
-                  step === stepItem.key
-                    ? "bg-emerald-600 border-emerald-600 text-white"
-                    : index < ["services", "details", "payment"].indexOf(step)
-                      ? "bg-emerald-100 border-emerald-600 text-emerald-600"
-                      : "bg-gray-100 border-gray-300 text-gray-400"
-                }`}
-              >
-                <stepItem.icon className="w-5 h-5" />
-              </div>
-              <span
-                className={`ml-2 text-sm font-medium ${step === stepItem.key ? "text-emerald-600" : "text-gray-500"}`}
-              >
-                {stepItem.label}
-              </span>
-              {index < 2 && <div className="w-8 h-0.5 bg-gray-300 mx-4" />}
-            </div>
-          ))}
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-emerald-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <Link href="/" className="inline-flex items-center text-primary-600 hover:text-primary-700 mb-6">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Home
+          </Link>
+
+          <h1 className="font-heading font-bold text-3xl text-gray-900 mb-2">Book Laboratory Appointment</h1>
+          <p className="text-gray-600">Schedule your laboratory tests with MAES Laboratory</p>
         </div>
 
-        {step === "services" && (
-          <div className="space-y-6">
-            <Card className="border-emerald-200">
-              <CardHeader>
-                <CardTitle className="text-emerald-800 flex items-center text-xl">
-                  <FileText className="w-6 h-6 mr-3" />
-                  Select Laboratory Services
-                </CardTitle>
-                <CardDescription className="text-base">
-                  Choose the laboratory tests you need. You can select multiple services.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-8">
-                  {services.map((category) => (
-                    <div key={category.category}>
-                      <h3 className="text-lg font-semibold text-emerald-800 mb-4 flex items-center">
-                        <Heart className="w-5 h-5 mr-2" />
-                        {category.category}
-                      </h3>
-                      <div className="grid md:grid-cols-2 gap-4">
-                        {category.tests.map((test) => (
-                          <Card
-                            key={test.name}
-                            className={`cursor-pointer transition-all hover:shadow-lg ${
-                              selectedServices.includes(test.name)
-                                ? "border-emerald-500 bg-emerald-50"
-                                : "border-gray-200 hover:border-emerald-300"
-                            }`}
-                            onClick={() => handleServiceToggle(test.name)}
-                          >
-                            <CardContent className="p-4">
-                              <div className="flex items-start justify-between mb-3">
-                                <div className="flex items-center space-x-3">
-                                  <Checkbox
-                                    checked={selectedServices.includes(test.name)}
-                                    onChange={() => handleServiceToggle(test.name)}
-                                  />
-                                  <div>
-                                    <h4 className="font-semibold text-emerald-800">{test.name}</h4>
-                                    <p className="text-sm text-gray-600 mt-1">{test.description}</p>
-                                  </div>
-                                </div>
-                                <div className="text-right">
-                                  <Badge className="bg-emerald-100 text-emerald-700 font-bold">
-                                    ₱{test.price.toLocaleString()}
-                                  </Badge>
-                                </div>
-                              </div>
-                              <div className="flex items-center justify-between text-xs text-gray-500">
-                                <div className="flex items-center">
-                                  <Clock className="w-3 h-3 mr-1" />
-                                  {test.duration}
-                                </div>
-                                <div className="flex items-center">
-                                  <Shield className="w-3 h-3 mr-1" />
-                                  Certified Lab
-                                </div>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        ))}
+        {/* Progress Steps */}
+        <div className="mb-8">
+          <div className="flex items-center justify-center space-x-4 overflow-x-auto">
+            {steps.map((step, index) => (
+              <div key={step.number} className="flex items-center flex-shrink-0">
+                <div
+                  className={`flex items-center justify-center w-10 h-10 rounded-full transition-colors ${
+                    currentStep >= step.number 
+                      ? "bg-primary-600 text-white" 
+                      : "bg-gray-200 text-gray-600"
+                  }`}
+                >
+                  <step.icon className="w-5 h-5" />
+                </div>
+                <span
+                  className={`ml-2 text-sm font-medium transition-colors ${
+                    currentStep >= step.number ? "text-primary-600" : "text-gray-500"
+                  }`}
+                >
+                  {step.title}
+                </span>
+                {index < steps.length - 1 && (
+                  <div className={`w-8 h-0.5 mx-4 transition-colors ${
+                    currentStep > step.number ? "bg-primary-600" : "bg-gray-200"
+                  }`} />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit}>
+          <div className="card">
+            {/* Step 1: Personal Information */}
+            {currentStep === 1 && (
+              <div className="space-y-6">
+                <div className="flex items-center mb-6">
+                  <User className="w-6 h-6 text-primary-600 mr-3" />
+                  <h2 className="font-heading font-semibold text-xl text-gray-900">Personal Information</h2>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">First Name *</label>
+                    <input
+                      type="text"
+                      name="firstName"
+                      required
+                      value={formData.firstName}
+                      onChange={handleInputChange}
+                      className="input-field"
+                      placeholder="Enter your first name"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Last Name *</label>
+                    <input
+                      type="text"
+                      name="lastName"
+                      required
+                      value={formData.lastName}
+                      onChange={handleInputChange}
+                      className="input-field"
+                      placeholder="Enter your last name"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                    <input
+                      type="email"
+                      name="email"
+                      required
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      className="input-field"
+                      placeholder="your.email@example.com"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      required
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      className="input-field"
+                      placeholder="09XX XXX XXXX"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Date of Birth *</label>
+                    <input
+                      type="date"
+                      name="dateOfBirth"
+                      required
+                      value={formData.dateOfBirth}
+                      onChange={handleInputChange}
+                      className="input-field"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                    <input
+                      type="text"
+                      name="address"
+                      value={formData.address}
+                      onChange={handleInputChange}
+                      className="input-field"
+                      placeholder="Complete address (optional)"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Step 2: Test Selection */}
+            {currentStep === 2 && (
+              <div className="space-y-6">
+                <div className="flex items-center mb-6">
+                  <TestTube className="w-6 h-6 text-primary-600 mr-3" />
+                  <h2 className="font-heading font-semibold text-xl text-gray-900">Select Laboratory Tests</h2>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {laboratoryTests.map((test) => (
+                    <div
+                      key={test.id}
+                      className={`border rounded-lg p-4 cursor-pointer transition-all relative ${
+                        formData.selectedTests.includes(test.id)
+                          ? "border-primary-500 bg-primary-50 shadow-md"
+                          : "border-gray-200 hover:border-gray-300 hover:shadow-sm"
+                      }`}
+                      onClick={() => handleTestSelection(test.id)}
+                    >
+                      {test.popular && (
+                        <div className="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-2 py-1 rounded-full text-xs font-semibold flex items-center">
+                          <Star className="w-3 h-3 mr-1" />
+                          Popular
+                        </div>
+                      )}
+                      
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1 pr-4">
+                          <h3 className="font-medium text-gray-900 mb-1">{test.name}</h3>
+                          <p className="text-sm text-gray-600 mb-2">{test.description}</p>
+                          <div className="flex items-center justify-between">
+                            <div className="text-lg font-bold text-primary-600">₱{test.price}</div>
+                            <div className="text-xs text-gray-500 flex items-center">
+                              <Clock className="w-3 h-3 mr-1" />
+                              {test.duration}
+                            </div>
+                          </div>
+                          <div className="text-xs text-gray-500 mt-1">{test.category}</div>
+                        </div>
+                        <input
+                          type="checkbox"
+                          checked={formData.selectedTests.includes(test.id)}
+                          onChange={() => handleTestSelection(test.id)}
+                          className="h-5 w-5 text-primary-600 rounded border-gray-300 focus:ring-primary-500"
+                        />
                       </div>
                     </div>
                   ))}
                 </div>
 
-                {selectedServices.length > 0 && (
-                  <div className="mt-8 p-6 bg-emerald-50 border border-emerald-200 rounded-xl">
-                    <h4 className="font-semibold text-emerald-800 mb-4">Selected Services Summary</h4>
-                    <div className="space-y-2 mb-4">
-                      {selectedServices.map((serviceName) => {
-                        const service = services.flatMap((cat) => cat.tests).find((test) => test.name === serviceName)
+                {formData.selectedTests.length > 0 && (
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <h3 className="font-medium text-gray-900 mb-3 flex items-center">
+                      <Shield className="w-4 h-4 mr-2" />
+                      Selected Tests Summary:
+                    </h3>
+                    <div className="space-y-2">
+                      {formData.selectedTests.map((testId) => {
+                        const test = laboratoryTests.find((t) => t.id === testId)
                         return (
-                          <div key={serviceName} className="flex justify-between text-sm">
-                            <span>{serviceName}</span>
-                            <span className="font-medium">₱{service?.price.toLocaleString()}</span>
+                          <div key={testId} className="flex justify-between text-sm">
+                            <span className="text-gray-700">{test?.name}</span>
+                            <span className="font-medium">₱{test?.price}</span>
                           </div>
                         )
                       })}
-                    </div>
-                    <div className="border-t border-emerald-200 pt-4">
-                      <div className="flex justify-between items-center">
-                        <span className="font-bold text-emerald-800">Total Amount:</span>
-                        <span className="text-2xl font-bold text-emerald-700">
-                          ₱{getTotalAmount().toLocaleString()}
-                        </span>
+                      <div className="border-t pt-2 mt-3">
+                        <div className="flex justify-between font-bold text-lg">
+                          <span className="text-gray-900">Total Amount:</span>
+                          <span className="text-primary-600">₱{calculateTotal()}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
                 )}
+              </div>
+            )}
 
-                <div className="flex justify-end mt-8">
-                  <Button
-                    onClick={handleNextStep}
-                    disabled={selectedServices.length === 0}
-                    className="bg-emerald-600 hover:bg-emerald-700 px-8 py-3"
-                  >
-                    Continue to Appointment Details
-                  </Button>
+            {/* Step 3: Date & Time */}
+            {currentStep === 3 && (
+              <div className="space-y-6">
+                <div className="flex items-center mb-6">
+                  <Calendar className="w-6 h-6 text-primary-600 mr-3" />
+                  <h2 className="font-heading font-semibold text-xl text-gray-900">Select Date & Time</h2>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
 
-        {step === "details" && (
-          <div className="space-y-6">
-            <Card className="border-emerald-200">
-              <CardHeader>
-                <CardTitle className="text-emerald-800 flex items-center text-xl">
-                  <User className="w-6 h-6 mr-3" />
-                  Appointment Details
-                </CardTitle>
-                <CardDescription className="text-base">
-                  Please provide your information and preferred appointment schedule.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault()
-                    const formData = new FormData(e.currentTarget)
-                    const data = Object.fromEntries(formData.entries())
-                    handleFormSubmit(data)
-                  }}
-                  className="space-y-6"
-                >
-                  {/* Personal Information */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-emerald-800 flex items-center">
-                      <User className="w-5 h-5 mr-2" />
-                      Personal Information
-                    </h3>
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="firstName">First Name *</Label>
-                        <Input id="firstName" name="firstName" required className="mt-1" />
-                      </div>
-                      <div>
-                        <Label htmlFor="lastName">Last Name *</Label>
-                        <Input id="lastName" name="lastName" required className="mt-1" />
-                      </div>
-                      <div>
-                        <Label htmlFor="email">Email Address *</Label>
-                        <Input id="email" name="email" type="email" required className="mt-1" />
-                      </div>
-                      <div>
-                        <Label htmlFor="phone">Phone Number *</Label>
-                        <Input id="phone" name="phone" type="tel" required className="mt-1" />
-                      </div>
-                      <div>
-                        <Label htmlFor="birthDate">Date of Birth *</Label>
-                        <Input id="birthDate" name="birthDate" type="date" required className="mt-1" />
-                      </div>
-                      <div>
-                        <Label htmlFor="gender">Gender</Label>
-                        <Select name="gender">
-                          <SelectTrigger className="mt-1">
-                            <SelectValue placeholder="Select gender" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="male">Male</SelectItem>
-                            <SelectItem value="female">Female</SelectItem>
-                            <SelectItem value="other">Other</SelectItem>
-                            <SelectItem value="prefer-not-to-say">Prefer not to say</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                    <div>
-                      <Label htmlFor="address">Complete Address *</Label>
-                      <Textarea id="address" name="address" required className="mt-1" rows={3} />
-                    </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Date *</label>
+                    <input
+                      type="date"
+                      name="selectedDate"
+                      required
+                      value={formData.selectedDate}
+                      onChange={handleInputChange}
+                      min={new Date().toISOString().split("T")[0]}
+                      className="input-field"
+                    />
                   </div>
 
-                  {/* Appointment Schedule */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-emerald-800 flex items-center">
-                      <Calendar className="w-5 h-5 mr-2" />
-                      Appointment Schedule
-                    </h3>
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="appointmentDate">Preferred Date *</Label>
-                        <Input
-                          id="appointmentDate"
-                          name="appointmentDate"
-                          type="date"
-                          required
-                          className="mt-1"
-                          min={new Date().toISOString().split("T")[0]}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="appointmentTime">Preferred Time *</Label>
-                        <Select name="appointmentTime" required>
-                          <SelectTrigger className="mt-1">
-                            <SelectValue placeholder="Select time" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="07:00">7:00 AM</SelectItem>
-                            <SelectItem value="08:00">8:00 AM</SelectItem>
-                            <SelectItem value="09:00">9:00 AM</SelectItem>
-                            <SelectItem value="10:00">10:00 AM</SelectItem>
-                            <SelectItem value="11:00">11:00 AM</SelectItem>
-                            <SelectItem value="13:00">1:00 PM</SelectItem>
-                            <SelectItem value="14:00">2:00 PM</SelectItem>
-                            <SelectItem value="15:00">3:00 PM</SelectItem>
-                            <SelectItem value="16:00">4:00 PM</SelectItem>
-                            <SelectItem value="17:00">5:00 PM</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Time *</label>
+                    <select
+                      name="selectedTime"
+                      required
+                      value={formData.selectedTime}
+                      onChange={handleInputChange}
+                      className="input-field"
+                    >
+                      <option value="">Select time slot</option>
+                      {timeSlots.map((time) => (
+                        <option key={time} value={time}>
+                          {time}
+                        </option>
+                      ))}
+                    </select>
                   </div>
+                </div>
 
-                  {/* Financial Assistance */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-emerald-800 flex items-center">
-                      <CreditCard className="w-5 h-5 mr-2" />
-                      Financial Assistance & Payment
-                    </h3>
-                    <div>
-                      <Label>Financial Assistance Type</Label>
-                      <RadioGroup value={financialAssistance} onValueChange={setFinancialAssistance} className="mt-2">
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="" id="no-assistance" />
-                          <Label htmlFor="no-assistance">No assistance (Full payment)</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="senior-discount" id="senior" />
-                          <Label htmlFor="senior">Senior Citizen Discount (20% off)</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="pwd-discount" id="pwd" />
-                          <Label htmlFor="pwd">PWD Discount (20% off)</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="student-discount" id="student" />
-                          <Label htmlFor="student">Student Discount (10% off)</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="hmo-coverage" id="hmo" />
-                          <Label htmlFor="hmo">HMO Coverage</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="company-guarantee" id="guarantee" />
-                          <Label htmlFor="guarantee">Company Guarantee Letter</Label>
-                        </div>
-                      </RadioGroup>
-                    </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Additional Notes</label>
+                  <textarea
+                    name="notes"
+                    value={formData.notes}
+                    onChange={handleInputChange}
+                    rows={4}
+                    className="input-field"
+                    placeholder="Any special instructions, medical conditions, or requirements we should know about..."
+                  />
+                </div>
 
-                    {financialAssistance && (
-                      <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                        <h4 className="font-medium text-blue-800 mb-2">Required Documents</h4>
-                        <p className="text-sm text-blue-700 mb-3">
-                          Please upload the required documents for your selected assistance type:
-                        </p>
-                        <div className="space-y-2 text-sm text-blue-700">
-                          {financialAssistance === "senior-discount" && <div>• Senior Citizen ID or Certificate</div>}
-                          {financialAssistance === "pwd-discount" && <div>• PWD ID Card</div>}
-                          {financialAssistance === "student-discount" && (
-                            <div>• Valid Student ID or Enrollment Certificate</div>
-                          )}
-                          {financialAssistance === "hmo-coverage" && (
-                            <div>• HMO Card and Authorization Letter (if required)</div>
-                          )}
-                          {financialAssistance === "company-guarantee" && (
-                            <div>• Company Guarantee Letter with Official Letterhead</div>
-                          )}
-                          <div>• Valid Government-issued ID</div>
-                        </div>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h3 className="font-medium text-blue-900 mb-2 flex items-center">
+                    <Clock className="w-4 h-4 mr-2" />
+                    Important Reminders:
+                  </h3>
+                  <ul className="text-sm text-blue-800 space-y-1">
+                    <li>• Please arrive 15 minutes before your scheduled time</li>
+                    <li>• Bring a valid ID and your appointment confirmation</li>
+                    <li>• Follow any specific preparation instructions for your tests</li>
+                    <li>• Fasting may be required for certain tests (we'll notify you)</li>
+                  </ul>
+                </div>
+              </div>
+            )}
 
-                        <div className="mt-4">
-                          <Label htmlFor="documents">Upload Documents</Label>
-                          <div className="mt-2 border-2 border-dashed border-blue-300 rounded-lg p-4 text-center">
-                            <Upload className="w-8 h-8 text-blue-500 mx-auto mb-2" />
-                            <input
-                              type="file"
-                              id="documents"
-                              multiple
-                              accept="image/*,.pdf"
-                              onChange={handleDocumentUpload}
-                              className="hidden"
-                            />
-                            <label htmlFor="documents" className="cursor-pointer">
-                              <span className="text-sm text-blue-600 hover:text-blue-700">
-                                Click to upload documents
-                              </span>
-                            </label>
-                            {documents.length > 0 && (
-                              <div className="mt-2 text-xs text-blue-600">{documents.length} file(s) uploaded</div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
+            {/* Step 4: Payment */}
+            {currentStep === 4 && (
+              <div className="space-y-6">
+                <div className="flex items-center mb-6">
+                  <CreditCard className="w-6 h-6 text-primary-600 mr-3" />
+                  <h2 className="font-heading font-semibold text-xl text-gray-900">Payment Method</h2>
+                </div>
 
-                  {/* Notification Preferences */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-emerald-800 flex items-center">
-                      <Mail className="w-5 h-5 mr-2" />
-                      Notification Preferences
-                    </h3>
-                    <div>
-                      <Label>How would you like to receive notifications?</Label>
-                      <RadioGroup
-                        value={notificationPreference}
-                        onValueChange={setNotificationPreference}
-                        className="mt-2"
-                      >
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="email" id="email-notif" />
-                          <Label htmlFor="email-notif" className="flex items-center">
-                            <Mail className="w-4 h-4 mr-2" />
-                            Email notifications
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="sms" id="sms-notif" />
-                          <Label htmlFor="sms-notif" className="flex items-center">
-                            <Phone className="w-4 h-4 mr-2" />
-                            SMS notifications
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="both" id="both-notif" />
-                          <Label htmlFor="both-notif">Both email and SMS</Label>
-                        </div>
-                      </RadioGroup>
-                    </div>
-                  </div>
-
-                  {/* Special Instructions */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-emerald-800">Special Instructions</h3>
-                    <div>
-                      <Label htmlFor="instructions">Additional Notes or Special Requests</Label>
-                      <Textarea
-                        id="instructions"
-                        name="instructions"
-                        className="mt-1"
-                        rows={3}
-                        placeholder="Any special instructions, medical conditions, or requests..."
-                      />
-                    </div>
-                  </div>
-
-                  {/* Amount Summary */}
-                  <div className="p-6 bg-emerald-50 border border-emerald-200 rounded-xl">
-                    <h4 className="font-semibold text-emerald-800 mb-4">Payment Summary</h4>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span>Subtotal:</span>
-                        <span>₱{getTotalAmount().toLocaleString()}</span>
-                      </div>
-                      {financialAssistance && (
-                        <div className="flex justify-between text-emerald-600">
-                          <span>Discount ({financialAssistance}):</span>
-                          <span>-₱{(getTotalAmount() - getDiscountedAmount()).toLocaleString()}</span>
+                <div className="space-y-4">
+                  {paymentMethods.map((method) => (
+                    <div
+                      key={method.id}
+                      className={`border rounded-lg p-4 cursor-pointer transition-all relative ${
+                        formData.paymentMethod === method.id
+                          ? "border-primary-500 bg-primary-50 shadow-md"
+                          : "border-gray-200 hover:border-gray-300 hover:shadow-sm"
+                      }`}
+                      onClick={() => setFormData({ ...formData, paymentMethod: method.id })}
+                    >
+                      {method.popular && (
+                        <div className="absolute -top-2 -right-2 bg-gradient-to-r from-green-400 to-blue-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
+                          Popular
                         </div>
                       )}
-                      <div className="border-t border-emerald-200 pt-2 flex justify-between font-bold text-lg">
-                        <span>Total Amount:</span>
-                        <span className="text-emerald-700">₱{getDiscountedAmount().toLocaleString()}</span>
+                      
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                          <span className="text-2xl mr-3">{method.icon}</span>
+                          <div>
+                            <h3 className="font-medium text-gray-900">{method.name}</h3>
+                            <p className="text-sm text-gray-600">{method.description}</p>
+                          </div>
+                        </div>
+                        <input
+                          type="radio"
+                          name="paymentMethod"
+                          value={method.id}
+                          checked={formData.paymentMethod === method.id}
+                          onChange={handleInputChange}
+                          className="h-5 w-5 text-primary-600 border-gray-300 focus:ring-primary-500"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Final Booking Summary */}
+                <div className="bg-gradient-to-r from-primary-50 to-secondary-50 rounded-lg p-6 border border-primary-200">
+                  <h3 className="font-semibold text-gray-900 mb-4 flex items-center">
+                    <Check className="w-5 h-5 mr-2 text-primary-600" />
+                    Final Booking Summary
+                  </h3>
+                  <div className="space-y-3 text-sm">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <span className="text-gray-600">Patient:</span>
+                        <div className="font-medium">{formData.firstName} {formData.lastName}</div>
+                      </div>
+                      <div>
+                        <span className="text-gray-600">Contact:</span>
+                        <div className="font-medium">{formData.phone}</div>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <span className="text-gray-600">Date & Time:</span>
+                        <div className="font-medium">{formData.selectedDate} at {formData.selectedTime}</div>
+                      </div>
+                      <div>
+                        <span className="text-gray-600">Payment Method:</span>
+                        <div className="font-medium">
+                          {paymentMethods.find(m => m.id === formData.paymentMethod)?.name}
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Selected Tests ({formData.selectedTests.length}):</span>
+                      <div className="mt-1 space-y-1">
+                        {formData.selectedTests.map((testId) => {
+                          const test = laboratoryTests.find((t) => t.id === testId)
+                          return (
+                            <div key={testId} className="flex justify-between">
+                              <span className="text-gray-700">• {test?.name}</span>
+                              <span className="font-medium">₱{test?.price}</span>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                    <div className="border-t border-primary-200 pt-3 mt-4">
+                      <div className="flex justify-between items-center">
+                        <span className="text-lg font-semibold text-gray-900">Total Amount:</span>
+                        <span className="text-2xl font-bold text-primary-600">₱{calculateTotal()}</span>
                       </div>
                     </div>
                   </div>
+                </div>
+              </div>
+            )}
 
-                  <div className="flex justify-between">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setStep("services")}
-                      className="border-emerald-600 text-emerald-600 hover:bg-emerald-50"
-                    >
-                      Back to Services
-                    </Button>
-                    <Button type="submit" className="bg-emerald-600 hover:bg-emerald-700 px-8">
-                      Continue to Payment
-                    </Button>
-                  </div>
-                </form>
-              </CardContent>
-            </Card>
+            {/* Navigation Buttons */}
+            <div className="flex justify-between mt-8 pt-6 border-t border-gray-200">
+              <button
+                type="button"
+                onClick={prevStep}
+                disabled={currentStep === 1}
+                className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+                  currentStep === 1
+                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                }`}
+              >
+                Previous
+              </button>
+
+              {currentStep < 4 ? (
+                <button
+                  type="button"
+                  onClick={nextStep}
+                  disabled={!isStepValid(currentStep)}
+                  className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+                    isStepValid(currentStep)
+                      ? "btn-primary"
+                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  }`}
+                >
+                  Next Step
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  disabled={isLoading || !formData.paymentMethod}
+                  className={`px-8 py-3 rounded-lg font-medium transition-colors ${
+                    !isLoading && formData.paymentMethod
+                      ? "btn-primary"
+                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  }`}
+                >
+                  {isLoading ? (
+                    <div className="flex items-center">
+                      <div className="loading-spinner mr-2"></div>
+                      Processing...
+                    </div>
+                  ) : (
+                    "Confirm Booking"
+                  )}
+                </button>
+              )}
+            </div>
           </div>
-        )}
+        </form>
       </div>
-    </PatientLayout>
-  )
-}
-
-export default function BookAppointment() {
-  return (
-    <NotificationProvider>
-      <BookAppointmentContent />
-    </NotificationProvider>
+    </div>
   )
 }

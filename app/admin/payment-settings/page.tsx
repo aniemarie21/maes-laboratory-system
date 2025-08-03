@@ -5,514 +5,523 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Badge } from "@/components/ui/badge"
 import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { CreditCard, Smartphone, Building, Shield, AlertCircle, Save, Copy, Eye, EyeOff } from "lucide-react"
+import {
+  CreditCard,
+  Smartphone,
+  Building2,
+  Shield,
+  Settings,
+  Save,
+  Eye,
+  EyeOff,
+  Copy,
+  CheckCircle,
+  AlertTriangle,
+  DollarSign,
+  Percent,
+  Clock,
+  Users,
+} from "lucide-react"
 import AdminLayout from "@/components/admin-layout"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Textarea } from "@/components/ui/textarea"
+
+const paymentMethods = [
+  {
+    id: "cash",
+    name: "Cash Payment",
+    description: "Accept cash payments at the laboratory",
+    icon: DollarSign,
+    enabled: true,
+    settings: {
+      acceptedDenominations: ["20", "50", "100", "200", "500", "1000"],
+      changePolicy: "Always provide exact change when possible",
+    },
+  },
+  {
+    id: "gcash",
+    name: "GCash",
+    description: "Mobile wallet payments via GCash",
+    icon: Smartphone,
+    enabled: true,
+    settings: {
+      merchantNumber: "09123456789",
+      merchantName: "MAES Laboratory",
+      qrCode: "gcash-qr-code.png",
+      fees: "0%",
+    },
+  },
+  {
+    id: "bank",
+    name: "Bank Transfer",
+    description: "Online bank transfers and deposits",
+    icon: Building2,
+    enabled: true,
+    settings: {
+      bankName: "Bank of the Philippine Islands (BPI)",
+      accountName: "Maria Estrella General Hospital",
+      accountNumber: "1234567890123",
+      swiftCode: "BOPIPHMM",
+    },
+  },
+  {
+    id: "card",
+    name: "Credit/Debit Cards",
+    description: "Visa, Mastercard, and other major cards",
+    icon: CreditCard,
+    enabled: false,
+    settings: {
+      acceptedCards: ["Visa", "Mastercard", "JCB", "American Express"],
+      processingFee: "3.5%",
+      terminal: "POS Terminal Required",
+    },
+  },
+]
+
+const hmoPartners = [
+  { name: "PhilHealth", coverage: "80%", status: "active", patients: 245 },
+  { name: "Maxicare", coverage: "90%", status: "active", patients: 156 },
+  { name: "Medicard", coverage: "85%", status: "active", patients: 89 },
+  { name: "Intellicare", coverage: "75%", status: "active", patients: 67 },
+  { name: "Cocolife", coverage: "70%", status: "pending", patients: 23 },
+  { name: "Avega", coverage: "80%", status: "inactive", patients: 12 },
+]
+
+const discountPrograms = [
+  {
+    id: "senior",
+    name: "Senior Citizen Discount",
+    description: "20% discount for patients 60 years and above",
+    discount: 20,
+    enabled: true,
+    requirements: "Valid Senior Citizen ID",
+  },
+  {
+    id: "pwd",
+    name: "PWD Discount",
+    description: "20% discount for Persons with Disabilities",
+    discount: 20,
+    enabled: true,
+    requirements: "Valid PWD ID",
+  },
+  {
+    id: "student",
+    name: "Student Discount",
+    description: "10% discount for students",
+    discount: 10,
+    enabled: false,
+    requirements: "Valid Student ID",
+  },
+  {
+    id: "employee",
+    name: "Hospital Employee Discount",
+    description: "15% discount for hospital employees",
+    discount: 15,
+    enabled: true,
+    requirements: "Valid Employee ID",
+  },
+]
 
 export default function PaymentSettingsPage() {
-  const [gcashSettings, setGcashSettings] = useState({
-    enabled: true,
-    accountName: "Maria Estrella General Hospital",
-    accountNumber: "09123456789",
-    displayQR: true,
-    instructions: "Please include your name and appointment reference number in the payment notes.",
-  })
-
-  const [bankSettings, setBankSettings] = useState({
-    enabled: true,
-    bankName: "BDO",
-    accountName: "Maria Estrella General Hospital",
-    accountNumber: "1234567890",
-    instructions: "Please include your name and appointment reference number in the payment notes.",
-  })
-
-  const [hmoSettings, setHmoSettings] = useState({
-    enabled: true,
-    acceptedProviders: ["Maxicare", "Medicard", "Intellicare", "Valucare", "PhilHealth", "Cocolife", "Insular Health"],
-    instructions:
-      "Please upload a clear photo of your HMO card (front and back) when booking an appointment. Pre-authorization may be required for some procedures.",
-    newProvider: "",
-  })
-
-  const [securitySettings, setSecuritySettings] = useState({
-    requireVerification: true,
-    hideAccountDetails: false,
-    allowPartialPayments: false,
-    sendPaymentReminders: true,
-    storePaymentInfo: false,
-  })
-
   const [showAccountNumber, setShowAccountNumber] = useState(false)
+  const [showGCashNumber, setShowGCashNumber] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [showSuccess, setShowSuccess] = useState(false)
 
-  const handleAddHMOProvider = () => {
-    if (hmoSettings.newProvider.trim()) {
-      setHmoSettings({
-        ...hmoSettings,
-        acceptedProviders: [...hmoSettings.acceptedProviders, hmoSettings.newProvider.trim()],
-        newProvider: "",
-      })
-    }
-  }
+  const handleSave = async () => {
+    setIsLoading(true)
 
-  const handleRemoveHMOProvider = (provider: string) => {
-    setHmoSettings({
-      ...hmoSettings,
-      acceptedProviders: hmoSettings.acceptedProviders.filter((p) => p !== provider),
-    })
+    // Simulate API call
+    setTimeout(() => {
+      setIsLoading(false)
+      setShowSuccess(true)
+      setTimeout(() => setShowSuccess(false), 3000)
+    }, 1500)
   }
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text)
-    alert("Copied to clipboard!")
-  }
-
-  const handleSaveSettings = () => {
-    // Here you would normally save to your backend
-    alert("Payment settings saved successfully!")
+    // Could add a toast notification here
   }
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold text-emerald-800 mb-2">Payment Settings</h1>
-          <p className="text-gray-600">Configure payment methods and options for laboratory services</p>
+      <div className="space-y-8">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-bold text-gray-900">Payment Settings</h1>
+            <p className="text-xl text-gray-600 mt-2">
+              Manage payment methods, HMO partnerships, and discount programs
+            </p>
+          </div>
+          <Button
+            onClick={handleSave}
+            disabled={isLoading}
+            className="bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 px-8 py-3 text-lg shadow-lg"
+          >
+            {isLoading ? (
+              <div className="flex items-center">
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                Saving...
+              </div>
+            ) : (
+              <>
+                <Save className="w-5 h-5 mr-2" />
+                Save Changes
+              </>
+            )}
+          </Button>
         </div>
 
-        <Alert className="bg-blue-50 border-blue-200">
-          <AlertCircle className="h-4 w-4 text-blue-600" />
-          <AlertDescription className="text-blue-700">
-            These settings will be visible to patients when they book laboratory services. Make sure all information is
-            accurate and up-to-date.
-          </AlertDescription>
-        </Alert>
+        {/* Success Alert */}
+        {showSuccess && (
+          <Alert className="bg-green-50 border-green-200">
+            <CheckCircle className="h-4 w-4 text-green-600" />
+            <AlertDescription className="text-green-700">
+              Payment settings have been updated successfully!
+            </AlertDescription>
+          </Alert>
+        )}
 
-        <Tabs defaultValue="gcash" className="w-full">
-          <TabsList className="grid grid-cols-4 mb-8">
-            <TabsTrigger value="gcash">
-              <Smartphone className="w-4 h-4 mr-2" />
-              GCash
+        <Tabs defaultValue="methods" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-4 bg-gray-100 p-1 rounded-xl">
+            <TabsTrigger
+              value="methods"
+              className="flex items-center space-x-2 data-[state=active]:bg-white data-[state=active]:shadow-sm"
+            >
+              <CreditCard className="w-4 h-4" />
+              <span>Payment Methods</span>
             </TabsTrigger>
-            <TabsTrigger value="bank">
-              <Building className="w-4 h-4 mr-2" />
-              Bank Transfer
+            <TabsTrigger
+              value="hmo"
+              className="flex items-center space-x-2 data-[state=active]:bg-white data-[state=active]:shadow-sm"
+            >
+              <Shield className="w-4 h-4" />
+              <span>HMO Partners</span>
             </TabsTrigger>
-            <TabsTrigger value="hmo">
-              <CreditCard className="w-4 h-4 mr-2" />
-              HMO Coverage
+            <TabsTrigger
+              value="discounts"
+              className="flex items-center space-x-2 data-[state=active]:bg-white data-[state=active]:shadow-sm"
+            >
+              <Percent className="w-4 h-4" />
+              <span>Discounts</span>
             </TabsTrigger>
-            <TabsTrigger value="security">
-              <Shield className="w-4 h-4 mr-2" />
-              Security
+            <TabsTrigger
+              value="security"
+              className="flex items-center space-x-2 data-[state=active]:bg-white data-[state=active]:shadow-sm"
+            >
+              <Shield className="w-4 h-4" />
+              <span>Security</span>
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="gcash" className="space-y-6">
-            <Card className="border-emerald-200">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-emerald-800">GCash Settings</CardTitle>
-                    <CardDescription>Configure GCash payment options</CardDescription>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Label htmlFor="gcash-enabled" className="text-sm font-medium">
-                      Enable GCash
-                    </Label>
-                    <Switch
-                      id="gcash-enabled"
-                      checked={gcashSettings.enabled}
-                      onCheckedChange={(checked) => setGcashSettings({ ...gcashSettings, enabled: checked })}
-                    />
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="gcash-account-name">Account Name</Label>
-                  <Input
-                    id="gcash-account-name"
-                    value={gcashSettings.accountName}
-                    onChange={(e) => setGcashSettings({ ...gcashSettings, accountName: e.target.value })}
-                    className="border-emerald-200 focus:border-emerald-500"
-                    disabled={!gcashSettings.enabled}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="gcash-account-number">Account Number</Label>
-                  <div className="relative">
-                    <Input
-                      id="gcash-account-number"
-                      type={showAccountNumber ? "text" : "password"}
-                      value={gcashSettings.accountNumber}
-                      onChange={(e) => setGcashSettings({ ...gcashSettings, accountNumber: e.target.value })}
-                      className="border-emerald-200 focus:border-emerald-500 pr-20"
-                      disabled={!gcashSettings.enabled}
-                    />
-                    <div className="absolute right-2 top-2 flex space-x-1">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setShowAccountNumber(!showAccountNumber)}
-                        className="h-6 w-6 p-0"
-                      >
-                        {showAccountNumber ? (
-                          <EyeOff className="h-4 w-4 text-gray-500" />
-                        ) : (
-                          <Eye className="h-4 w-4 text-gray-500" />
-                        )}
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => copyToClipboard(gcashSettings.accountNumber)}
-                        className="h-6 w-6 p-0"
-                        disabled={!gcashSettings.enabled}
-                      >
-                        <Copy className="h-4 w-4 text-gray-500" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="display-qr"
-                    checked={gcashSettings.displayQR}
-                    onCheckedChange={(checked) => setGcashSettings({ ...gcashSettings, displayQR: checked })}
-                    disabled={!gcashSettings.enabled}
-                  />
-                  <Label htmlFor="display-qr" className="text-sm font-medium">
-                    Display QR Code to patients
-                  </Label>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="gcash-instructions">Payment Instructions</Label>
-                  <Textarea
-                    id="gcash-instructions"
-                    value={gcashSettings.instructions}
-                    onChange={(e) => setGcashSettings({ ...gcashSettings, instructions: e.target.value })}
-                    className="border-emerald-200 focus:border-emerald-500"
-                    rows={3}
-                    disabled={!gcashSettings.enabled}
-                  />
-                </div>
-
-                <div className="pt-4">
-                  <Alert className="bg-yellow-50 border-yellow-200">
-                    <AlertCircle className="h-4 w-4 text-yellow-600" />
-                    <AlertDescription className="text-yellow-700">
-                      For security reasons, we recommend updating your GCash account details periodically.
-                    </AlertDescription>
-                  </Alert>
-                </div>
-              </CardContent>
-            </Card>
-
-            <div className="flex justify-end">
-              <Button className="bg-emerald-600 hover:bg-emerald-700" onClick={handleSaveSettings}>
-                <Save className="w-4 h-4 mr-2" />
-                Save GCash Settings
-              </Button>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="bank" className="space-y-6">
-            <Card className="border-emerald-200">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-emerald-800">Bank Transfer Settings</CardTitle>
-                    <CardDescription>Configure bank transfer payment options</CardDescription>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Label htmlFor="bank-enabled" className="text-sm font-medium">
-                      Enable Bank Transfer
-                    </Label>
-                    <Switch
-                      id="bank-enabled"
-                      checked={bankSettings.enabled}
-                      onCheckedChange={(checked) => setBankSettings({ ...bankSettings, enabled: checked })}
-                    />
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="bank-name">Bank Name</Label>
-                  <Input
-                    id="bank-name"
-                    value={bankSettings.bankName}
-                    onChange={(e) => setBankSettings({ ...bankSettings, bankName: e.target.value })}
-                    className="border-emerald-200 focus:border-emerald-500"
-                    disabled={!bankSettings.enabled}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="bank-account-name">Account Name</Label>
-                  <Input
-                    id="bank-account-name"
-                    value={bankSettings.accountName}
-                    onChange={(e) => setBankSettings({ ...bankSettings, accountName: e.target.value })}
-                    className="border-emerald-200 focus:border-emerald-500"
-                    disabled={!bankSettings.enabled}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="bank-account-number">Account Number</Label>
-                  <div className="relative">
-                    <Input
-                      id="bank-account-number"
-                      type={showAccountNumber ? "text" : "password"}
-                      value={bankSettings.accountNumber}
-                      onChange={(e) => setBankSettings({ ...bankSettings, accountNumber: e.target.value })}
-                      className="border-emerald-200 focus:border-emerald-500 pr-20"
-                      disabled={!bankSettings.enabled}
-                    />
-                    <div className="absolute right-2 top-2 flex space-x-1">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setShowAccountNumber(!showAccountNumber)}
-                        className="h-6 w-6 p-0"
-                      >
-                        {showAccountNumber ? (
-                          <EyeOff className="h-4 w-4 text-gray-500" />
-                        ) : (
-                          <Eye className="h-4 w-4 text-gray-500" />
-                        )}
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => copyToClipboard(bankSettings.accountNumber)}
-                        className="h-6 w-6 p-0"
-                        disabled={!bankSettings.enabled}
-                      >
-                        <Copy className="h-4 w-4 text-gray-500" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="bank-instructions">Payment Instructions</Label>
-                  <Textarea
-                    id="bank-instructions"
-                    value={bankSettings.instructions}
-                    onChange={(e) => setBankSettings({ ...bankSettings, instructions: e.target.value })}
-                    className="border-emerald-200 focus:border-emerald-500"
-                    rows={3}
-                    disabled={!bankSettings.enabled}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            <div className="flex justify-end">
-              <Button className="bg-emerald-600 hover:bg-emerald-700" onClick={handleSaveSettings}>
-                <Save className="w-4 h-4 mr-2" />
-                Save Bank Settings
-              </Button>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="hmo" className="space-y-6">
-            <Card className="border-emerald-200">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-emerald-800">HMO Coverage Settings</CardTitle>
-                    <CardDescription>Configure accepted HMO providers and policies</CardDescription>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Label htmlFor="hmo-enabled" className="text-sm font-medium">
-                      Enable HMO Coverage
-                    </Label>
-                    <Switch
-                      id="hmo-enabled"
-                      checked={hmoSettings.enabled}
-                      onCheckedChange={(checked) => setHmoSettings({ ...hmoSettings, enabled: checked })}
-                    />
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Accepted HMO Providers</Label>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {hmoSettings.acceptedProviders.map((provider) => (
-                      <div
-                        key={provider}
-                        className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-sm flex items-center"
-                      >
-                        {provider}
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleRemoveHMOProvider(provider)}
-                          className="h-5 w-5 p-0 ml-1 hover:bg-emerald-200 rounded-full"
-                          disabled={!hmoSettings.enabled}
+          {/* Payment Methods Tab */}
+          <TabsContent value="methods" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {paymentMethods.map((method) => (
+                <Card key={method.id} className="border-0 shadow-xl">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div
+                          className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                            method.enabled ? "bg-emerald-100" : "bg-gray-100"
+                          }`}
                         >
-                          <span className="sr-only">Remove</span>
-                          <span aria-hidden="true">×</span>
+                          <method.icon className={`w-6 h-6 ${method.enabled ? "text-emerald-600" : "text-gray-400"}`} />
+                        </div>
+                        <div>
+                          <CardTitle className="text-lg">{method.name}</CardTitle>
+                          <CardDescription>{method.description}</CardDescription>
+                        </div>
+                      </div>
+                      <Switch checked={method.enabled} />
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {method.id === "gcash" && (
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <Label>GCash Number</Label>
+                            <Button variant="ghost" size="sm" onClick={() => setShowGCashNumber(!showGCashNumber)}>
+                              {showGCashNumber ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                            </Button>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Input
+                              type={showGCashNumber ? "text" : "password"}
+                              value={method.settings.merchantNumber}
+                              readOnly
+                              className="font-mono"
+                            />
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => copyToClipboard(method.settings.merchantNumber)}
+                            >
+                              <Copy className="w-4 h-4" />
+                            </Button>
+                          </div>
+                          <div>
+                            <Label>Merchant Name</Label>
+                            <Input value={method.settings.merchantName} className="mt-1" />
+                          </div>
+                        </div>
+                      )}
+
+                      {method.id === "bank" && (
+                        <div className="space-y-3">
+                          <div>
+                            <Label>Bank Name</Label>
+                            <Input value={method.settings.bankName} className="mt-1" />
+                          </div>
+                          <div>
+                            <Label>Account Name</Label>
+                            <Input value={method.settings.accountName} className="mt-1" />
+                          </div>
+                          <div>
+                            <Label>Account Number</Label>
+                            <div className="flex items-center space-x-2 mt-1">
+                              <Input
+                                type={showAccountNumber ? "text" : "password"}
+                                value={method.settings.accountNumber}
+                                className="font-mono"
+                              />
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setShowAccountNumber(!showAccountNumber)}
+                              >
+                                {showAccountNumber ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => copyToClipboard(method.settings.accountNumber)}
+                              >
+                                <Copy className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {method.id === "cash" && (
+                        <div className="space-y-3">
+                          <div>
+                            <Label>Change Policy</Label>
+                            <Textarea value={method.settings.changePolicy} className="mt-1 min-h-20" />
+                          </div>
+                        </div>
+                      )}
+
+                      {method.id === "card" && (
+                        <div className="space-y-3">
+                          <Alert className="bg-yellow-50 border-yellow-200">
+                            <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                            <AlertDescription className="text-yellow-700">
+                              Card payments require a POS terminal and merchant account setup.
+                            </AlertDescription>
+                          </Alert>
+                          <div>
+                            <Label>Processing Fee</Label>
+                            <Input value={method.settings.processingFee} className="mt-1" />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+
+          {/* HMO Partners Tab */}
+          <TabsContent value="hmo" className="space-y-6">
+            <Card className="border-0 shadow-xl">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Shield className="w-5 h-5 text-blue-600" />
+                  <span>HMO Partnership Management</span>
+                </CardTitle>
+                <CardDescription>Manage health insurance partnerships and coverage rates</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {hmoPartners.map((hmo, index) => (
+                    <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                          <Shield className="w-6 h-6 text-blue-600" />
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-gray-900">{hmo.name}</h3>
+                          <div className="flex items-center space-x-4 text-sm text-gray-600">
+                            <span>Coverage: {hmo.coverage}</span>
+                            <span>•</span>
+                            <span className="flex items-center space-x-1">
+                              <Users className="w-3 h-3" />
+                              <span>{hmo.patients} patients</span>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <Badge
+                          className={`${
+                            hmo.status === "active"
+                              ? "bg-green-100 text-green-800"
+                              : hmo.status === "pending"
+                                ? "bg-yellow-100 text-yellow-800"
+                                : "bg-gray-100 text-gray-800"
+                          }`}
+                        >
+                          {hmo.status}
+                        </Badge>
+                        <Button variant="outline" size="sm">
+                          <Settings className="w-4 h-4 mr-1" />
+                          Configure
                         </Button>
                       </div>
-                    ))}
-                  </div>
-
-                  <div className="flex space-x-2">
-                    <Input
-                      value={hmoSettings.newProvider}
-                      onChange={(e) => setHmoSettings({ ...hmoSettings, newProvider: e.target.value })}
-                      className="border-emerald-200 focus:border-emerald-500"
-                      placeholder="Add new HMO provider"
-                      disabled={!hmoSettings.enabled}
-                    />
-                    <Button
-                      type="button"
-                      onClick={handleAddHMOProvider}
-                      className="bg-emerald-600 hover:bg-emerald-700"
-                      disabled={!hmoSettings.enabled || !hmoSettings.newProvider.trim()}
-                    >
-                      Add
-                    </Button>
-                  </div>
+                    </div>
+                  ))}
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="hmo-instructions">HMO Instructions for Patients</Label>
-                  <Textarea
-                    id="hmo-instructions"
-                    value={hmoSettings.instructions}
-                    onChange={(e) => setHmoSettings({ ...hmoSettings, instructions: e.target.value })}
-                    className="border-emerald-200 focus:border-emerald-500"
-                    rows={4}
-                    disabled={!hmoSettings.enabled}
-                  />
+                <div className="mt-6 pt-6 border-t border-gray-200">
+                  <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                    Add New HMO Partner
+                  </Button>
                 </div>
-
-                <Alert className="bg-blue-50 border-blue-200">
-                  <AlertCircle className="h-4 w-4 text-blue-600" />
-                  <AlertDescription className="text-blue-700">
-                    Patients will be required to upload their HMO cards during the booking process. Make sure to verify
-                    coverage before approving appointments.
-                  </AlertDescription>
-                </Alert>
               </CardContent>
             </Card>
+          </TabsContent>
 
-            <div className="flex justify-end">
-              <Button className="bg-emerald-600 hover:bg-emerald-700" onClick={handleSaveSettings}>
-                <Save className="w-4 h-4 mr-2" />
-                Save HMO Settings
-              </Button>
+          {/* Discounts Tab */}
+          <TabsContent value="discounts" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {discountPrograms.map((program) => (
+                <Card key={program.id} className="border-0 shadow-xl">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <CardTitle className="text-lg">{program.name}</CardTitle>
+                        <CardDescription>{program.description}</CardDescription>
+                      </div>
+                      <Switch checked={program.enabled} />
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between p-3 bg-emerald-50 rounded-lg">
+                        <span className="font-medium text-emerald-800">Discount Rate</span>
+                        <span className="text-2xl font-bold text-emerald-600">{program.discount}%</span>
+                      </div>
+
+                      <div>
+                        <Label>Requirements</Label>
+                        <Input value={program.requirements} className="mt-1" />
+                      </div>
+
+                      <div>
+                        <Label>Additional Notes</Label>
+                        <Textarea
+                          placeholder="Any additional requirements or conditions..."
+                          className="mt-1 min-h-20"
+                        />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </TabsContent>
 
+          {/* Security Tab */}
           <TabsContent value="security" className="space-y-6">
-            <Card className="border-emerald-200">
-              <CardHeader>
-                <CardTitle className="text-emerald-800">Payment Security Settings</CardTitle>
-                <CardDescription>Configure security options for payment processing</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="font-medium text-emerald-800">Require Payment Verification</h4>
-                    <p className="text-sm text-gray-600">
-                      Patients must upload proof of payment before appointment is confirmed
-                    </p>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card className="border-0 shadow-xl">
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Shield className="w-5 h-5 text-green-600" />
+                    <span>Payment Security</span>
+                  </CardTitle>
+                  <CardDescription>Configure security settings for payment processing</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                    <div>
+                      <span className="font-medium text-green-800">SSL Encryption</span>
+                      <p className="text-sm text-green-600">All payment data is encrypted</p>
+                    </div>
+                    <Badge className="bg-green-100 text-green-800">Active</Badge>
                   </div>
-                  <Switch
-                    checked={securitySettings.requireVerification}
-                    onCheckedChange={(checked) =>
-                      setSecuritySettings({ ...securitySettings, requireVerification: checked })
-                    }
-                  />
-                </div>
 
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="font-medium text-emerald-800">Hide Account Details Until Approval</h4>
-                    <p className="text-sm text-gray-600">
-                      Payment details are only shown after appointment request is approved
-                    </p>
+                  <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                    <div>
+                      <span className="font-medium text-green-800">PCI Compliance</span>
+                      <p className="text-sm text-green-600">Payment card industry standards</p>
+                    </div>
+                    <Badge className="bg-green-100 text-green-800">Compliant</Badge>
                   </div>
-                  <Switch
-                    checked={securitySettings.hideAccountDetails}
-                    onCheckedChange={(checked) =>
-                      setSecuritySettings({ ...securitySettings, hideAccountDetails: checked })
-                    }
-                  />
-                </div>
 
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="font-medium text-emerald-800">Allow Partial Payments</h4>
-                    <p className="text-sm text-gray-600">Patients can pay a deposit and complete payment on arrival</p>
+                  <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                    <div>
+                      <span className="font-medium text-blue-800">Transaction Monitoring</span>
+                      <p className="text-sm text-blue-600">Real-time fraud detection</p>
+                    </div>
+                    <Switch checked={true} />
                   </div>
-                  <Switch
-                    checked={securitySettings.allowPartialPayments}
-                    onCheckedChange={(checked) =>
-                      setSecuritySettings({ ...securitySettings, allowPartialPayments: checked })
-                    }
-                  />
-                </div>
 
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="font-medium text-emerald-800">Send Payment Reminders</h4>
-                    <p className="text-sm text-gray-600">Automatically send reminders for pending payments</p>
+                  <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                    <div>
+                      <span className="font-medium text-blue-800">Payment Notifications</span>
+                      <p className="text-sm text-blue-600">Email alerts for transactions</p>
+                    </div>
+                    <Switch checked={true} />
                   </div>
-                  <Switch
-                    checked={securitySettings.sendPaymentReminders}
-                    onCheckedChange={(checked) =>
-                      setSecuritySettings({ ...securitySettings, sendPaymentReminders: checked })
-                    }
-                  />
-                </div>
+                </CardContent>
+              </Card>
 
-                <div className="flex items-center justify-between">
+              <Card className="border-0 shadow-xl">
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Clock className="w-5 h-5 text-purple-600" />
+                    <span>Transaction Limits</span>
+                  </CardTitle>
+                  <CardDescription>Set daily and transaction limits for security</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
                   <div>
-                    <h4 className="font-medium text-emerald-800">Store Payment Information</h4>
-                    <p className="text-sm text-gray-600">Save payment details for returning patients (encrypted)</p>
+                    <Label>Daily Transaction Limit</Label>
+                    <Input type="number" placeholder="50000" className="mt-1" />
+                    <p className="text-xs text-gray-500 mt-1">Maximum daily transaction amount in PHP</p>
                   </div>
-                  <Switch
-                    checked={securitySettings.storePaymentInfo}
-                    onCheckedChange={(checked) =>
-                      setSecuritySettings({ ...securitySettings, storePaymentInfo: checked })
-                    }
-                  />
-                </div>
 
-                <Alert className="bg-red-50 border-red-200">
-                  <AlertCircle className="h-4 w-4 text-red-600" />
-                  <AlertDescription className="text-red-700">
-                    Always follow PCI DSS guidelines when handling payment information. Never store sensitive card
-                    details in plain text.
-                  </AlertDescription>
-                </Alert>
-              </CardContent>
-            </Card>
+                  <div>
+                    <Label>Single Transaction Limit</Label>
+                    <Input type="number" placeholder="10000" className="mt-1" />
+                    <p className="text-xs text-gray-500 mt-1">Maximum single transaction amount in PHP</p>
+                  </div>
 
-            <div className="flex justify-end">
-              <Button className="bg-emerald-600 hover:bg-emerald-700" onClick={handleSaveSettings}>
-                <Save className="w-4 h-4 mr-2" />
-                Save Security Settings
-              </Button>
+                  <div>
+                    <Label>Minimum Transaction Amount</Label>
+                    <Input type="number" placeholder="50" className="mt-1" />
+                    <p className="text-xs text-gray-500 mt-1">Minimum transaction amount in PHP</p>
+                  </div>
+
+                  <Alert className="bg-purple-50 border-purple-200">
+                    <Shield className="h-4 w-4 text-purple-600" />
+                    <AlertDescription className="text-purple-700">
+                      Transaction limits help prevent fraud and ensure secure payment processing.
+                    </AlertDescription>
+                  </Alert>
+                </CardContent>
+              </Card>
             </div>
           </TabsContent>
         </Tabs>
