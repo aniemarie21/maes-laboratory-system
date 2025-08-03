@@ -1,30 +1,51 @@
-# Megh website design
+# 🏥 MAES Laboratory Management System
 
-*Automatically synced with your [v0.dev](https://v0.dev) deployments*
+A modern, full-featured hospital laboratory management system built with Django and modern web technologies.
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/mariaestrellageneralhospital-7079s-projects/v0-megh-website-design)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.dev-black?style=for-the-badge)](https://v0.dev/chat/projects/E5DTihWjYq1)
+## 🌟 Features
 
-## Overview
+### 👥 **User Management**
+- Patient registration and authentication
+- Admin dashboard with analytics
+- Role-based access control
+- Profile management with avatars
 
-This repository will stay in sync with your deployed chats on [v0.dev](https://v0.dev).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.dev](https://v0.dev).
+### 📅 **Appointment System**
+- Online appointment booking
+- Real-time availability checking
+- Appointment status tracking
+- Email/SMS notifications
 
-## Deployment
+### 🧪 **Laboratory Services**
+- Blood tests, X-rays, ultrasound, ECG
+- Test result management
+- AI-powered analysis integration
+- Digital report generation
 
-Your project is live at:
+### 💳 **Payment Integration**
+- GCash, PayMaya, bank transfers
+- HMO and insurance support
+- Payment tracking and receipts
+- Financial reporting
 
-**[https://vercel.com/mariaestrellageneralhospital-7079s-projects/v0-megh-website-design](https://vercel.com/mariaestrellageneralhospital-7079s-projects/v0-megh-website-design)**
+### 🤖 **AI Features**
+- Intelligent chatbot support
+- Automated result analysis
+- Predictive health insights
+- Smart appointment scheduling
 
-## Build your app
+### 📊 **Analytics & Reporting**
+- Real-time dashboard analytics
+- Revenue and patient reports
+- Exportable data (PDF, Excel)
+- Performance metrics
 
-Continue building your app on:
+### 🔒 **Security & Compliance**
+- HIPAA-compliant data handling
+- Encrypted patient records
+- Audit logging
+- Secure file storage
 
-**[https://v0.dev/chat/projects/E5DTihWjYq1](https://v0.dev/chat/projects/E5DTihWjYq1)**
+## 🚀 Quick Start
 
-## How It Works
-
-1. Create and modify your project using [v0.dev](https://v0.dev)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+Follow the complete setup guide below to get your system running in minutes!

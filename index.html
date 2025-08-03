@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}MAES Laboratory Management System{% endblock %}</title>
+    <title>MAES Laboratory - Modern Healthcare Solutions</title>
     
     <!-- Bootstrap 5.3 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -258,24 +258,6 @@
             font-size: 2rem;
         }
 
-        /* Form Styles */
-        .form-floating > .form-control {
-            border: 2px solid #e2e8f0;
-            border-radius: 15px;
-            padding: 1rem 0.75rem;
-            transition: all 0.3s ease;
-        }
-
-        .form-floating > .form-control:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-        }
-
-        .form-floating > label {
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-
         /* Chatbot Styles */
         .chatbot-container {
             position: fixed;
@@ -406,25 +388,6 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Success/Error Messages */
-        .alert-modern {
-            border: none;
-            border-radius: 15px;
-            padding: 1rem 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: var(--shadow-soft);
-        }
-
-        .alert-success {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            color: white;
-        }
-
-        .alert-danger {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-        }
-
         /* Footer */
         .footer-modern {
             background: rgba(0, 0, 0, 0.9);
@@ -448,15 +411,26 @@
         .footer-modern a:hover {
             color: white;
         }
+
+        .navbar-toggler {
+            border: none;
+            padding: 4px 8px;
+        }
+
+        .navbar-toggler:focus {
+            box-shadow: none;
+        }
+
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
     </style>
-    
-    {% block extra_css %}{% endblock %}
 </head>
 <body>
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-glass fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="{% url 'home' %}">
+            <a class="navbar-brand" href="#home">
                 <i class="fas fa-microscope"></i>
                 MAES Laboratory
             </a>
@@ -468,75 +442,282 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'home' %}">
+                        <a class="nav-link" href="#home">
                             <i class="fas fa-home me-1"></i>Home
                         </a>
                     </li>
-                    
-                    {% if user.is_authenticated %}
-                        {% if user.userprofile.role == 'patient' %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'patient_dashboard' %}">
-                                    <i class="fas fa-tachometer-alt me-1"></i>Dashboard
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'book_appointment' %}">
-                                    <i class="fas fa-calendar-plus me-1"></i>Book Appointment
-                                </a>
-                            </li>
-                        {% elif user.userprofile.role == 'admin' %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'admin_dashboard' %}">
-                                    <i class="fas fa-chart-line me-1"></i>Admin Dashboard
-                                </a>
-                            </li>
-                        {% endif %}
-                        
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                <i class="fas fa-user me-1"></i>{{ user.get_full_name|default:user.username }}
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-user-edit me-2"></i>Profile</a></li>
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
-                            </ul>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'login' %}">
-                                <i class="fas fa-sign-in-alt me-1"></i>Login
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'register' %}">
-                                <i class="fas fa-user-plus me-1"></i>Register
-                            </a>
-                        </li>
-                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="#services">
+                            <i class="fas fa-stethoscope me-1"></i>Services
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">
+                            <i class="fas fa-info-circle me-1"></i>About
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">
+                            <i class="fas fa-envelope me-1"></i>Contact
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#login">
+                            <i class="fas fa-sign-in-alt me-1"></i>Login
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#register">
+                            <i class="fas fa-user-plus me-1"></i>Register
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
     </nav>
 
     <!-- Main Content -->
-    <main style="padding-top: 80px;">
-        <!-- Messages -->
-        {% if messages %}
-            <div class="container mt-3">
-                {% for message in messages %}
-                    <div class="alert alert-modern alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                        <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-circle{% else %}info-circle{% endif %} me-2"></i>
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <main style="padding-top: 80px;" id="home">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-6" data-aos="fade-right">
+                        <div class="hero-content">
+                            <h1 class="hero-title">
+                                Modern Healthcare
+                                <span style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                                    Laboratory
+                                </span>
+                            </h1>
+                            <p class="hero-subtitle">
+                                Experience cutting-edge diagnostic services with AI-powered analysis, 
+                                real-time results, and personalized patient care at MAES Laboratory.
+                            </p>
+                            <div class="d-flex gap-3 flex-wrap">
+                                <button class="btn btn-gradient-primary btn-lg">
+                                    <i class="fas fa-user-plus me-2"></i>Get Started
+                                </button>
+                                <button class="btn btn-gradient-secondary btn-lg">
+                                    <i class="fas fa-calendar-plus me-2"></i>Book Appointment
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                {% endfor %}
+                    <div class="col-lg-6" data-aos="fade-left">
+                        <div class="text-center">
+                            <img src="/placeholder.svg?height=500&width=600&text=MAES+Laboratory+Building" alt="MAES Laboratory Building" class="img-fluid rounded-4 shadow-lg" style="max-height: 500px; object-fit: cover;">
+                        </div>
+                    </div>
+                </div>
             </div>
-        {% endif %}
+        </section>
 
-        {% block content %}{% endblock %}
+        <!-- Statistics Section -->
+        <section class="py-5" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px);">
+            <div class="container">
+                <div class="row g-4">
+                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                        <div class="stats-card">
+                            <div class="stats-number" id="patientsCount">2,547</div>
+                            <div class="stats-label">Happy Patients</div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                        <div class="stats-card">
+                            <div class="stats-number" id="appointmentsCount">8,932</div>
+                            <div class="stats-label">Appointments</div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                        <div class="stats-card">
+                            <div class="stats-number">24/7</div>
+                            <div class="stats-label">Emergency Support</div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                        <div class="stats-card">
+                            <div class="stats-number">99.9%</div>
+                            <div class="stats-label">Accuracy Rate</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section class="py-5" style="background: white;" id="services">
+            <div class="container">
+                <div class="text-center mb-5" data-aos="fade-up">
+                    <h2 class="display-4 fw-bold mb-3" style="color: var(--text-primary);">Our Services</h2>
+                    <p class="lead text-muted">Comprehensive laboratory services with state-of-the-art technology</p>
+                </div>
+                
+                <div class="row g-4">
+                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                        <div class="service-card p-4">
+                            <div class="service-icon">
+                                <i class="fas fa-vial"></i>
+                            </div>
+                            <h5 class="fw-bold mb-3">Blood Tests</h5>
+                            <p class="text-muted mb-3">Complete blood count, lipid profile, and comprehensive blood analysis with AI-powered insights.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="h5 mb-0 text-primary">₱500</span>
+                                <small class="text-muted">30 mins</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                        <div class="service-card p-4">
+                            <div class="service-icon">
+                                <i class="fas fa-x-ray"></i>
+                            </div>
+                            <h5 class="fw-bold mb-3">X-Ray Imaging</h5>
+                            <p class="text-muted mb-3">Digital X-ray services for chest, bone, and joint examinations with instant results.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="h5 mb-0 text-primary">₱800</span>
+                                <small class="text-muted">15 mins</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                        <div class="service-card p-4">
+                            <div class="service-icon">
+                                <i class="fas fa-heartbeat"></i>
+                            </div>
+                            <h5 class="fw-bold mb-3">ECG Testing</h5>
+                            <p class="text-muted mb-3">Electrocardiogram testing for heart health monitoring and cardiac diagnosis.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="h5 mb-0 text-primary">₱600</span>
+                                <small class="text-muted">20 mins</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                        <div class="service-card p-4">
+                            <div class="service-icon">
+                                <i class="fas fa-microscope"></i>
+                            </div>
+                            <h5 class="fw-bold mb-3">Microscopy</h5>
+                            <p class="text-muted mb-3">Advanced microscopic analysis for accurate diagnostic results and pathology.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="h5 mb-0 text-primary">₱400</span>
+                                <small class="text-muted">45 mins</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="500">
+                        <div class="service-card p-4">
+                            <div class="service-icon">
+                                <i class="fas fa-stethoscope"></i>
+                            </div>
+                            <h5 class="fw-bold mb-3">Ultrasound</h5>
+                            <p class="text-muted mb-3">High-resolution ultrasound imaging for abdominal, pelvic, and cardiac examinations.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="h5 mb-0 text-primary">₱1,200</span>
+                                <small class="text-muted">30 mins</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="600">
+                        <div class="service-card p-4">
+                            <div class="service-icon">
+                                <i class="fas fa-pills"></i>
+                            </div>
+                            <h5 class="fw-bold mb-3">Drug Testing</h5>
+                            <p class="text-muted mb-3">Comprehensive drug screening and toxicology testing for employment and medical purposes.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="h5 mb-0 text-primary">₱350</span>
+                                <small class="text-muted">15 mins</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="700">
+                        <div class="service-card p-4">
+                            <div class="service-icon">
+                                <i class="fas fa-syringe"></i>
+                            </div>
+                            <h5 class="fw-bold mb-3">Vaccination</h5>
+                            <p class="text-muted mb-3">Complete vaccination services including COVID-19, flu, and travel vaccines.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="h5 mb-0 text-primary">₱250</span>
+                                <small class="text-muted">10 mins</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="800">
+                        <div class="service-card p-4">
+                            <div class="service-icon">
+                                <i class="fas fa-dna"></i>
+                            </div>
+                            <h5 class="fw-bold mb-3">DNA Testing</h5>
+                            <p class="text-muted mb-3">Genetic testing and DNA analysis for paternity, ancestry, and health predisposition.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="h5 mb-0 text-primary">₱2,500</span>
+                                <small class="text-muted">60 mins</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="py-5" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);" id="about">
+            <div class="container">
+                <div class="text-center mb-5" data-aos="fade-up">
+                    <h2 class="display-4 fw-bold mb-3 text-white">Why Choose MAES?</h2>
+                    <p class="lead text-white opacity-75">Advanced technology meets compassionate care</p>
+                </div>
+                
+                <div class="row g-4">
+                    <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+                        <div class="card-glass p-4 text-center h-100">
+                            <div class="mb-4">
+                                <i class="fas fa-robot fa-3x text-white"></i>
+                            </div>
+                            <h4 class="fw-bold text-white mb-3">AI-Powered Analysis</h4>
+                            <p class="text-white opacity-75">Advanced artificial intelligence assists in accurate diagnosis and faster results processing with 99.9% accuracy rate.</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
+                        <div class="card-glass p-4 text-center h-100">
+                            <div class="mb-4">
+                                <i class="fas fa-clock fa-3x text-white"></i>
+                            </div>
+                            <h4 class="fw-bold text-white mb-3">Real-Time Results</h4>
+                            <p class="text-white opacity-75">Get your test results instantly through our modern digital platform and mobile notifications system.</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">
+                        <div class="card-glass p-4 text-center h-100">
+                            <div class="mb-4">
+                                <i class="fas fa-shield-alt fa-3x text-white"></i>
+                            </div>
+                            <h4 class="fw-bold text-white mb-3">Secure & Private</h4>
+                            <p class="text-white opacity-75">Your health data is protected with enterprise-grade security and privacy measures following international standards.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);" id="contact">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-8" data-aos="fade-right">
+                        <h2 class="display-5 fw-bold text-white mb-3">Ready to Experience Modern Healthcare?</h2>
+                        <p class="lead text-white opacity-75 mb-0">Join thousands of satisfied patients who trust MAES Laboratory for their healthcare needs.</p>
+                    </div>
+                    <div class="col-lg-4 text-lg-end" data-aos="fade-left">
+                        <button class="btn btn-light btn-lg px-5 py-3">
+                            <i class="fas fa-rocket me-2"></i>Get Started Today
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
 
     <!-- Footer -->
@@ -576,10 +757,10 @@
                 <div class="col-lg-2 col-md-6 mb-4">
                     <h5>Quick Links</h5>
                     <ul class="list-unstyled">
-                        <li class="mb-2"><a href="{% url 'home' %}">Home</a></li>
-                        <li class="mb-2"><a href="#">About Us</a></li>
-                        <li class="mb-2"><a href="#">Services</a></li>
-                        <li class="mb-2"><a href="#">Contact</a></li>
+                        <li class="mb-2"><a href="#home">Home</a></li>
+                        <li class="mb-2"><a href="#about">About Us</a></li>
+                        <li class="mb-2"><a href="#services">Services</a></li>
+                        <li class="mb-2"><a href="#contact">Contact</a></li>
                         <li class="mb-2"><a href="#">FAQ</a></li>
                     </ul>
                 </div>
@@ -703,41 +884,41 @@
                 // Scroll to bottom
                 messages.scrollTop = messages.scrollHeight;
                 
-                // Send to API
-                fetch('/api/chatbot/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ message: message })
-                })
-                .then(response => response.json())
-                .then(data => {
+                // Simulate bot response
+                setTimeout(() => {
                     // Remove typing indicator
                     messages.removeChild(typingIndicator);
+                    
+                    // Simple responses
+                    const responses = {
+                        'hello': 'Hello! How can I help you today?',
+                        'hi': 'Hi there! What can I do for you?',
+                        'appointment': 'To book an appointment, please visit our booking page or call (043) 286-2531.',
+                        'hours': 'We are open Monday to Saturday, 8:00 AM to 6:00 PM.',
+                        'location': 'We are located at Batangas City. You can find our exact address on our contact page.',
+                        'services': 'We offer various laboratory services including blood tests, X-rays, ultrasound, and more.',
+                        'payment': 'We accept cash, GCash, PayMaya, bank transfers, and major credit cards.',
+                        'results': 'Test results are usually available within 24-48 hours. You will be notified when ready.',
+                    };
+                    
+                    let response = 'I\'m sorry, I didn\'t understand that. Please contact our staff for more information.';
+                    
+                    for (const [keyword, reply] of Object.entries(responses)) {
+                        if (message.toLowerCase().includes(keyword)) {
+                            response = reply;
+                            break;
+                        }
+                    }
                     
                     // Add bot response
                     const botMessage = document.createElement('div');
                     botMessage.className = 'message bot';
-                    botMessage.innerHTML = `<i class="fas fa-robot me-2"></i>${data.response}`;
+                    botMessage.innerHTML = `<i class="fas fa-robot me-2"></i>${response}`;
                     messages.appendChild(botMessage);
                     
                     // Scroll to bottom
                     messages.scrollTop = messages.scrollHeight;
-                })
-                .catch(error => {
-                    // Remove typing indicator
-                    messages.removeChild(typingIndicator);
-                    
-                    // Add error message
-                    const errorMessage = document.createElement('div');
-                    errorMessage.className = 'message bot';
-                    errorMessage.innerHTML = '<i class="fas fa-robot me-2"></i>Sorry, I encountered an error. Please try again.';
-                    messages.appendChild(errorMessage);
-                    
-                    // Scroll to bottom
-                    messages.scrollTop = messages.scrollHeight;
-                });
+                }, 1500);
             }
         }
 
@@ -762,16 +943,48 @@
             });
         });
 
-        // Auto-hide alerts after 5 seconds
-        setTimeout(function() {
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(alert => {
-                const bsAlert = new bootstrap.Alert(alert);
-                bsAlert.close();
+        // Animate counters
+        function animateCounter(element, target) {
+            let current = 0;
+            const increment = target / 100;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                element.textContent = Math.floor(current);
+            }, 20);
+        }
+
+        // Initialize counter animations when in viewport
+        const observerOptions = {
+            threshold: 0.5,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const element = entry.target;
+                    const target = parseInt(element.textContent);
+                    if (!isNaN(target)) {
+                        animateCounter(element, target);
+                    }
+                    observer.unobserve(element);
+                }
             });
-        }, 5000);
+        }, observerOptions);
+
+        // Observe counter elements
+        document.addEventListener('DOMContentLoaded', () => {
+            const counters = document.querySelectorAll('.stats-number');
+            counters.forEach(counter => {
+                if (!counter.textContent.includes('%') && !counter.textContent.includes('/')) {
+                    observer.observe(counter);
+                }
+            });
+        });
     </script>
-    
-    {% block extra_js %}{% endblock %}
 </body>
 </html>

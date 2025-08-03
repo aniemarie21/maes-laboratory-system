@@ -1,92 +1,80 @@
 {% extends 'base.html' %}
-{% load static %}
 
-{% block title %}MAES Laboratory - Maria Estrella General Hospital{% endblock %}
+{% block title %}MAES Laboratory - Modern Healthcare Solutions{% endblock %}
 
 {% block content %}
 <!-- Hero Section -->
 <section class="hero-section">
     <div class="container">
         <div class="row align-items-center">
-            <div class="col-lg-6">
-                <h1 class="display-4 fw-bold mb-4">
-                    Welcome to MAES Laboratory
-                </h1>
-                <p class="lead mb-4">
-                    Maria Estrella General Hospital - Your trusted partner in healthcare diagnostics. 
-                    We provide accurate, reliable, and timely laboratory services with modern technology 
-                    and professional care.
-                </p>
-                <div class="d-flex flex-wrap gap-3">
-                    <a href="{% url 'book_appointment' %}" class="btn btn-light btn-lg">
-                        <i class="fas fa-calendar-plus me-2"></i>Book Appointment
-                    </a>
-                    <a href="{% url 'services' %}" class="btn btn-outline-light btn-lg">
-                        <i class="fas fa-flask me-2"></i>Our Services
-                    </a>
+            <div class="col-lg-6" data-aos="fade-right">
+                <div class="hero-content">
+                    <h1 class="hero-title">
+                        Modern Healthcare
+                        <span style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                            Laboratory
+                        </span>
+                    </h1>
+                    <p class="hero-subtitle">
+                        Experience cutting-edge diagnostic services with AI-powered analysis, 
+                        real-time results, and personalized patient care at MAES Laboratory.
+                    </p>
+                    <div class="d-flex gap-3 flex-wrap">
+                        {% if not user.is_authenticated %}
+                            <a href="{% url 'register' %}" class="btn btn-gradient-primary btn-lg">
+                                <i class="fas fa-user-plus me-2"></i>Get Started
+                            </a>
+                            <a href="{% url 'login' %}" class="btn btn-gradient-secondary btn-lg">
+                                <i class="fas fa-sign-in-alt me-2"></i>Login
+                            </a>
+                        {% else %}
+                            <a href="{% url 'book_appointment' %}" class="btn btn-gradient-primary btn-lg">
+                                <i class="fas fa-calendar-plus me-2"></i>Book Appointment
+                            </a>
+                            {% if user.userprofile.role == 'patient' %}
+                                <a href="{% url 'patient_dashboard' %}" class="btn btn-gradient-secondary btn-lg">
+                                    <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                                </a>
+                            {% endif %}
+                        {% endif %}
+                    </div>
                 </div>
             </div>
-            <div class="col-lg-6 text-center">
-                <div class="hero-image">
-                    <i class="fas fa-hospital-alt" style="font-size: 200px; opacity: 0.3;"></i>
+            <div class="col-lg-6" data-aos="fade-left">
+                <div class="text-center">
+                    <img src="/public/images/hospital-building.jpg" alt="MAES Laboratory Building" class="img-fluid rounded-4 shadow-lg" style="max-height: 500px; object-fit: cover;">
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Features Section -->
-<section class="py-5 bg-primary text-white">
+<!-- Statistics Section -->
+<section class="py-5" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px);">
     <div class="container">
-        <div class="row text-center mb-5">
-            <div class="col-lg-8 mx-auto">
-                <h2 class="display-5 fw-bold mb-3">Why Choose MAES Hospital?</h2>
-                <p class="lead text-muted">
-                    We combine cutting-edge technology with compassionate care to deliver exceptional healthcare services.
-                </p>
-            </div>
-        </div>
-        
         <div class="row g-4">
-            <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body text-center p-4">
-                        <div class="feature-icon bg-primary text-white rounded-circle mx-auto mb-3">
-                            <i class="fas fa-robot fa-2x"></i>
-                        </div>
-                        <h5 class="card-title">AI-Powered Analysis</h5>
-                        <p class="card-text text-muted">
-                            Advanced artificial intelligence provides accurate test result analysis and health insights.
-                        </p>
-                    </div>
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="stats-card">
+                    <div class="stats-number" id="patientsCount">{{ total_patients }}</div>
+                    <div class="stats-label">Happy Patients</div>
                 </div>
             </div>
-            
-            <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body text-center p-4">
-                        <div class="feature-icon bg-success text-white rounded-circle mx-auto mb-3">
-                            <i class="fas fa-clock fa-2x"></i>
-                        </div>
-                        <h5 class="card-title">Fast Results</h5>
-                        <p class="card-text text-muted">
-                            Get your test results quickly with our efficient laboratory processes and digital delivery.
-                        </p>
-                    </div>
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="stats-card">
+                    <div class="stats-number" id="appointmentsCount">{{ total_appointments }}</div>
+                    <div class="stats-label">Appointments</div>
                 </div>
             </div>
-            
-            <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body text-center p-4">
-                        <div class="feature-icon bg-info text-white rounded-circle mx-auto mb-3">
-                            <i class="fas fa-shield-alt fa-2x"></i>
-                        </div>
-                        <h5 class="card-title">Secure & Private</h5>
-                        <p class="card-text text-muted">
-                            Your health data is protected with enterprise-grade security and privacy measures.
-                        </p>
-                    </div>
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                <div class="stats-card">
+                    <div class="stats-number">24/7</div>
+                    <div class="stats-label">Emergency Support</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                <div class="stats-card">
+                    <div class="stats-number">99.9%</div>
+                    <div class="stats-label">Accuracy Rate</div>
                 </div>
             </div>
         </div>
@@ -94,174 +82,199 @@
 </section>
 
 <!-- Services Section -->
-<section class="py-5">
+<section class="py-5" style="background: white;">
     <div class="container">
-        <div class="row text-center mb-5">
-            <div class="col-lg-8 mx-auto">
-                <h2 class="display-5 fw-bold mb-3">Our Laboratory Services</h2>
-                <p class="lead text-muted">
-                    Comprehensive diagnostic services with {{ total_services }} different tests available.
-                </p>
-            </div>
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="display-4 fw-bold mb-3" style="color: var(--text-primary);">Our Services</h2>
+            <p class="lead text-muted">Comprehensive laboratory services with state-of-the-art technology</p>
         </div>
         
         <div class="row g-4">
-            {% for service in featured_services %}
-            <div class="col-lg-4 col-md-6">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="service-icon bg-primary text-white rounded me-3">
-                                <i class="fas fa-flask"></i>
-                            </div>
-                            <h5 class="card-title mb-0">{{ service.name }}</h5>
+            {% for service in services %}
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:100 }}">
+                    <div class="service-card p-4">
+                        <div class="service-icon">
+                            <i class="fas fa-{% cycle 'vial' 'x-ray' 'heartbeat' 'microscope' 'stethoscope' 'pills' 'syringe' 'dna' %}"></i>
                         </div>
-                        <p class="card-text text-muted">{{ service.description|truncatewords:15 }}</p>
+                        <h5 class="fw-bold mb-3">{{ service.name }}</h5>
+                        <p class="text-muted mb-3">{{ service.description|truncatewords:15 }}</p>
                         <div class="d-flex justify-content-between align-items-center">
-                            <span class="text-primary fw-bold">₱{{ service.price }}</span>
-                            <small class="text-muted">{{ service.duration_hours }}h result</small>
+                            <span class="h5 mb-0 text-primary">₱{{ service.price }}</span>
+                            <small class="text-muted">{{ service.duration_minutes }} mins</small>
                         </div>
                     </div>
                 </div>
-            </div>
+            {% empty %}
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="service-card p-4">
+                        <div class="service-icon">
+                            <i class="fas fa-vial"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3">Blood Tests</h5>
+                        <p class="text-muted mb-3">Complete blood count, lipid profile, and more comprehensive blood analysis.</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="h5 mb-0 text-primary">₱500</span>
+                            <small class="text-muted">30 mins</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="service-card p-4">
+                        <div class="service-icon">
+                            <i class="fas fa-x-ray"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3">X-Ray Imaging</h5>
+                        <p class="text-muted mb-3">Digital X-ray services for chest, bone, and joint examinations.</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="h5 mb-0 text-primary">₱800</span>
+                            <small class="text-muted">15 mins</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                    <div class="service-card p-4">
+                        <div class="service-icon">
+                            <i class="fas fa-heartbeat"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3">ECG Testing</h5>
+                        <p class="text-muted mb-3">Electrocardiogram testing for heart health monitoring and diagnosis.</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="h5 mb-0 text-primary">₱600</span>
+                            <small class="text-muted">20 mins</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                    <div class="service-card p-4">
+                        <div class="service-icon">
+                            <i class="fas fa-microscope"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3">Microscopy</h5>
+                        <p class="text-muted mb-3">Advanced microscopic analysis for accurate diagnostic results.</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="h5 mb-0 text-primary">₱400</span>
+                            <small class="text-muted">45 mins</small>
+                        </div>
+                    </div>
+                </div>
             {% endfor %}
         </div>
-        
-        <div class="text-center mt-4">
-            <a href="{% url 'services' %}" class="btn btn-primary btn-lg">
-                <i class="fas fa-list me-2"></i>View All Services
-            </a>
-        </div>
     </div>
 </section>
 
-<!-- Statistics Section -->
-<section class="py-5" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);">
+<!-- Features Section -->
+<section class="py-5" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
     <div class="container">
-        <div class="row">
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="stats-card">
-                    <div class="stats-number">25+</div>
-                    <div class="stats-label">Years of Service</div>
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="display-4 fw-bold mb-3 text-white">Why Choose MAES?</h2>
+            <p class="lead text-white opacity-75">Advanced technology meets compassionate care</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="card-glass p-4 text-center h-100">
+                    <div class="mb-4">
+                        <i class="fas fa-robot fa-3x text-white"></i>
+                    </div>
+                    <h4 class="fw-bold text-white mb-3">AI-Powered Analysis</h4>
+                    <p class="text-white opacity-75">Advanced artificial intelligence assists in accurate diagnosis and faster results processing.</p>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="stats-card">
-                    <div class="stats-number">{{ total_services }}+</div>
-                    <div class="stats-label">Laboratory Tests</div>
+            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="card-glass p-4 text-center h-100">
+                    <div class="mb-4">
+                        <i class="fas fa-clock fa-3x text-white"></i>
+                    </div>
+                    <h4 class="fw-bold text-white mb-3">Real-Time Results</h4>
+                    <p class="text-white opacity-75">Get your test results instantly through our modern digital platform and mobile notifications.</p>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="stats-card">
-                    <div class="stats-number">10K+</div>
-                    <div class="stats-label">Patients Served</div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="stats-card">
-                    <div class="stats-number">24/7</div>
-                    <div class="stats-label">Emergency Service</div>
+            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="card-glass p-4 text-center h-100">
+                    <div class="mb-4">
+                        <i class="fas fa-shield-alt fa-3x text-white"></i>
+                    </div>
+                    <h4 class="fw-bold text-white mb-3">Secure & Private</h4>
+                    <p class="text-white opacity-75">Your health data is protected with enterprise-grade security and privacy measures.</p>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Operating Hours Section -->
-<section class="py-5">
+<!-- Recent Appointments Section -->
+{% if recent_appointments %}
+<section class="py-5" style="background: white;">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="display-4 fw-bold mb-3" style="color: var(--text-primary);">Recent Activity</h2>
+            <p class="lead text-muted">Latest appointments and patient care updates</p>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card-modern p-4" data-aos="fade-up">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Patient</th>
+                                    <th>Service</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for appointment in recent_appointments %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-sm bg-primary rounded-circle d-flex align-items-center justify-content-center me-3">
+                                                <i class="fas fa-user text-white"></i>
+                                            </div>
+                                            <div>
+                                                <div class="fw-semibold">{{ appointment.patient.get_full_name }}</div>
+                                                <small class="text-muted">{{ appointment.patient.email }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ appointment.service.name }}</td>
+                                    <td>{{ appointment.appointment_date|date:"M d, Y" }}</td>
+                                    <td>
+                                        <span class="badge bg-{% if appointment.status == 'completed' %}success{% elif appointment.status == 'pending' %}warning{% elif appointment.status == 'confirmed' %}info{% else %}secondary{% endif %}">
+                                            {{ appointment.get_status_display }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- CTA Section -->
+<section class="py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
     <div class="container">
         <div class="row align-items-center">
-            <div class="col-lg-6 mb-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h3 class="card-title mb-4">
-                            <i class="fas fa-clock me-2 text-primary"></i>
-                            Operating Hours
-                        </h3>
-                        
-                        <div class="row">
-                            <div class="col-sm-6 mb-3">
-                                <h6 class="fw-bold">Laboratory Services</h6>
-                                <ul class="list-unstyled">
-                                    <li><strong>Weekdays:</strong> {{ operating_hours.weekdays }}</li>
-                                    <li><strong>Saturday:</strong> {{ operating_hours.saturday }}</li>
-                                    <li><strong>Sunday:</strong> {{ operating_hours.sunday }}</li>
-                                </ul>
-                            </div>
-                            <div class="col-sm-6 mb-3">
-                                <h6 class="fw-bold">Emergency Services</h6>
-                                <ul class="list-unstyled">
-                                    <li><strong>Emergency:</strong> {{ operating_hours.emergency }}</li>
-                                    <li><strong>Urgent Tests:</strong> Available</li>
-                                    <li><strong>On-call Staff:</strong> 24/7</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="col-lg-8" data-aos="fade-right">
+                <h2 class="display-5 fw-bold text-white mb-3">Ready to Experience Modern Healthcare?</h2>
+                <p class="lead text-white opacity-75 mb-0">Join thousands of satisfied patients who trust MAES Laboratory for their healthcare needs.</p>
             </div>
-            
-            <div class="col-lg-6 mb-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h3 class="card-title mb-4">
-                            <i class="fas fa-phone me-2 text-primary"></i>
-                            Contact Information
-                        </h3>
-                        
-                        <div class="contact-info">
-                            <div class="mb-3">
-                                <i class="fas fa-map-marker-alt me-2 text-primary"></i>
-                                <strong>Address:</strong><br>
-                                <span class="ms-4">{{ hospital_address }}</span>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <i class="fas fa-phone me-2 text-primary"></i>
-                                <strong>Phone:</strong>
-                                <a href="tel:{{ hospital_phone }}" class="text-decoration-none ms-2">{{ hospital_phone }}</a>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <i class="fas fa-envelope me-2 text-primary"></i>
-                                <strong>Email:</strong>
-                                <a href="mailto:{{ hospital_email }}" class="text-decoration-none ms-2">{{ hospital_email }}</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Call to Action Section -->
-<section class="py-5" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.9), rgba(59, 130, 246, 0.9));">
-    <div class="container text-center">
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <h2 class="display-5 fw-bold text-white mb-3">Ready to Get Started?</h2>
-                <p class="lead text-white mb-4">
-                    Book your appointment today and experience professional healthcare diagnostics 
-                    with MAES Laboratory. Your health is our priority.
-                </p>
-                <div class="d-flex flex-wrap justify-content-center gap-3">
-                    {% if user.is_authenticated %}
-                        <a href="{% url 'book_appointment' %}" class="btn btn-light btn-lg">
-                            <i class="fas fa-calendar-plus me-2"></i>Book Appointment Now
-                        </a>
-                        <a href="{% url 'dashboard' %}" class="btn btn-outline-light btn-lg">
-                            <i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard
-                        </a>
-                    {% else %}
-                        <a href="{% url 'register' %}" class="btn btn-light btn-lg">
-                            <i class="fas fa-user-plus me-2"></i>Register Now
-                        </a>
-                        <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg">
-                            <i class="fas fa-sign-in-alt me-2"></i>Login
-                        </a>
-                    {% endif %}
-                </div>
+            <div class="col-lg-4 text-lg-end" data-aos="fade-left">
+                {% if not user.is_authenticated %}
+                    <a href="{% url 'register' %}" class="btn btn-light btn-lg px-5 py-3">
+                        <i class="fas fa-rocket me-2"></i>Get Started Today
+                    </a>
+                {% else %}
+                    <a href="{% url 'book_appointment' %}" class="btn btn-light btn-lg px-5 py-3">
+                        <i class="fas fa-calendar-plus me-2"></i>Book Now
+                    </a>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -270,58 +283,47 @@
 
 {% block extra_js %}
 <script>
-// Auto-start chat for new visitors
-document.addEventListener('DOMContentLoaded', function() {
-    // Check if user has visited before
-    if (!localStorage.getItem('maes_visited')) {
-        setTimeout(function() {
-            // Show welcome message in chat
-            if (typeof toggleChat === 'function') {
-                toggleChat();
-                addMessage('bot', 'Welcome to MAES Laboratory! 👋 How can I help you today?');
+    // Animate counters
+    function animateCounter(element, target) {
+        let current = 0;
+        const increment = target / 100;
+        const timer = setInterval(() => {
+            current += increment;
+            if (current >= target) {
+                current = target;
+                clearInterval(timer);
             }
-            localStorage.setItem('maes_visited', 'true');
-        }, 3000);
+            element.textContent = Math.floor(current);
+        }, 20);
     }
-});
+
+    // Initialize counter animations when in viewport
+    const observerOptions = {
+        threshold: 0.5,
+        rootMargin: '0px 0px -100px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const element = entry.target;
+                const target = parseInt(element.textContent);
+                if (!isNaN(target)) {
+                    animateCounter(element, target);
+                }
+                observer.unobserve(element);
+            }
+        });
+    }, observerOptions);
+
+    // Observe counter elements
+    document.addEventListener('DOMContentLoaded', () => {
+        const counters = document.querySelectorAll('.stats-number');
+        counters.forEach(counter => {
+            if (!counter.textContent.includes('%') && !counter.textContent.includes('/')) {
+                observer.observe(counter);
+            }
+        });
+    });
 </script>
-{% endblock %}
-
-{% block extra_css %}
-<style>
-.hero-section {
-    background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
-}
-
-.feature-icon {
-    width: 80px;
-    height: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.service-icon {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-}
-
-.stats-card {
-    padding: 2rem 0;
-    text-align: center;
-}
-
-.card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
-}
-</style>
 {% endblock %}

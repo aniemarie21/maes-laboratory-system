@@ -1,100 +1,47 @@
-"""
-Serializers for MAES Hospital Management System API
-"""
-
 from rest_framework import serializers
-from .models import (
-    UserProfile, LabService, Appointment, TestResult, 
-    PaymentTransaction, ChatSession
-)
-from django.contrib.auth.models import User
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name']
+from .models import Appointment, Service, Payment, Notification, UserProfile
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
+    full_name = serializers.CharField(source='user.get_full_name', read_only=True)
     
     class Meta:
         model = UserProfile
-        fields = [
-            'user', 'user_type', 'phone', 'date_of_birth', 
-            'address', 'notification_preference', 'created_at'
-        ]
+        fields = ['full_name', 'role', 'phone_number']
 
-class LabServiceSerializer(serializers.ModelSerializer):
+class ServiceSerializer(serializers.ModelSerializer):
+    department_name = serializers.CharField(source='department.name', read_only=True)
+    
     class Meta:
-        model = LabService
-        fields = [
-            'id', 'name', 'code', 'description', 'category', 
-            'price', 'duration_hours', 'preparation_instructions',
-            'requires_fasting', 'priority_service', 'ai_analysis_available'
-        ]
+        model = Service
+        fields = ['id', 'name', 'department_name', 'description', 'price', 'duration_minutes', 'requires_fasting']
 
 class AppointmentSerializer(serializers.ModelSerializer):
-    patient = UserSerializer(read_only=True)
-    services = LabServiceSerializer(many=True, read_only=True)
-    service_ids = serializers.ListField(
-        child=serializers.IntegerField(),
-        write_only=True
-    )
+    patient_name = serializers.CharField(source='patient.get_full_name', read_only=True)
+    service_name = serializers.CharField(source='service.name', read_only=True)
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
     
     class Meta:
         model = Appointment
         fields = [
-            'appointment_id', 'patient', 'services', 'service_ids',
-            'appointment_date', 'appointment_time', 'status',
-            'total_amount', 'payment_method', 'payment_status',
-            'notes', 'created_at', 'updated_at'
-        ]
-        read_only_fields = ['appointment_id', 'total_amount', 'created_at', 'updated_at']
-    
-    def create(self, validated_data):
-        service_ids = validated_data.pop('service_ids')
-        appointment = Appointment.objects.create(**validated_data)
-        
-        services = LabService.objects.filter(id__in=service_ids)
-        appointment.services.set(services)
-        appointment.calculate_total()
-        appointment.save()
-        
-        return appointment
-
-class TestResultSerializer(serializers.ModelSerializer):
-    patient = UserSerializer(read_only=True)
-    service = LabServiceSerializer(read_only=True)
-    appointment = AppointmentSerializer(read_only=True)
-    
-    class Meta:
-        model = TestResult
-        fields = [
-            'result_id', 'patient', 'service', 'appointment',
-            'status', 'result_data', 'ai_analysis',
-            'technician_notes', 'doctor_review', 'recommendations',
-            'patient_notified', 'created_at', 'updated_at'
+            'appointment_id', 'patient_name', 'service_name', 'appointment_date',
+            'status', 'status_display', 'payment_status', 'final_amount', 'notes'
         ]
 
-class PaymentTransactionSerializer(serializers.ModelSerializer):
-    patient = UserSerializer(read_only=True)
-    appointment = AppointmentSerializer(read_only=True)
+class PaymentSerializer(serializers.ModelSerializer):
+    appointment_id = serializers.CharField(source='appointment.appointment_id', read_only=True)
+    patient_name = serializers.CharField(source='appointment.patient.get_full_name', read_only=True)
     
     class Meta:
-        model = PaymentTransaction
+        model = Payment
         fields = [
-            'transaction_id', 'patient', 'appointment',
-            'amount', 'payment_method', 'payment_reference',
-            'status', 'payment_date', 'notes', 'created_at'
+            'id', 'appointment_id', 'patient_name', 'amount', 'payment_method',
+            'payment_status', 'reference_number', 'payment_date', 'is_verified'
         ]
 
-class ChatSessionSerializer(serializers.ModelSerializer):
-    patient = UserSerializer(read_only=True)
-    
+class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ChatSession
+        model = Notification
         fields = [
-            'session_id', 'patient', 'session_type',
-            'is_active', 'messages', 'session_rating',
-            'feedback', 'created_at', 'updated_at'
+            'id', 'notification_type', 'title', 'message', 'is_read',
+            'created_at', 'read_at'
         ]

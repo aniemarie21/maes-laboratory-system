@@ -1,1 +1,0 @@
-# MAES Hospital Management System

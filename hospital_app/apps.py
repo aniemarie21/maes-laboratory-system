@@ -4,4 +4,7 @@ from django.apps import AppConfig
 class HospitalAppConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'hospital_app'
-    verbose_name = 'MAES Hospital Management'
+    verbose_name = 'MAES Laboratory Management'
+    
+    def ready(self):
+        import hospital_app.signals

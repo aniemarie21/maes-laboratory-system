@@ -3,117 +3,120 @@
 {% block title %}Login - MAES Laboratory{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-5 col-md-7">
-            <div class="card">
-                <div class="card-body p-5">
+<section class="py-5" style="min-height: 100vh; display: flex; align-items: center;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-5 col-md-7">
+                <div class="card-modern p-5" data-aos="fade-up">
                     <div class="text-center mb-4">
-                        <i class="fas fa-hospital-alt fa-3x text-primary mb-3"></i>
-                        <h2 class="fw-bold">Welcome Back</h2>
+                        <div class="mb-4">
+                            <i class="fas fa-microscope fa-3x" style="background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
+                        </div>
+                        <h2 class="fw-bold mb-2">Welcome Back</h2>
                         <p class="text-muted">Sign in to your MAES Laboratory account</p>
                     </div>
-                    
-                    <!-- User Type Toggle -->
-                    <div class="btn-group w-100 mb-4" role="group">
-                        <input type="radio" class="btn-check" name="user_type" id="patient_type" value="patient" checked>
-                        <label class="btn btn-outline-primary" for="patient_type">
-                            <i class="fas fa-user me-2"></i>Patient
-                        </label>
-                        
-                        <input type="radio" class="btn-check" name="user_type" id="admin_type" value="admin">
-                        <label class="btn btn-outline-primary" for="admin_type">
-                            <i class="fas fa-user-shield me-2"></i>Admin
-                        </label>
-                    </div>
-                    
-                    <form method="post">
+
+                    <form method="post" class="needs-validation" novalidate>
                         {% csrf_token %}
-                        <input type="hidden" name="user_type" id="selected_user_type" value="patient">
                         
-                        <div class="mb-3">
-                            <label for="username" class="form-label">Username or Email</label>
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="fas fa-user"></i>
-                                </span>
-                                <input type="text" class="form-control" id="username" name="username" required>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
+                            <label for="username"><i class="fas fa-user me-2"></i>Username</label>
+                            <div class="invalid-feedback">
+                                Please enter your username.
                             </div>
                         </div>
-                        
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Password</label>
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="fas fa-lock"></i>
-                                </span>
-                                <input type="password" class="form-control" id="password" name="password" required>
-                                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()">
-                                    <i class="fas fa-eye" id="password-toggle-icon"></i>
-                                </button>
+
+                        <div class="form-floating mb-4">
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+                            <label for="password"><i class="fas fa-lock me-2"></i>Password</label>
+                            <div class="invalid-feedback">
+                                Please enter your password.
                             </div>
                         </div>
-                        
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="remember_me">
-                            <label class="form-check-label" for="remember_me">
-                                Remember me
-                            </label>
+
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="rememberMe">
+                                <label class="form-check-label" for="rememberMe">
+                                    Remember me
+                                </label>
+                            </div>
+                            <a href="#" class="text-decoration-none">Forgot password?</a>
                         </div>
-                        
-                        <button type="submit" class="btn btn-primary w-100 mb-3">
+
+                        <button type="submit" class="btn btn-gradient-primary w-100 py-3 mb-3">
                             <i class="fas fa-sign-in-alt me-2"></i>Sign In
                         </button>
+
+                        <div class="text-center">
+                            <p class="mb-0">Don't have an account? 
+                                <a href="{% url 'register' %}" class="text-decoration-none fw-semibold">Create one here</a>
+                            </p>
+                        </div>
                     </form>
-                    
+
+                    <hr class="my-4">
+
                     <div class="text-center">
-                        <p class="mb-2">
-                            <a href="#" class="text-decoration-none">Forgot your password?</a>
-                        </p>
-                        <p class="mb-0">
-                            Don't have an account? 
-                            <a href="{% url 'register' %}" class="text-decoration-none fw-bold">Register here</a>
-                        </p>
+                        <p class="text-muted mb-3">Or continue with</p>
+                        <div class="d-flex gap-2 justify-content-center">
+                            <button class="btn btn-outline-primary flex-fill">
+                                <i class="fab fa-google me-2"></i>Google
+                            </button>
+                            <button class="btn btn-outline-primary flex-fill">
+                                <i class="fab fa-facebook-f me-2"></i>Facebook
+                            </button>
+                        </div>
                     </div>
-                    
-                    <!-- Demo Credentials -->
-                    <div class="mt-4 p-3 bg-light rounded">
-                        <h6 class="fw-bold mb-2">Demo Credentials:</h6>
-                        <div class="row">
-                            <div class="col-6">
-                                <small class="text-muted">
-                                    <strong>Patient:</strong><br>
-                                    Username: patient<br>
-                                    Password: patient123
-                                </small>
-                            </div>
-                            <div class="col-6">
-                                <small class="text-muted">
-                                    <strong>Admin:</strong><br>
-                                    Username: admin<br>
-                                    Password: admin123
-                                </small>
-                            </div>
+                </div>
+
+                <!-- Quick Access Cards -->
+                <div class="row g-3 mt-4">
+                    <div class="col-6">
+                        <div class="card-glass p-3 text-center">
+                            <i class="fas fa-user-md fa-2x text-white mb-2"></i>
+                            <h6 class="text-white mb-1">For Doctors</h6>
+                            <small class="text-white opacity-75">Admin Access</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="card-glass p-3 text-center">
+                            <i class="fas fa-user fa-2x text-white mb-2"></i>
+                            <h6 class="text-white mb-1">For Patients</h6>
+                            <small class="text-white opacity-75">Book & Track</small>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
+{% endblock %}
 
+{% block extra_js %}
 <script>
-    // User type toggle functionality
-    document.querySelectorAll('input[name="user_type"]').forEach(radio => {
-        radio.addEventListener('change', function() {
-            document.getElementById('selected_user_type').value = this.value;
-        });
-    });
-    
-    // Password visibility toggle
+    // Form validation
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            var forms = document.getElementsByClassName('needs-validation');
+            var validation = Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+
+    // Show password toggle
     function togglePassword() {
         const passwordInput = document.getElementById('password');
-        const toggleIcon = document.getElementById('password-toggle-icon');
+        const toggleIcon = document.getElementById('toggleIcon');
         
         if (passwordInput.type === 'password') {
             passwordInput.type = 'text';

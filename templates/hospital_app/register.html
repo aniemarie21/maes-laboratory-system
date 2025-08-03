@@ -3,123 +3,160 @@
 {% block title %}Register - MAES Laboratory{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-6 col-md-8">
-            <div class="card">
-                <div class="card-body p-5">
+<section class="py-5" style="min-height: 100vh; display: flex; align-items: center;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6 col-md-8">
+                <div class="card-modern p-5" data-aos="fade-up">
                     <div class="text-center mb-4">
-                        <i class="fas fa-user-plus fa-3x text-primary mb-3"></i>
-                        <h2 class="fw-bold">Create Account</h2>
-                        <p class="text-muted">Join MAES Laboratory for better healthcare</p>
+                        <div class="mb-4">
+                            <i class="fas fa-user-plus fa-3x" style="background: var(--secondary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
+                        </div>
+                        <h2 class="fw-bold mb-2">Create Account</h2>
+                        <p class="text-muted">Join MAES Laboratory for modern healthcare</p>
                     </div>
-                    
-                    <form method="post">
+
+                    <form method="post" class="needs-validation" novalidate>
                         {% csrf_token %}
                         
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="first_name" class="form-label">First Name</label>
-                                <input type="text" class="form-control" id="first_name" name="first_name" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="last_name" class="form-label">Last Name</label>
-                                <input type="text" class="form-control" id="last_name" name="last_name" required>
-                            </div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email Address</label>
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="fas fa-envelope"></i>
-                                </span>
-                                <input type="email" class="form-control" id="email" name="email" required>
-                            </div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="username" class="form-label">Username</label>
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="fas fa-user"></i>
-                                </span>
-                                <input type="text" class="form-control" id="username" name="username" required>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="password" class="form-label">Password</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">
-                                        <i class="fas fa-lock"></i>
-                                    </span>
-                                    <input type="password" class="form-control" id="password" name="password" required>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="first_name" name="first_name" placeholder="First Name" required>
+                                    <label for="first_name"><i class="fas fa-user me-2"></i>First Name</label>
+                                    <div class="invalid-feedback">
+                                        Please enter your first name.
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="confirm_password" class="form-label">Confirm Password</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">
-                                        <i class="fas fa-lock"></i>
-                                    </span>
-                                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Last Name" required>
+                                    <label for="last_name"><i class="fas fa-user me-2"></i>Last Name</label>
+                                    <div class="invalid-feedback">
+                                        Please enter your last name.
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        
-                        <div class="mb-3">
-                            <label for="phone" class="form-label">Phone Number</label>
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="fas fa-phone"></i>
-                                </span>
-                                <input type="tel" class="form-control" id="phone" name="phone" placeholder="+63 912 345 6789">
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
+                            <label for="username"><i class="fas fa-at me-2"></i>Username</label>
+                            <div class="invalid-feedback">
+                                Please choose a username.
                             </div>
                         </div>
-                        
-                        <div class="mb-3">
-                            <label for="date_of_birth" class="form-label">Date of Birth</label>
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="fas fa-calendar"></i>
-                                </span>
-                                <input type="date" class="form-control" id="date_of_birth" name="date_of_birth">
+
+                        <div class="form-floating mb-3">
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
+                            <label for="email"><i class="fas fa-envelope me-2"></i>Email Address</label>
+                            <div class="invalid-feedback">
+                                Please enter a valid email address.
                             </div>
                         </div>
-                        
-                        <div class="mb-3">
-                            <label for="address" class="form-label">Address</label>
-                            <textarea class="form-control" id="address" name="address" rows="3" placeholder="Complete address"></textarea>
+
+                        <div class="form-floating mb-3">
+                            <input type="tel" class="form-control" id="phone_number" name="phone_number" placeholder="Phone Number" required>
+                            <label for="phone_number"><i class="fas fa-phone me-2"></i>Phone Number</label>
+                            <div class="invalid-feedback">
+                                Please enter your phone number.
+                            </div>
                         </div>
-                        
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="terms_agreement" required>
-                            <label class="form-check-label" for="terms_agreement">
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="password" class="form-control" id="password" name="password" placeholder="Password" required minlength="8">
+                                    <label for="password"><i class="fas fa-lock me-2"></i>Password</label>
+                                    <div class="invalid-feedback">
+                                        Password must be at least 8 characters long.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Confirm Password" required>
+                                    <label for="confirm_password"><i class="fas fa-lock me-2"></i>Confirm Password</label>
+                                    <div class="invalid-feedback">
+                                        Passwords do not match.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" id="terms" required>
+                            <label class="form-check-label" for="terms">
                                 I agree to the <a href="#" class="text-decoration-none">Terms of Service</a> and 
                                 <a href="#" class="text-decoration-none">Privacy Policy</a>
                             </label>
+                            <div class="invalid-feedback">
+                                You must agree to the terms and conditions.
+                            </div>
                         </div>
-                        
-                        <button type="submit" class="btn btn-primary w-100 mb-3">
+
+                        <button type="submit" class="btn btn-gradient-secondary w-100 py-3 mb-3">
                             <i class="fas fa-user-plus me-2"></i>Create Account
                         </button>
+
+                        <div class="text-center">
+                            <p class="mb-0">Already have an account? 
+                                <a href="{% url 'login' %}" class="text-decoration-none fw-semibold">Sign in here</a>
+                            </p>
+                        </div>
                     </form>
-                    
-                    <div class="text-center">
-                        <p class="mb-0">
-                            Already have an account? 
-                            <a href="{% url 'login' %}" class="text-decoration-none fw-bold">Sign in here</a>
-                        </p>
+                </div>
+
+                <!-- Benefits Cards -->
+                <div class="row g-3 mt-4">
+                    <div class="col-md-4">
+                        <div class="card-glass p-3 text-center">
+                            <i class="fas fa-calendar-check fa-2x text-white mb-2"></i>
+                            <h6 class="text-white mb-1">Easy Booking</h6>
+                            <small class="text-white opacity-75">Schedule appointments online</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card-glass p-3 text-center">
+                            <i class="fas fa-mobile-alt fa-2x text-white mb-2"></i>
+                            <h6 class="text-white mb-1">Mobile Access</h6>
+                            <small class="text-white opacity-75">Access results anywhere</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card-glass p-3 text-center">
+                            <i class="fas fa-bell fa-2x text-white mb-2"></i>
+                            <h6 class="text-white mb-1">Smart Alerts</h6>
+                            <small class="text-white opacity-75">Get notified instantly</small>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
+{% endblock %}
 
+{% block extra_js %}
 <script>
+    // Form validation
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            var forms = document.getElementsByClassName('needs-validation');
+            var validation = Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+
     // Password confirmation validation
     document.getElementById('confirm_password').addEventListener('input', function() {
         const password = document.getElementById('password').value;
@@ -128,12 +165,25 @@
         if (password !== confirmPassword) {
             this.setCustomValidity('Passwords do not match');
         } else {
-            this
-        if (password !== confirmPassword) {
-            this.setCustomValidity('Passwords do not match');
-        } else {
             this.setCustomValidity('');
         }
     });
+
+    // Password strength indicator
+    document.getElementById('password').addEventListener('input', function() {
+        const password = this.value;
+        const strength = calculatePasswordStrength(password);
+        // You can add a password strength indicator here
+    });
+
+    function calculatePasswordStrength(password) {
+        let strength = 0;
+        if (password.length >= 8) strength++;
+        if (/[a-z]/.test(password)) strength++;
+        if (/[A-Z]/.test(password)) strength++;
+        if (/[0-9]/.test(password)) strength++;
+        if (/[^A-Za-z0-9]/.test(password)) strength++;
+        return strength;
+    }
 </script>
 {% endblock %}

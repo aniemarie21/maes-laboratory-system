@@ -1,182 +1,63 @@
-"""
-Django admin configuration for MAES Hospital Management System
-"""
-
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
 from django.utils.html import format_html
+from django.urls import reverse
+from django.utils.safestring import mark_safe
 from .models import (
-    UserProfile, LabService, Appointment, TestResult, 
-    PaymentTransaction, ChatSession, SystemSettings
+    UserProfile, Department, Service, Appointment, 
+    TestResult, Payment, MedicalCertificate, Notification, 
+    AuditLog, SystemSettings
 )
 
 # Unregister the default User admin
 admin.site.unregister(User)
 
 class UserProfileInline(admin.StackedInline):
-    """Inline admin for user profile"""
     model = UserProfile
     can_delete = False
     verbose_name_plural = 'Profile'
-    fields = ('user_type', 'phone', 'date_of_birth', 'address', 'emergency_contact_name', 'emergency_contact_phone', 'is_active', 'notification_preference', 'firebase_uid', 'firebase_doc_id', 'created_at', 'updated_at')
+    fields = ('role', 'phone_number', 'address', 'date_of_birth', 'emergency_contact', 'emergency_phone', 'notification_preference', 'profile_picture', 'is_active')
 
+@admin.register(User)
 class UserAdmin(BaseUserAdmin):
-    """Extended user admin with profile"""
     inlines = (UserProfileInline,)
-    list_display = ('username', 'email', 'first_name', 'last_name', 'get_user_type', 'is_staff', 'date_joined')
-    list_filter = ('is_staff', 'is_superuser', 'is_active', 'userprofile__user_type')
-    search_fields = ('username', 'first_name', 'last_name', 'email')
+    list_display = ('username', 'email', 'first_name', 'last_name', 'get_role', 'get_phone', 'is_active', 'date_joined')
+    list_filter = ('is_active', 'is_staff', 'userprofile__role', 'date_joined')
+    search_fields = ('username', 'first_name', 'last_name', 'email', 'userprofile__phone_number')
     
-    def get_user_type(self, obj):
+    def get_role(self, obj):
         try:
-            return obj.userprofile.get_user_type_display()
+            return obj.userprofile.get_role_display()
         except UserProfile.DoesNotExist:
             return 'No Profile'
-    get_user_type.short_description = 'User Type'
+    get_role.short_description = 'Role'
+    
+    def get_phone(self, obj):
+        try:
+            return obj.userprofile.phone_number
+        except UserProfile.DoesNotExist:
+            return '-'
+    get_phone.short_description = 'Phone'
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ['user', 'user_type', 'phone', 'created_at']
-    list_filter = ['user_type', 'notification_preference', 'is_active']
-    search_fields = ['user__username', 'user__email', 'phone']
-    readonly_fields = ['firebase_uid', 'firebase_doc_id', 'created_at', 'updated_at']
-
-@admin.register(LabService)
-class LabServiceAdmin(admin.ModelAdmin):
-    """Lab service admin"""
-    list_display = ['name', 'code', 'category', 'price', 'duration_hours', 'is_active']
-    list_filter = ['category', 'is_active', 'requires_fasting', 'priority_service']
-    search_fields = ['name', 'code', 'description']
-    ordering = ('category', 'name')
-    
+    list_display = ['user', 'role', 'phone_number', 'notification_preference', 'is_active', 'created_at']
+    list_filter = ['role', 'notification_preference', 'is_active', 'created_at']
+    search_fields = ['user__username', 'user__email', 'phone_number', 'user__first_name', 'user__last_name']
+    readonly_fields = ['created_at', 'updated_at']
     fieldsets = (
-        ('Basic Information', {
-            'fields': ('name', 'code', 'description', 'category')
+        ('User Information', {
+            'fields': ('user', 'role')
         }),
-        ('Pricing & Duration', {
-            'fields': ('price', 'duration_hours')
+        ('Contact Information', {
+            'fields': ('phone_number', 'address', 'emergency_contact', 'emergency_phone')
         }),
-        ('Requirements', {
-            'fields': ('preparation_instructions', 'requires_fasting', 'ai_analysis_available')
+        ('Personal Information', {
+            'fields': ('date_of_birth', 'profile_picture')
         }),
-        ('Service Features', {
-            'fields': ('is_active', 'is_walk_in_available', 'priority_service')
-        }),
-        ('Status', {
-            'fields': ('is_active',)
-        }),
-    )
-
-    readonly_fields = ['firebase_doc_id', 'created_at', 'updated_at']
-
-@admin.register(Appointment)
-class AppointmentAdmin(admin.ModelAdmin):
-    """Appointment admin"""
-    list_display = ['appointment_id', 'patient', 'appointment_date', 'status', 'total_amount']
-    list_filter = ['status', 'payment_method', 'payment_status', 'appointment_date']
-    search_fields = ['patient__username', 'patient__email', 'appointment_id']
-    date_hierarchy = 'appointment_date'
-    ordering = ('-created_at',)
-    
-    fieldsets = (
-        ('Patient Information', {
-            'fields': ('patient', 'appointment_id')
-        }),
-        ('Appointment Details', {
-            'fields': ('services', 'appointment_date', 'appointment_time', 'status', 'notes')
-        }),
-        ('Payment Information', {
-            'fields': ('total_amount', 'payment_method', 'payment_status', 'payment_reference')
-        }),
-        ('System Information', {
-            'fields': ('firebase_doc_id',),
-            'classes': ('collapse',)
-        }),
-    )
-    
-    filter_horizontal = ['services']
-    readonly_fields = ['appointment_id', 'firebase_doc_id', 'created_at', 'updated_at']
-
-@admin.register(TestResult)
-class TestResultAdmin(admin.ModelAdmin):
-    """Test result admin"""
-    list_display = ['result_id', 'patient', 'service', 'status', 'created_at']
-    list_filter = ['status', 'patient_notified', 'created_at']
-    search_fields = ['patient__username', 'service__name', 'result_id']
-    date_hierarchy = 'created_at'
-    ordering = ('-created_at',)
-    
-    fieldsets = (
-        ('Basic Information', {
-            'fields': ('result_id', 'appointment', 'patient', 'service', 'status')
-        }),
-        ('Results', {
-            'fields': ('result_data', 'normal_ranges', 'ai_analysis')
-        }),
-        ('Review', {
-            'fields': ('technician_notes', 'doctor_review', 'recommendations', 'reviewed_by')
-        }),
-        ('Files & Notifications', {
-            'fields': ('result_pdf', 'patient_notified', 'notification_sent_at')
-        }),
-        ('System Information', {
-            'fields': ('firebase_doc_id',),
-            'classes': ('collapse',)
-        }),
-    )
-    
-    readonly_fields = ['result_id', 'firebase_doc_id', 'created_at', 'updated_at']
-
-@admin.register(PaymentTransaction)
-class PaymentTransactionAdmin(admin.ModelAdmin):
-    list_display = ['transaction_id', 'patient', 'amount', 'payment_method', 'status']
-    list_filter = ['status', 'payment_method', 'created_at']
-    search_fields = ['patient__username', 'transaction_id', 'payment_reference']
-    readonly_fields = ['transaction_id', 'firebase_doc_id', 'created_at', 'updated_at']
-
-@admin.register(ChatSession)
-class ChatSessionAdmin(admin.ModelAdmin):
-    """Chat session admin"""
-    list_display = ['session_id', 'patient', 'session_type', 'is_active', 'created_at']
-    list_filter = ['session_type', 'is_active', 'created_at']
-    search_fields = ['patient__username', 'session_id']
-    date_hierarchy = 'created_at'
-    ordering = ('-updated_at',)
-    
-    fieldsets = (
-        ('Session Information', {
-            'fields': ('session_id', 'patient', 'session_type', 'is_active', 'admin_assigned')
-        }),
-        ('Messages & Feedback', {
-            'fields': ('messages', 'session_rating', 'feedback')
-        }),
-        ('Firebase Integration', {
-            'fields': ('firebase_doc_id',),
-            'classes': ('collapse',)
-        }),
-        ('Timestamps', {
-            'fields': ('created_at', 'updated_at', 'ended_at'),
-            'classes': ('collapse',)
-        }),
-    )
-    
-    readonly_fields = ['session_id', 'firebase_doc_id', 'created_at', 'updated_at']
-
-@admin.register(SystemSettings)
-class SystemSettingsAdmin(admin.ModelAdmin):
-    """System settings admin"""
-    list_display = ['key', 'setting_type', 'is_active', 'updated_at']
-    list_filter = ['setting_type', 'is_active']
-    search_fields = ['key', 'description']
-    ordering = ('key',)
-    
-    fieldsets = (
-        ('Setting Information', {
-            'fields': ('key', 'setting_type', 'description', 'is_active')
-        }),
-        ('Setting Value', {
-            'fields': ('value',)
+        ('Preferences', {
+            'fields': ('notification_preference', 'is_active')
         }),
         ('Timestamps', {
             'fields': ('created_at', 'updated_at'),
@@ -184,12 +65,197 @@ class SystemSettingsAdmin(admin.ModelAdmin):
         }),
     )
 
+@admin.register(Department)
+class DepartmentAdmin(admin.ModelAdmin):
+    list_display = ['name', 'head_doctor', 'phone_number', 'email', 'service_count', 'is_active', 'created_at']
+    list_filter = ['is_active', 'created_at']
+    search_fields = ['name', 'description', 'head_doctor__username']
     readonly_fields = ['created_at', 'updated_at']
+    
+    def service_count(self, obj):
+        return obj.services.count()
+    service_count.short_description = 'Services'
 
-# Register the extended User admin
-admin.site.register(User, UserAdmin)
+@admin.register(Service)
+class ServiceAdmin(admin.ModelAdmin):
+    list_display = ['name', 'department', 'price', 'duration_minutes', 'requires_fasting', 'is_available', 'created_at']
+    list_filter = ['department', 'is_available', 'requires_fasting', 'requires_appointment', 'created_at']
+    search_fields = ['name', 'description', 'department__name']
+    readonly_fields = ['created_at', 'updated_at']
+    fieldsets = (
+        ('Basic Information', {
+            'fields': ('name', 'department', 'description')
+        }),
+        ('Pricing & Duration', {
+            'fields': ('price', 'duration_minutes')
+        }),
+        ('Requirements', {
+            'fields': ('requires_fasting', 'requires_appointment', 'preparation_instructions')
+        }),
+        ('Technical Details', {
+            'fields': ('sample_type', 'normal_range')
+        }),
+        ('Status', {
+            'fields': ('is_available',)
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+
+@admin.register(Appointment)
+class AppointmentAdmin(admin.ModelAdmin):
+    list_display = ['appointment_id', 'patient_name', 'service', 'appointment_date', 'status', 'payment_status', 'priority', 'final_amount']
+    list_filter = ['status', 'payment_status', 'priority', 'appointment_date', 'created_at']
+    search_fields = ['patient__username', 'patient__first_name', 'patient__last_name', 'service__name', 'appointment_id']
+    readonly_fields = ['appointment_id', 'created_at', 'updated_at']
+    date_hierarchy = 'appointment_date'
+    actions = ['mark_as_confirmed', 'mark_as_completed', 'mark_as_cancelled']
+    
+    fieldsets = (
+        ('Appointment Details', {
+            'fields': ('appointment_id', 'patient', 'service', 'appointment_date')
+        }),
+        ('Status & Priority', {
+            'fields': ('status', 'payment_status', 'priority')
+        }),
+        ('Financial Information', {
+            'fields': ('total_amount', 'discount_amount', 'final_amount')
+        }),
+        ('Assignment', {
+            'fields': ('assigned_technician', 'estimated_completion', 'actual_completion')
+        }),
+        ('Notes', {
+            'fields': ('notes', 'patient_instructions')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    def patient_name(self, obj):
+        return obj.patient.get_full_name() or obj.patient.username
+    patient_name.short_description = 'Patient'
+    
+    def mark_as_confirmed(self, request, queryset):
+        queryset.update(status='confirmed')
+        self.message_user(request, f"{queryset.count()} appointments marked as confirmed.")
+    mark_as_confirmed.short_description = "Mark selected appointments as confirmed"
+    
+    def mark_as_completed(self, request, queryset):
+        queryset.update(status='completed')
+        self.message_user(request, f"{queryset.count()} appointments marked as completed.")
+    mark_as_completed.short_description = "Mark selected appointments as completed"
+    
+    def mark_as_cancelled(self, request, queryset):
+        queryset.update(status='cancelled')
+        self.message_user(request, f"{queryset.count()} appointments marked as cancelled.")
+    mark_as_cancelled.short_description = "Mark selected appointments as cancelled"
+
+@admin.register(TestResult)
+class TestResultAdmin(admin.ModelAdmin):
+    list_display = ['appointment', 'status', 'is_normal', 'processed_by', 'reviewed_by', 'released_at', 'created_at']
+    list_filter = ['status', 'is_normal', 'released_at', 'created_at']
+    search_fields = ['appointment__patient__username', 'appointment__service__name']
+    readonly_fields = ['created_at', 'updated_at']
+    
+    fieldsets = (
+        ('Appointment Information', {
+            'fields': ('appointment',)
+        }),
+        ('Results', {
+            'fields': ('result_file', 'result_text', 'result_data')
+        }),
+        ('Analysis', {
+            'fields': ('is_normal', 'abnormal_findings', 'recommendations')
+        }),
+        ('Notes', {
+            'fields': ('technician_notes', 'doctor_notes')
+        }),
+        ('Processing', {
+            'fields': ('status', 'processed_by', 'reviewed_by', 'released_at')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+
+@admin.register(Payment)
+class PaymentAdmin(admin.ModelAdmin):
+    list_display = ['receipt_number', 'appointment', 'amount', 'payment_method', 'payment_status', 'is_verified', 'payment_date']
+    list_filter = ['payment_method', 'payment_status', 'is_verified', 'payment_date']
+    search_fields = ['appointment__patient__username', 'reference_number', 'transaction_id', 'receipt_number']
+    readonly_fields = ['receipt_number', 'payment_date']
+    actions = ['mark_as_verified', 'mark_as_completed']
+    
+    def mark_as_verified(self, request, queryset):
+        queryset.update(is_verified=True)
+        self.message_user(request, f"{queryset.count()} payments marked as verified.")
+    mark_as_verified.short_description = "Mark selected payments as verified"
+    
+    def mark_as_completed(self, request, queryset):
+        queryset.update(payment_status='completed')
+        self.message_user(request, f"{queryset.count()} payments marked as completed.")
+    mark_as_completed.short_description = "Mark selected payments as completed"
+
+@admin.register(MedicalCertificate)
+class MedicalCertificateAdmin(admin.ModelAdmin):
+    list_display = ['certificate_number', 'patient', 'certificate_type', 'valid_from', 'valid_until', 'issued_by', 'is_active']
+    list_filter = ['certificate_type', 'is_active', 'created_at', 'valid_from']
+    search_fields = ['certificate_number', 'patient__username', 'patient__first_name', 'patient__last_name']
+    readonly_fields = ['certificate_number', 'created_at', 'updated_at']
+    date_hierarchy = 'created_at'
+
+@admin.register(Notification)
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ['title', 'user', 'notification_type', 'is_read', 'is_sent', 'created_at']
+    list_filter = ['notification_type', 'is_read', 'is_sent', 'created_at']
+    search_fields = ['title', 'message', 'user__username']
+    readonly_fields = ['created_at', 'sent_at', 'read_at']
+    actions = ['mark_as_read', 'mark_as_sent']
+    
+    def mark_as_read(self, request, queryset):
+        queryset.update(is_read=True)
+        self.message_user(request, f"{queryset.count()} notifications marked as read.")
+    mark_as_read.short_description = "Mark selected notifications as read"
+    
+    def mark_as_sent(self, request, queryset):
+        queryset.update(is_sent=True)
+        self.message_user(request, f"{queryset.count()} notifications marked as sent.")
+    mark_as_sent.short_description = "Mark selected notifications as sent"
+
+@admin.register(AuditLog)
+class AuditLogAdmin(admin.ModelAdmin):
+    list_display = ['timestamp', 'user', 'action', 'model_name', 'object_repr', 'ip_address']
+    list_filter = ['action', 'model_name', 'timestamp']
+    search_fields = ['user__username', 'model_name', 'object_repr', 'ip_address']
+    readonly_fields = ['user', 'action', 'model_name', 'object_id', 'object_repr', 'changes', 'ip_address', 'user_agent', 'session_key', 'timestamp']
+    date_hierarchy = 'timestamp'
+    
+    def has_add_permission(self, request):
+        return False
+    
+    def has_change_permission(self, request, obj=None):
+        return False
+    
+    def has_delete_permission(self, request, obj=None):
+        return request.user.is_superuser
+
+@admin.register(SystemSettings)
+class SystemSettingsAdmin(admin.ModelAdmin):
+    list_display = ['key', 'value_preview', 'is_active', 'updated_at']
+    list_filter = ['is_active', 'created_at']
+    search_fields = ['key', 'value', 'description']
+    readonly_fields = ['created_at', 'updated_at']
+    
+    def value_preview(self, obj):
+        return obj.value[:100] + '...' if len(obj.value) > 100 else obj.value
+    value_preview.short_description = 'Value'
 
 # Customize admin site
-admin.site.site_header = "MAES Laboratory Administration"
-admin.site.site_title = "MAES Laboratory Admin"
-admin.site.index_title = "Hospital Management System"
+admin.site.site_header = "MAES Laboratory Management System"
+admin.site.site_title = "MAES Lab Admin"
+admin.site.index_title = "Welcome to MAES Laboratory Administration"
