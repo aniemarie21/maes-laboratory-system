@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Appointment - MAES Laboratory</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .booking-container {
+            max-width: 800px;
+            margin: 50px auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 2px solid #e5e7eb;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .service-card {
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .service-card:hover {
+            border-color: #667eea;
+            background-color: #f8fafc;
+        }
+
+        .service-card.selected {
+            border-color: #667eea;
+            background-color: #eff6ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="booking-container">
+            <div class="text-center mb-4">
+                <h2><i class="fas fa-calendar-plus me-2"></i>Book Your Appointment</h2>
+                <p class="text-muted">Schedule your laboratory test with Firebase-powered booking</p>
+            </div>
+
+            <form id="appointmentForm">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Full Name *</label>
+                        <input type="text" class="form-control" id="patientName" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Email Address *</label>
+                        <input type="email" class="form-control" id="patientEmail" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Phone Number *</label>
+                        <input type="tel" class="form-control" id="patientPhone" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Department</label>
+                        <select class="form-select" id="departmentSelect">
+                            <option value="">Select Department</option>
+                            {% for department in departments %}
+                            <option value="{{ department.name }}">{{ department.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Select Service *</label>
+                    <div id="servicesContainer">
+                        {% for service in services %}
+                        <div class="service-card" data-service-id="{{ service.id }}" data-price="{{ service.price }}">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">{{ service.name }}</h6>
+                                    <small class="text-muted">{{ service.description }}</small>
+                                </div>
+                                <div class="text-end">
+                                    <strong class="text-primary">₱{{ service.price }}</strong>
+                                    <br>
+                                    <small class="text-muted">{{ service.duration_minutes }} mins</small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Preferred Date *</label>
+                        <input type="date" class="form-control" id="appointmentDate" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Preferred Time *</label>
+                        <select class="form-select" id="appointmentTime" required>
+                            <option value="">Select Time</option>
+                            <option value="08:00">8:00 AM</option>
+                            <option value="09:00">9:00 AM</option>
+                            <option value="10:00">10:00 AM</option>
+                            <option value="11:00">11:00 AM</option>
+                            <option value="13:00">1:00 PM</option>
+                            <option value="14:00">2:00 PM</option>
+                            <option value="15:00">3:00 PM</option>
+                            <option value="16:00">4:00 PM</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Additional Notes</label>
+                    <textarea class="form-control" id="notes" rows="3" placeholder="Any special instructions or concerns..."></textarea>
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-check me-2"></i>Book Appointment
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-check-circle text-success me-2"></i>Appointment Booked!</h5>
+                </div>
+                <div class="modal-body">
+                    <p>Your appointment has been successfully booked and saved to Firebase!</p>
+                    <p><strong>Appointment ID:</strong> <span id="appointmentId"></span></p>
+                    <p>You will receive a confirmation email shortly.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="window.location.href='{% url 'firebase_home' %}'">Go Home</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let selectedServiceId = null;
+
+        // Service selection
+        document.querySelectorAll('.service-card').forEach(card => {
+            card.addEventListener('click', function() {
+                // Remove previous selection
+                document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
+                
+                // Add selection to clicked card
+                this.classList.add('selected');
+                selectedServiceId = this.dataset.serviceId;
+            });
+        });
+
+        // Set minimum date to today
+        document.getElementById('appointmentDate').min = new Date().toISOString().split('T')[0];
+
+        // Form submission
+        document.getElementById('appointmentForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            if (!selectedServiceId) {
+                alert('Please select a service');
+                return;
+            }
+
+            const formData = {
+                patient_id: 'patient_' + Date.now(), // Generate temporary ID
+                service_id: selectedServiceId,
+                patient_name: document.getElementById('patientName').value,
+                patient_email: document.getElementById('patientEmail').value,
+                patient_phone: document.getElementById('patientPhone').value,
+                appointment_date: document.getElementById('appointmentDate').value,
+                appointment_time: document.getElementById('appointmentTime').value,
+                notes: document.getElementById('notes').value
+            };
+
+            try {
+                const response = await fetch('{% url "firebase_book_appointment" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    document.getElementById('appointmentId').textContent = result.appointment_id;
+                    new bootstrap.Modal(document.getElementById('successModal')).show();
+                } else {
+                    alert('Error: ' + result.message);
+                }
+            } catch (error) {
+                alert('Error booking appointment: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>

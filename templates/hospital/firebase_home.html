@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAES Laboratory - Firebase Powered</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --accent-color: #3b82f6;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --bg-light: #f8fafc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        /* Glass Morphism Navigation */
+        .navbar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1rem 0;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: white !important;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.9) !important;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: white !important;
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero-section {
+            padding: 100px 0;
+            text-align: center;
+            color: white;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .btn-primary-custom {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            padding: 12px 30px;
+            font-weight: 600;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary-custom:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        /* Stats Section */
+        .stats-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem;
+            margin: -50px auto 50px;
+            max-width: 1000px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-card {
+            text-align: center;
+            color: white;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            opacity: 0.8;
+            margin-top: 0.5rem;
+        }
+
+        /* Content Section */
+        .content-section {
+            background: white;
+            padding: 80px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            color: var(--text-dark);
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: 1px solid #e5e7eb;
+            height: 100%;
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .service-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .service-icon i {
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .service-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .service-description {
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        .service-price {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-top: 1rem;
+        }
+
+        /* Firebase Badge */
+        .firebase-badge {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .stats-section {
+                margin: -30px 15px 30px;
+                padding: 2rem;
+            }
+            
+            .stat-number {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Firebase Badge -->
+    <div class="firebase-badge">
+        <i class="fab fa-google"></i> Firebase Powered
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-flask me-2"></i>MAES Laboratory
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#services">Services</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#departments">Departments</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'firebase_book_appointment' %}">Book Appointment</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'firebase_register' %}">Register</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-section">
+        <div class="container">
+            <h1 class="hero-title">Welcome to MAES Laboratory</h1>
+            <p class="hero-subtitle">Advanced Healthcare Solutions Powered by Firebase</p>
+            <a href="{% url 'firebase_book_appointment' %}" class="btn btn-primary-custom btn-lg">
+                <i class="fas fa-calendar-plus me-2"></i>Book Appointment Now
+            </a>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <div class="container">
+        <div class="stats-section">
+            <div class="row">
+                <div class="col-md-3 col-6">
+                    <div class="stat-card">
+                        <span class="stat-number">{{ stats.total_patients|default:"1,250" }}</span>
+                        <div class="stat-label">Happy Patients</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-card">
+                        <span class="stat-number">{{ stats.total_appointments|default:"3,420" }}</span>
+                        <div class="stat-label">Appointments</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-card">
+                        <span class="stat-number">{{ stats.total_services|default:"25" }}</span>
+                        <div class="stat-label">Services</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-card">
+                        <span class="stat-number">{{ stats.satisfaction_rate|default:"98.5" }}%</span>
+                        <div class="stat-label">Satisfaction</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Services Section -->
+    <section id="services" class="content-section">
+        <div class="container">
+            <h2 class="section-title">Our Services</h2>
+            <div class="row">
+                {% for service in services %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="service-card">
+                        <div class="service-icon">
+                            <i class="fas fa-microscope"></i>
+                        </div>
+                        <h3 class="service-title">{{ service.name }}</h3>
+                        <p class="service-description">{{ service.description }}</p>
+                        <div class="service-price">₱{{ service.price }}</div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12 text-center">
+                    <p class="text-muted">Loading services from Firebase...</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Departments Section -->
+    <section id="departments" class="content-section bg-light">
+        <div class="container">
+            <h2 class="section-title">Our Departments</h2>
+            <div class="row">
+                {% for department in departments %}
+                <div class="col-lg-6 col-md-6 mb-4">
+                    <div class="service-card">
+                        <div class="service-icon">
+                            <i class="fas fa-hospital"></i>
+                        </div>
+                        <h3 class="service-title">{{ department.name }}</h3>
+                        <p class="service-description">{{ department.description }}</p>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12 text-center">
+                    <p class="text-muted">Loading departments from Firebase...</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container text-center">
+            <p>&copy; 2024 MAES Laboratory Management System. Powered by Firebase & Django.</p>
+            <p class="mb-0">
+                <i class="fas fa-phone me-2"></i>(043) 286-2531 |
+                <i class="fas fa-envelope me-2 ms-3"></i>info@maeslaboratory.com
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

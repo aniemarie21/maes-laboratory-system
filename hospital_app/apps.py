@@ -7,4 +7,7 @@ class HospitalAppConfig(AppConfig):
     verbose_name = 'MAES Laboratory Management'
     
     def ready(self):
-        import hospital_app.signals
+        try:
+            import hospital_app.signals
+        except ImportError:
+            pass

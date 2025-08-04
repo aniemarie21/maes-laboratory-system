@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block title %}Patient Dashboard - MAES Laboratory{% endblock %}
+
+{% block content %}
+<section class="py-5" style="background: white;">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="display-5 fw-bold mb-2">Welcome, {{ user.get_full_name }}!</h1>
+                <p class="lead text-muted">Manage your appointments and view your health records</p>
+            </div>
+        </div>
+
+        &lt;!-- Statistics Cards -->
+        <div class="row g-4 mb-5">
+            <div class="col-lg-3 col-md-6">
+                <div class="stats-card">
+                    <div class="stats-number">{{ stats.total_appointments }}</div>
+                    <div class="stats-label">Total Appointments</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stats-card">
+                    <div class="stats-number">{{ stats.pending_appointments }}</div>
+                    <div class="stats-label">Pending</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stats-card">
+                    <div class="stats-number">{{ stats.completed_appointments }}</div>
+                    <div class="stats-label">Completed</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="card-modern p-3 text-center">
+                    <a href="{% url 'book_appointment' %}" class="btn btn-gradient-primary">
+                        <i class="fas fa-plus me-2"></i>Book New
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        &lt;!-- Recent Appointments -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card-modern p-4">
+                    <h3 class="fw-bold mb-4">Recent Appointments</h3>
+                    
+                    {% if appointments %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Service</th>
+                                        <th>Date & Time</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for appointment in appointments %}
+                                    <tr>
+                                        <td>
+                                            <div class="fw-semibold">{{ appointment.service.name }}</div>
+                                            <small class="text-muted">{{ appointment.service.department.name }}</small>
+                                        </td>
+                                        <td>{{ appointment.appointment_date|date:"M d, Y H:i" }}</td>
+                                        <td>
+                                            <span class="badge bg-{% if appointment.status == 'completed' %}success{% elif appointment.status == 'pending' %}warning{% elif appointment.status == 'confirmed' %}info{% else %}secondary{% endif %}">
+                                                {{ appointment.get_status_display }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a href="#" class="btn btn-sm btn-outline-primary me-2">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            {% if appointment.status == 'pending' %}
+                                                <a href="#" class="btn btn-sm btn-outline-danger">
+                                                    <i class="fas fa-times"></i>
+                                                </a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No appointments yet</h5>
+                            <p class="text-muted">Book your first appointment to get started</p>
+                            <a href="{% url 'book_appointment' %}" class="btn btn-gradient-primary">
+                                <i class="fas fa-plus me-2"></i>Book Appointment
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

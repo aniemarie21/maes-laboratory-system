@@ -1,27 +1,22 @@
-"""
-Django settings for modern_maes project.
-"""
-
-from pathlib import Path
 import os
+from pathlib import Path
+from dotenv import load_dotenv
+import firebase_admin
+from firebase_admin import credentials
 
-# Try to load dotenv, but don't fail if it's not available
-try:
-    from dotenv import load_dotenv
-    load_dotenv()
-except ImportError:
-    pass
+# Load environment variables
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-your-secret-key-here-change-this-in-production-12345')
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-change-this-in-production')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
+DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.vercel.app', '.herokuapp.com']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '*']
 
 # Application definition
 INSTALLED_APPS = [
@@ -31,17 +26,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'hospital_app',
-    'rest_framework',
+    'hospital',
 ]
-
-# Add CORS headers only if available
-try:
-    import corsheaders
-    INSTALLED_APPS.insert(-1, 'corsheaders')
-    CORS_MIDDLEWARE = 'corsheaders.middleware.CorsMiddleware'
-except ImportError:
-    CORS_MIDDLEWARE = None
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -54,11 +40,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# Add CORS middleware if available
-if CORS_MIDDLEWARE:
-    MIDDLEWARE.insert(0, CORS_MIDDLEWARE)
-
-ROOT_URLCONF = 'modern_maes.urls'
+ROOT_URLCONF = 'maes_lab.urls'
 
 TEMPLATES = [
     {
@@ -76,7 +58,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'modern_maes.wsgi.application'
+WSGI_APPLICATION = 'maes_lab.wsgi.application'
 
 # Database
 DATABASES = {
@@ -122,41 +104,29 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Email Configuration
-EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'noreply@maeslaboratory.com')
-
-# Security Settings
-SECURE_BROWSER_XSS_FILTER = True
-SECURE_CONTENT_TYPE_NOSNIFF = True
-X_FRAME_OPTIONS = 'DENY'
-
-# CORS Settings (only if corsheaders is available)
-if 'corsheaders' in INSTALLED_APPS:
-    CORS_ALLOWED_ORIGINS = [
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-    ]
-
-# REST Framework
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
-    ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ],
+# Firebase Configuration
+FIREBASE_CONFIG = {
+    "type": os.getenv('FIREBASE_TYPE'),
+    "project_id": os.getenv('FIREBASE_PROJECT_ID'),
+    "private_key_id": os.getenv('FIREBASE_PRIVATE_KEY_ID'),
+    "private_key": os.getenv('FIREBASE_PRIVATE_KEY', '').replace('\\n', '\n'),
+    "client_email": os.getenv('FIREBASE_CLIENT_EMAIL'),
+    "client_id": os.getenv('FIREBASE_CLIENT_ID'),
+    "auth_uri": os.getenv('FIREBASE_AUTH_URI'),
+    "token_uri": os.getenv('FIREBASE_TOKEN_URI'),
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": os.getenv('FIREBASE_CLIENT_CERT_URL')
 }
 
-# Login/Logout URLs
+# Initialize Firebase Admin SDK
+if not firebase_admin._apps:
+    try:
+        cred = credentials.Certificate(FIREBASE_CONFIG)
+        firebase_admin.initialize_app(cred)
+    except Exception as e:
+        print(f"Firebase initialization error: {e}")
+
+# Login URLs
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
-
-# File Upload Settings
-FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
-DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
-
-# Session Settings
-SESSION_COOKIE_AGE = 86400  # 24 hours
-SESSION_SAVE_EVERY_REQUEST = True

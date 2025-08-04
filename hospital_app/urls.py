@@ -23,9 +23,9 @@ urlpatterns = [
     
     # API endpoints
     path('api/chatbot/', views.chatbot_api, name='chatbot_api'),
-    path('api/services/<int:department_id>/', views.get_services_by_department, name='get_services_by_department'),
-    path('api/check-availability/', views.check_appointment_availability, name='check_appointment_availability'),
+    # path('api/services/<int:department_id>/', views.get_services_by_department, name='get_services_by_department'),
+    # path('api/check-availability/', views.check_appointment_availability, name='check_appointment_availability'),
     
     # Export functionality
-    path('export/appointments/', views.export_appointments, name='export_appointments'),
+    # path('export/appointments/', views.export_appointments, name='export_appointments'),
 ]

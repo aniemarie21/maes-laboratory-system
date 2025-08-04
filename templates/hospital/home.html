@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+
+{% block title %}MAES Laboratory - Modern Healthcare Solutions{% endblock %}
+
+{% block content %}
+&lt;!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6" data-aos="fade-right">
+                <div class="hero-content">
+                    <h1 class="hero-title">
+                        Modern Healthcare
+                        <span style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                            Laboratory
+                        </span>
+                    </h1>
+                    <p class="hero-subtitle">
+                        Experience cutting-edge diagnostic services with AI-powered analysis, 
+                        real-time results, and personalized patient care at MAES Laboratory.
+                    </p>
+                    <div class="d-flex gap-3 flex-wrap">
+                        {% if not user.is_authenticated %}
+                            <a href="{% url 'register' %}" class="btn btn-gradient-primary btn-lg">
+                                <i class="fas fa-user-plus me-2"></i>Get Started
+                            </a>
+                            <a href="{% url 'login' %}" class="btn btn-gradient-secondary btn-lg">
+                                <i class="fas fa-sign-in-alt me-2"></i>Login
+                            </a>
+                        {% else %}
+                            <a href="{% url 'book_appointment' %}" class="btn btn-gradient-primary btn-lg">
+                                <i class="fas fa-calendar-plus me-2"></i>Book Appointment
+                            </a>
+                            {% if user.userprofile.role == 'patient' %}
+                                <a href="{% url 'patient_dashboard' %}" class="btn btn-gradient-secondary btn-lg">
+                                    <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                                </a>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6" data-aos="fade-left">
+                <div class="text-center">
+                    <img src="/placeholder.svg?height=500&width=600&text=MAES+Laboratory+Building" alt="MAES Laboratory Building" class="img-fluid rounded-4 shadow-lg" style="max-height: 500px; object-fit: cover;">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+&lt;!-- Statistics Section -->
+<section class="py-5" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px);">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="stats-card">
+                    <div class="stats-number">{{ stats.total_patients }}</div>
+                    <div class="stats-label">Happy Patients</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="stats-card">
+                    <div class="stats-number">{{ stats.total_appointments }}</div>
+                    <div class="stats-label">Appointments</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                <div class="stats-card">
+                    <div class="stats-number">24/7</div>
+                    <div class="stats-label">Emergency Support</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                <div class="stats-card">
+                    <div class="stats-number">{{ stats.satisfaction_rate }}%</div>
+                    <div class="stats-label">Satisfaction Rate</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+&lt;!-- Services Section -->
+<section class="py-5" style="background: white;">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="display-4 fw-bold mb-3" style="color: var(--text-primary);">Our Services</h2>
+            <p class="lead text-muted">Comprehensive laboratory services with state-of-the-art technology</p>
+        </div>
+        
+        <div class="row g-4">
+            {% for service in services %}
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:100 }}">
+                    <div class="service-card p-4">
+                        <div class="service-icon">
+                            <i class="fas fa-{% cycle 'vial' 'x-ray' 'heartbeat' 'microscope' 'stethoscope' 'pills' 'syringe' 'dna' %}"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3">{{ service.name }}</h5>
+                        <p class="text-muted mb-3">{{ service.description|truncatewords:15 }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="h5 mb-0 text-primary">₱{{ service.price }}</span>
+                            <small class="text-muted">{{ service.duration_minutes }} mins</small>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="service-card p-4">
+                        <div class="service-icon">
+                            <i class="fas fa-vial"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3">Blood Tests</h5>
+                        <p class="text-muted mb-3">Complete blood count, lipid profile, and comprehensive blood analysis.</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="h5 mb-0 text-primary">₱500</span>
+                            <small class="text-muted">30 mins</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="service-card p-4">
+                        <div class="service-icon">
+                            <i class="fas fa-x-ray"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3">X-Ray Imaging</h5>
+                        <p class="text-muted mb-3">Digital X-ray services for chest, bone, and joint examinations.</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="h5 mb-0 text-primary">₱800</span>
+                            <small class="text-muted">15 mins</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                    <div class="service-card p-4">
+                        <div class="service-icon">
+                            <i class="fas fa-heartbeat"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3">ECG Testing</h5>
+                        <p class="text-muted mb-3">Electrocardiogram testing for heart health monitoring.</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="h5 mb-0 text-primary">₱600</span>
+                            <small class="text-muted">20 mins</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                    <div class="service-card p-4">
+                        <div class="service-icon">
+                            <i class="fas fa-microscope"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3">Microscopy</h5>
+                        <p class="text-muted mb-3">Advanced microscopic analysis for accurate diagnostic results.</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="h5 mb-0 text-primary">₱400</span>
+                            <small class="text-muted">45 mins</small>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+&lt;!-- Features Section -->
+<section class="py-5" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="display-4 fw-bold mb-3 text-white">Why Choose MAES?</h2>
+            <p class="lead text-white opacity-75">Advanced technology meets compassionate care</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="card-glass p-4 text-center h-100">
+                    <div class="mb-4">
+                        <i class="fas fa-robot fa-3x text-white"></i>
+                    </div>
+                    <h4 class="fw-bold text-white mb-3">AI-Powered Analysis</h4>
+                    <p class="text-white opacity-75">Advanced artificial intelligence assists in accurate diagnosis and faster results processing.</p>
+                </div>
+            </div>
+            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="card-glass p-4 text-center h-100">
+                    <div class="mb-4">
+                        <i class="fas fa-clock fa-3x text-white"></i>
+                    </div>
+                    <h4 class="fw-bold text-white mb-3">Real-Time Results</h4>
+                    <p class="text-white opacity-75">Get your test results instantly through our modern digital platform and mobile notifications.</p>
+                </div>
+            </div>
+            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="card-glass p-4 text-center h-100">
+                    <div class="mb-4">
+                        <i class="fas fa-shield-alt fa-3x text-white"></i>
+                    </div>
+                    <h4 class="fw-bold text-white mb-3">Secure & Private</h4>
+                    <p class="text-white opacity-75">Your health data is protected with enterprise-grade security and privacy measures.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+&lt;!-- CTA Section -->
+<section class="py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8" data-aos="fade-right">
+                <h2 class="display-5 fw-bold text-white mb-3">Ready to Experience Modern Healthcare?</h2>
+                <p class="lead text-white opacity-75 mb-0">Join thousands of satisfied patients who trust MAES Laboratory for their healthcare needs.</p>
+            </div>
+            <div class="col-lg-4 text-lg-end" data-aos="fade-left">
+                {% if not user.is_authenticated %}
+                    <a href="{% url 'register' %}" class="btn btn-light btn-lg px-5 py-3">
+                        <i class="fas fa-rocket me-2"></i>Get Started Today
+                    </a>
+                {% else %}
+                    <a href="{% url 'book_appointment' %}" class="btn btn-light btn-lg px-5 py-3">
+                        <i class="fas fa-calendar-plus me-2"></i>Book Now
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

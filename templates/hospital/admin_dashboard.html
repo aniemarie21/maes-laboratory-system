@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - MAES Laboratory{% endblock %}
+
+{% block content %}
+<section class="py-5" style="background: white;">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="display-5 fw-bold mb-2">Admin Dashboard</h1>
+                <p class="lead text-muted">Monitor and manage laboratory operations</p>
+            </div>
+        </div>
+
+        &lt;!-- Statistics Cards -->
+        <div class="row g-4 mb-5">
+            <div class="col-lg-3 col-md-6">
+                <div class="stats-card">
+                    <div class="stats-number">{{ stats.total_patients }}</div>
+                    <div class="stats-label">Total Patients</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stats-card">
+                    <div class="stats-number">{{ stats.total_appointments }}</div>
+                    <div class="stats-label">Total Appointments</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stats-card">
+                    <div class="stats-number">{{ stats.today_appointments }}</div>
+                    <div class="stats-label">Today's Appointments</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stats-card">
+                    <div class="stats-number">₱{{ stats.monthly_revenue|floatformat:0 }}</div>
+                    <div class="stats-label">Monthly Revenue</div>
+                </div>
+            </div>
+        </div>
+
+        &lt;!-- Recent Activities -->
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="card-modern p-4">
+                    <h3 class="fw-bold mb-4">Recent Appointments</h3>
+                    
+                    {% if recent_appointments %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Patient</th>
+                                        <th>Service</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for appointment in recent_appointments %}
+                                    <tr>
+                                        <td>{{ appointment.patient.get_full_name }}</td>
+                                        <td>{{ appointment.service.name }}</td>
+                                        <td>{{ appointment.appointment_date|date:"M d" }}</td>
+                                        <td>
+                                            <span class="badge bg-{% if appointment.status == 'completed' %}success{% elif appointment.status == 'pending' %}warning{% else %}info{% endif %} badge-sm">
+                                                {{ appointment.get_status_display }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No recent appointments</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="card-modern p-4">
+                    <h3 class="fw-bold mb-4">Recent Payments</h3>
+                    
+                    {% if recent_payments %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Patient</th>
+                                        <th>Amount</th>
+                                        <th>Method</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for payment in recent_payments %}
+                                    <tr>
+                                        <td>{{ payment.appointment.patient.get_full_name }}</td>
+                                        <td>₱{{ payment.amount }}</td>
+                                        <td>{{ payment.get_payment_method_display }}</td>
+                                        <td>
+                                            <span class="badge bg-{% if payment.is_verified %}success{% else %}warning{% endif %} badge-sm">
+                                                {% if payment.is_verified %}Verified{% else %}Pending{% endif %}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No recent payments</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

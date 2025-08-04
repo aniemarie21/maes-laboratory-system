@@ -3,33 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MAES Laboratory - Modern Healthcare Solutions</title>
-    
-    <!-- Bootstrap 5.3 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Google Fonts -->
+    <title>MAES Laboratory - Firebase Powered Healthcare</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- AOS Animation -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    
-    <!-- Custom CSS -->
     <style>
         :root {
             --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --text-dark: #2d3748;
+            --text-light: #718096;
             --glass-bg: rgba(255, 255, 255, 0.1);
             --glass-border: rgba(255, 255, 255, 0.2);
-            --text-primary: #2d3748;
-            --text-secondary: #718096;
-            --shadow-soft: 0 10px 25px rgba(0, 0, 0, 0.1);
-            --shadow-medium: 0 20px 40px rgba(0, 0, 0, 0.15);
         }
 
         * {
@@ -40,124 +27,78 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: var(--text-primary);
+            line-height: 1.6;
+            color: var(--text-dark);
             overflow-x: hidden;
         }
 
         /* Glass Morphism Navigation */
-        .navbar-glass {
-            background: rgba(255, 255, 255, 0.1);
+        .navbar {
+            background: var(--glass-bg);
             backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
         }
 
         .navbar-brand {
             font-family: 'Poppins', sans-serif;
             font-weight: 700;
-            font-size: 1.5rem;
-            color: white !important;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .navbar-brand i {
-            background: var(--success-gradient);
+            font-size: 1.8rem;
+            background: var(--primary-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            font-size: 2rem;
+            background-clip: text;
         }
 
-        .navbar-nav .nav-link {
-            color: rgba(255, 255, 255, 0.9) !important;
-            font-weight: 500;
-            margin: 0 10px;
-            padding: 8px 16px !important;
-            border-radius: 25px;
-            transition: all 0.3s ease;
-        }
-
-        .navbar-nav .nav-link:hover {
-            background: rgba(255, 255, 255, 0.1);
+        .nav-link {
             color: white !important;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .navbar.scrolled .nav-link {
+            color: var(--text-dark) !important;
+        }
+
+        .nav-link:hover {
             transform: translateY(-2px);
         }
 
-        /* Modern Cards */
-        .card-glass {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 20px;
-            box-shadow: var(--shadow-soft);
-            transition: all 0.3s ease;
-        }
-
-        .card-glass:hover {
-            transform: translateY(-10px);
-            box-shadow: var(--shadow-medium);
-        }
-
-        .card-modern {
-            background: white;
-            border: none;
-            border-radius: 20px;
-            box-shadow: var(--shadow-soft);
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .card-modern:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-medium);
-        }
-
-        /* Gradient Buttons */
-        .btn-gradient-primary {
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 50%;
             background: var(--primary-gradient);
-            border: none;
-            color: white;
-            padding: 12px 30px;
-            border-radius: 25px;
-            font-weight: 600;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transform: translateX(-50%);
         }
 
-        .btn-gradient-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
-            color: white;
-        }
-
-        .btn-gradient-secondary {
-            background: var(--secondary-gradient);
-            border: none;
-            color: white;
-            padding: 12px 30px;
-            border-radius: 25px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(240, 147, 251, 0.4);
-        }
-
-        .btn-gradient-secondary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(240, 147, 251, 0.6);
-            color: white;
+        .nav-link:hover::after {
+            width: 100%;
         }
 
         /* Hero Section */
         .hero-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            position: relative;
-            overflow: hidden;
+            background: var(--primary-gradient);
             min-height: 100vh;
             display: flex;
             align-items: center;
+            position: relative;
+            overflow: hidden;
         }
 
         .hero-section::before {
@@ -167,7 +108,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="a" cx="50%" cy="50%"><stop offset="0%" stop-color="%23ffffff" stop-opacity="0.1"/><stop offset="100%" stop-color="%23ffffff" stop-opacity="0"/></radialGradient></defs><circle cx="200" cy="200" r="100" fill="url(%23a)"/><circle cx="800" cy="300" r="150" fill="url(%23a)"/><circle cx="400" cy="700" r="120" fill="url(%23a)"/></svg>');
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="a" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="%23ffffff" stop-opacity="0.1"/><stop offset="100%" stop-color="%23ffffff" stop-opacity="0"/></radialGradient></defs><circle cx="200" cy="200" r="100" fill="url(%23a)"/><circle cx="800" cy="300" r="150" fill="url(%23a)"/><circle cx="400" cy="700" r="120" fill="url(%23a)"/></svg>');
             animation: float 20s ease-in-out infinite;
         }
 
@@ -179,108 +120,342 @@
         .hero-content {
             position: relative;
             z-index: 2;
+            color: white;
+            text-align: center;
         }
 
         .hero-title {
             font-family: 'Poppins', sans-serif;
-            font-size: 3.5rem;
+            font-size: 4rem;
             font-weight: 700;
-            color: white;
             margin-bottom: 1.5rem;
-            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: fadeInUp 1s ease-out;
         }
 
         .hero-subtitle {
-            font-size: 1.3rem;
-            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.4rem;
             margin-bottom: 2rem;
-            line-height: 1.6;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease-out 0.2s both;
         }
 
-        /* Statistics Section */
-        .stats-card {
+        .hero-description {
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0.8;
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .btn-hero {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 2px solid var(--glass-border);
+            color: white;
+            padding: 15px 40px;
+            font-weight: 600;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0 10px;
+            animation: fadeInUp 1s ease-out 0.6s both;
+        }
+
+        .btn-hero:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            color: white;
+        }
+
+        .btn-hero.primary {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Firebase Badge */
+        .firebase-badge {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: var(--secondary-gradient);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            z-index: 1000;
+            box-shadow: 0 8px 25px rgba(240, 147, 251, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Stats Section */
+        .stats-section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 3rem;
+            margin: -80px auto 0;
+            max-width: 1000px;
+            border: 1px solid var(--glass-border);
+            position: relative;
+            z-index: 3;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .stat-card {
+            text-align: center;
+            color: white;
+            padding: 1rem;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            display: block;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        /* Features Section */
+        .features-section {
+            padding: 100px 0;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .section-title {
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 4rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--primary-gradient);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .feature-icon::after {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: var(--primary-gradient);
+            border-radius: 25px;
+            opacity: 0.1;
+            z-index: -1;
+        }
+
+        .feature-icon i {
+            font-size: 2rem;
+            color: white;
+        }
+
+        .feature-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .feature-description {
+            color: var(--text-light);
+            line-height: 1.7;
+            font-size: 1rem;
+        }
+
+        /* Services Section */
+        .services-section {
+            padding: 100px 0;
+            background: white;
+        }
+
+        .service-card {
             background: white;
             border-radius: 20px;
             padding: 2rem;
-            text-align: center;
-            box-shadow: var(--shadow-soft);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
             transition: all 0.3s ease;
-            border: none;
+            border: 1px solid #f1f5f9;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
         }
 
-        .stats-card:hover {
-            transform: translateY(-10px);
-            box-shadow: var(--shadow-medium);
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--primary-gradient);
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
-        .stats-number {
-            font-size: 3rem;
+        .service-card:hover::before {
+            opacity: 0.05;
+        }
+
+        .service-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+        }
+
+        .service-icon {
+            width: 70px;
+            height: 70px;
+            background: var(--accent-gradient);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .service-icon i {
+            font-size: 1.8rem;
+            color: white;
+        }
+
+        .service-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .service-description {
+            color: var(--text-light);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .service-price {
+            font-size: 1.4rem;
             font-weight: 700;
             background: var(--primary-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 0.5rem;
+            background-clip: text;
         }
 
-        .stats-label {
-            color: var(--text-secondary);
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: 0.9rem;
-        }
-
-        /* Service Cards */
-        .service-card {
-            background: white;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: var(--shadow-soft);
-            transition: all 0.3s ease;
-            height: 100%;
-        }
-
-        .service-card:hover {
-            transform: translateY(-10px);
-            box-shadow: var(--shadow-medium);
-        }
-
-        .service-icon {
-            width: 80px;
-            height: 80px;
-            background: var(--primary-gradient);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1rem;
-            color: white;
-            font-size: 2rem;
-        }
-
-        /* Chatbot Styles */
+        /* Chatbot */
         .chatbot-container {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            bottom: 30px;
+            right: 30px;
             z-index: 1000;
         }
 
         .chatbot-toggle {
             width: 60px;
             height: 60px;
-            border-radius: 50%;
             background: var(--primary-gradient);
-            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: white;
             font-size: 1.5rem;
-            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
             transition: all 0.3s ease;
+            border: none;
         }
 
         .chatbot-toggle:hover {
             transform: scale(1.1);
-            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.6);
         }
 
         .chatbot-window {
@@ -291,16 +466,18 @@
             height: 500px;
             background: white;
             border-radius: 20px;
-            box-shadow: var(--shadow-medium);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
             display: none;
             flex-direction: column;
             overflow: hidden;
+            border: 1px solid #e2e8f0;
         }
 
         .chatbot-header {
             background: var(--primary-gradient);
             color: white;
             padding: 1rem;
+            text-align: center;
             font-weight: 600;
         }
 
@@ -308,19 +485,29 @@
             flex: 1;
             padding: 1rem;
             overflow-y: auto;
-            max-height: 350px;
+            background: #f8fafc;
         }
 
         .chatbot-input {
             padding: 1rem;
             border-top: 1px solid #e2e8f0;
+            background: white;
+        }
+
+        .chatbot-input input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 25px;
+            outline: none;
         }
 
         .message {
             margin-bottom: 1rem;
-            padding: 0.75rem 1rem;
-            border-radius: 15px;
+            padding: 10px 15px;
+            border-radius: 18px;
             max-width: 80%;
+            word-wrap: break-word;
         }
 
         .message.user {
@@ -330,27 +517,48 @@
         }
 
         .message.bot {
-            background: #f7fafc;
-            color: var(--text-primary);
+            background: white;
+            color: var(--text-dark);
+            border: 1px solid #e2e8f0;
         }
 
-        /* Animations */
-        .fade-in {
-            animation: fadeIn 0.6s ease-in;
+        /* Footer */
+        .footer {
+            background: var(--text-dark);
+            color: white;
+            padding: 60px 0 30px;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
         }
 
-        .slide-up {
-            animation: slideUp 0.6s ease-out;
+        .footer-section h4 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: white;
         }
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(50px); }
-            to { opacity: 1; transform: translateY(0); }
+        .footer-section p,
+        .footer-section a {
+            color: #a0aec0;
+            text-decoration: none;
+            line-height: 1.8;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #4a5568;
+            padding-top: 2rem;
+            text-align: center;
+            color: #a0aec0;
         }
 
         /* Responsive Design */
@@ -360,10 +568,19 @@
             }
             
             .hero-subtitle {
-                font-size: 1.1rem;
+                font-size: 1.2rem;
             }
             
-            .stats-number {
+            .stats-section {
+                margin: -50px 15px 0;
+                padding: 2rem;
+            }
+            
+            .stat-number {
+                font-size: 2rem;
+            }
+            
+            .section-title {
                 font-size: 2rem;
             }
             
@@ -371,432 +588,339 @@
                 width: 300px;
                 height: 400px;
             }
+            
+            .firebase-badge {
+                position: relative;
+                top: auto;
+                right: auto;
+                display: inline-block;
+                margin: 1rem 0;
+            }
         }
 
         /* Loading Animation */
-        .loading-spinner {
+        .loading {
             display: inline-block;
             width: 20px;
             height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
+            border: 3px solid rgba(255,255,255,.3);
             border-radius: 50%;
-            border-top-color: white;
+            border-top-color: #fff;
             animation: spin 1s ease-in-out infinite;
         }
 
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-
-        /* Footer */
-        .footer-modern {
-            background: rgba(0, 0, 0, 0.9);
-            color: white;
-            padding: 3rem 0 1rem;
-            margin-top: 5rem;
-        }
-
-        .footer-modern h5 {
-            color: white;
-            margin-bottom: 1rem;
-            font-weight: 600;
-        }
-
-        .footer-modern a {
-            color: rgba(255, 255, 255, 0.7);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .footer-modern a:hover {
-            color: white;
-        }
-
-        .navbar-toggler {
-            border: none;
-            padding: 4px 8px;
-        }
-
-        .navbar-toggler:focus {
-            box-shadow: none;
-        }
-
-        .navbar-toggler-icon {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
-        }
     </style>
 </head>
 <body>
+    <!-- Firebase Badge -->
+    <div class="firebase-badge">
+        <i class="fab fa-google me-2"></i>Firebase Powered
+    </div>
+
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-glass fixed-top">
+    <nav class="navbar navbar-expand-lg" id="navbar">
         <div class="container">
             <a class="navbar-brand" href="#home">
-                <i class="fas fa-microscope"></i>
-                MAES Laboratory
+                <i class="fas fa-flask me-2"></i>MAES Laboratory
             </a>
-            
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="#home">
-                            <i class="fas fa-home me-1"></i>Home
-                        </a>
+                        <a class="nav-link" href="#home">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#services">
-                            <i class="fas fa-stethoscope me-1"></i>Services
-                        </a>
+                        <a class="nav-link" href="#features">Features</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#about">
-                            <i class="fas fa-info-circle me-1"></i>About
-                        </a>
+                        <a class="nav-link" href="#services">Services</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#contact">
-                            <i class="fas fa-envelope me-1"></i>Contact
-                        </a>
+                        <a class="nav-link" href="#about">About</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#login">
-                            <i class="fas fa-sign-in-alt me-1"></i>Login
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#register">
-                            <i class="fas fa-user-plus me-1"></i>Register
-                        </a>
+                        <a class="nav-link" href="#contact">Contact</a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <main style="padding-top: 80px;" id="home">
-        <!-- Hero Section -->
-        <section class="hero-section">
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="col-lg-6" data-aos="fade-right">
-                        <div class="hero-content">
-                            <h1 class="hero-title">
-                                Modern Healthcare
-                                <span style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                                    Laboratory
-                                </span>
-                            </h1>
-                            <p class="hero-subtitle">
-                                Experience cutting-edge diagnostic services with AI-powered analysis, 
-                                real-time results, and personalized patient care at MAES Laboratory.
-                            </p>
-                            <div class="d-flex gap-3 flex-wrap">
-                                <button class="btn btn-gradient-primary btn-lg">
-                                    <i class="fas fa-user-plus me-2"></i>Get Started
-                                </button>
-                                <button class="btn btn-gradient-secondary btn-lg">
-                                    <i class="fas fa-calendar-plus me-2"></i>Book Appointment
-                                </button>
-                            </div>
-                        </div>
+    <!-- Hero Section -->
+    <section id="home" class="hero-section">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">MAES Laboratory</h1>
+                <p class="hero-subtitle">Advanced Healthcare Management System</p>
+                <p class="hero-description">
+                    Experience the future of healthcare with our Firebase-powered laboratory management system. 
+                    Seamless appointments, real-time results, and comprehensive patient care.
+                </p>
+                <div class="hero-buttons">
+                    <a href="#services" class="btn-hero primary">
+                        <i class="fas fa-calendar-plus me-2"></i>Book Appointment
+                    </a>
+                    <a href="#features" class="btn-hero">
+                        <i class="fas fa-play me-2"></i>Learn More
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <div class="container">
+        <div class="stats-section" data-aos="fade-up">
+            <div class="row">
+                <div class="col-md-3 col-6">
+                    <div class="stat-card">
+                        <span class="stat-number" data-count="1250">0</span>
+                        <div class="stat-label">Happy Patients</div>
                     </div>
-                    <div class="col-lg-6" data-aos="fade-left">
-                        <div class="text-center">
-                            <img src="/placeholder.svg?height=500&width=600&text=MAES+Laboratory+Building" alt="MAES Laboratory Building" class="img-fluid rounded-4 shadow-lg" style="max-height: 500px; object-fit: cover;">
-                        </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-card">
+                        <span class="stat-number" data-count="3420">0</span>
+                        <div class="stat-label">Appointments</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-card">
+                        <span class="stat-number" data-count="25">0</span>
+                        <div class="stat-label">Services</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-card">
+                        <span class="stat-number" data-count="98.5">0</span>
+                        <div class="stat-label">Satisfaction %</div>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
+    </div>
 
-        <!-- Statistics Section -->
-        <section class="py-5" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px);">
-            <div class="container">
-                <div class="row g-4">
-                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
-                        <div class="stats-card">
-                            <div class="stats-number" id="patientsCount">2,547</div>
-                            <div class="stats-label">Happy Patients</div>
+    <!-- Features Section -->
+    <section id="features" class="features-section">
+        <div class="container">
+            <h2 class="section-title" data-aos="fade-up">Why Choose MAES Laboratory?</h2>
+            <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+                Cutting-edge technology meets compassionate care in our state-of-the-art facility
+            </p>
+            
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-cloud"></i>
                         </div>
+                        <h3 class="feature-title">Firebase Integration</h3>
+                        <p class="feature-description">
+                            Real-time data synchronization with Google's Firebase platform ensures your information is always secure and accessible.
+                        </p>
                     </div>
-                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
-                        <div class="stats-card">
-                            <div class="stats-number" id="appointmentsCount">8,932</div>
-                            <div class="stats-label">Appointments</div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
-                        <div class="stats-card">
-                            <div class="stats-number">24/7</div>
-                            <div class="stats-label">Emergency Support</div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
-                        <div class="stats-card">
-                            <div class="stats-number">99.9%</div>
-                            <div class="stats-label">Accuracy Rate</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Services Section -->
-        <section class="py-5" style="background: white;" id="services">
-            <div class="container">
-                <div class="text-center mb-5" data-aos="fade-up">
-                    <h2 class="display-4 fw-bold mb-3" style="color: var(--text-primary);">Our Services</h2>
-                    <p class="lead text-muted">Comprehensive laboratory services with state-of-the-art technology</p>
                 </div>
                 
-                <div class="row g-4">
-                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
-                        <div class="service-card p-4">
-                            <div class="service-icon">
-                                <i class="fas fa-vial"></i>
-                            </div>
-                            <h5 class="fw-bold mb-3">Blood Tests</h5>
-                            <p class="text-muted mb-3">Complete blood count, lipid profile, and comprehensive blood analysis with AI-powered insights.</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="h5 mb-0 text-primary">₱500</span>
-                                <small class="text-muted">30 mins</small>
-                            </div>
+                <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-mobile-alt"></i>
                         </div>
+                        <h3 class="feature-title">Mobile Responsive</h3>
+                        <p class="feature-description">
+                            Access your health information and book appointments from any device, anywhere, anytime with our responsive design.
+                        </p>
                     </div>
-                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
-                        <div class="service-card p-4">
-                            <div class="service-icon">
-                                <i class="fas fa-x-ray"></i>
-                            </div>
-                            <h5 class="fw-bold mb-3">X-Ray Imaging</h5>
-                            <p class="text-muted mb-3">Digital X-ray services for chest, bone, and joint examinations with instant results.</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="h5 mb-0 text-primary">₱800</span>
-                                <small class="text-muted">15 mins</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
-                        <div class="service-card p-4">
-                            <div class="service-icon">
-                                <i class="fas fa-heartbeat"></i>
-                            </div>
-                            <h5 class="fw-bold mb-3">ECG Testing</h5>
-                            <p class="text-muted mb-3">Electrocardiogram testing for heart health monitoring and cardiac diagnosis.</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="h5 mb-0 text-primary">₱600</span>
-                                <small class="text-muted">20 mins</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
-                        <div class="service-card p-4">
-                            <div class="service-icon">
-                                <i class="fas fa-microscope"></i>
-                            </div>
-                            <h5 class="fw-bold mb-3">Microscopy</h5>
-                            <p class="text-muted mb-3">Advanced microscopic analysis for accurate diagnostic results and pathology.</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="h5 mb-0 text-primary">₱400</span>
-                                <small class="text-muted">45 mins</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="500">
-                        <div class="service-card p-4">
-                            <div class="service-icon">
-                                <i class="fas fa-stethoscope"></i>
-                            </div>
-                            <h5 class="fw-bold mb-3">Ultrasound</h5>
-                            <p class="text-muted mb-3">High-resolution ultrasound imaging for abdominal, pelvic, and cardiac examinations.</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="h5 mb-0 text-primary">₱1,200</span>
-                                <small class="text-muted">30 mins</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="600">
-                        <div class="service-card p-4">
-                            <div class="service-icon">
-                                <i class="fas fa-pills"></i>
-                            </div>
-                            <h5 class="fw-bold mb-3">Drug Testing</h5>
-                            <p class="text-muted mb-3">Comprehensive drug screening and toxicology testing for employment and medical purposes.</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="h5 mb-0 text-primary">₱350</span>
-                                <small class="text-muted">15 mins</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="700">
-                        <div class="service-card p-4">
-                            <div class="service-icon">
-                                <i class="fas fa-syringe"></i>
-                            </div>
-                            <h5 class="fw-bold mb-3">Vaccination</h5>
-                            <p class="text-muted mb-3">Complete vaccination services including COVID-19, flu, and travel vaccines.</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="h5 mb-0 text-primary">₱250</span>
-                                <small class="text-muted">10 mins</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="800">
-                        <div class="service-card p-4">
-                            <div class="service-icon">
-                                <i class="fas fa-dna"></i>
-                            </div>
-                            <h5 class="fw-bold mb-3">DNA Testing</h5>
-                            <p class="text-muted mb-3">Genetic testing and DNA analysis for paternity, ancestry, and health predisposition.</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="h5 mb-0 text-primary">₱2,500</span>
-                                <small class="text-muted">60 mins</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Features Section -->
-        <section class="py-5" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);" id="about">
-            <div class="container">
-                <div class="text-center mb-5" data-aos="fade-up">
-                    <h2 class="display-4 fw-bold mb-3 text-white">Why Choose MAES?</h2>
-                    <p class="lead text-white opacity-75">Advanced technology meets compassionate care</p>
                 </div>
                 
-                <div class="row g-4">
-                    <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
-                        <div class="card-glass p-4 text-center h-100">
-                            <div class="mb-4">
-                                <i class="fas fa-robot fa-3x text-white"></i>
-                            </div>
-                            <h4 class="fw-bold text-white mb-3">AI-Powered Analysis</h4>
-                            <p class="text-white opacity-75">Advanced artificial intelligence assists in accurate diagnosis and faster results processing with 99.9% accuracy rate.</p>
+                <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="400">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
                         </div>
+                        <h3 class="feature-title">Secure & Private</h3>
+                        <p class="feature-description">
+                            Your medical data is protected with enterprise-grade security and HIPAA-compliant privacy measures.
+                        </p>
                     </div>
-                    <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
-                        <div class="card-glass p-4 text-center h-100">
-                            <div class="mb-4">
-                                <i class="fas fa-clock fa-3x text-white"></i>
-                            </div>
-                            <h4 class="fw-bold text-white mb-3">Real-Time Results</h4>
-                            <p class="text-white opacity-75">Get your test results instantly through our modern digital platform and mobile notifications system.</p>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="500">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-clock"></i>
                         </div>
+                        <h3 class="feature-title">Real-time Results</h3>
+                        <p class="feature-description">
+                            Get your test results instantly through our real-time notification system and secure patient portal.
+                        </p>
                     </div>
-                    <div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">
-                        <div class="card-glass p-4 text-center h-100">
-                            <div class="mb-4">
-                                <i class="fas fa-shield-alt fa-3x text-white"></i>
-                            </div>
-                            <h4 class="fw-bold text-white mb-3">Secure & Private</h4>
-                            <p class="text-white opacity-75">Your health data is protected with enterprise-grade security and privacy measures following international standards.</p>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="600">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-robot"></i>
                         </div>
+                        <h3 class="feature-title">AI Chatbot</h3>
+                        <p class="feature-description">
+                            24/7 intelligent assistance for appointment booking, general inquiries, and health information.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="700">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3 class="feature-title">Analytics Dashboard</h3>
+                        <p class="feature-description">
+                            Comprehensive health analytics and reporting for both patients and healthcare providers.
+                        </p>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- CTA Section -->
-        <section class="py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);" id="contact">
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="col-lg-8" data-aos="fade-right">
-                        <h2 class="display-5 fw-bold text-white mb-3">Ready to Experience Modern Healthcare?</h2>
-                        <p class="lead text-white opacity-75 mb-0">Join thousands of satisfied patients who trust MAES Laboratory for their healthcare needs.</p>
+    <!-- Services Section -->
+    <section id="services" class="services-section">
+        <div class="container">
+            <h2 class="section-title" data-aos="fade-up">Our Services</h2>
+            <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+                Comprehensive laboratory services with the latest technology and expert care
+            </p>
+            
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="service-card">
+                        <div class="service-icon">
+                            <i class="fas fa-microscope"></i>
+                        </div>
+                        <h3 class="service-title">Complete Blood Count</h3>
+                        <p class="service-description">
+                            Comprehensive blood analysis including RBC, WBC, platelets, and hemoglobin levels.
+                        </p>
+                        <div class="service-price">₱350.00</div>
                     </div>
-                    <div class="col-lg-4 text-lg-end" data-aos="fade-left">
-                        <button class="btn btn-light btn-lg px-5 py-3">
-                            <i class="fas fa-rocket me-2"></i>Get Started Today
-                        </button>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="service-card">
+                        <div class="service-icon">
+                            <i class="fas fa-vial"></i>
+                        </div>
+                        <h3 class="service-title">Urinalysis</h3>
+                        <p class="service-description">
+                            Complete urine examination and analysis for kidney function and urinary tract health.
+                        </p>
+                        <div class="service-price">₱200.00</div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="400">
+                    <div class="service-card">
+                        <div class="service-icon">
+                            <i class="fas fa-x-ray"></i>
+                        </div>
+                        <h3 class="service-title">Chest X-Ray</h3>
+                        <p class="service-description">
+                            Digital chest X-ray imaging for lung and heart health assessment.
+                        </p>
+                        <div class="service-price">₱500.00</div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="500">
+                    <div class="service-card">
+                        <div class="service-icon">
+                            <i class="fas fa-heartbeat"></i>
+                        </div>
+                        <h3 class="service-title">ECG/EKG</h3>
+                        <p class="service-description">
+                            Electrocardiogram heart monitoring to assess cardiac rhythm and function.
+                        </p>
+                        <div class="service-price">₱400.00</div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="600">
+                    <div class="service-card">
+                        <div class="service-icon">
+                            <i class="fas fa-baby"></i>
+                        </div>
+                        <h3 class="service-title">Ultrasound</h3>
+                        <p class="service-description">
+                            Abdominal and pelvic ultrasound imaging for comprehensive internal examination.
+                        </p>
+                        <div class="service-price">₱800.00</div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="700">
+                    <div class="service-card">
+                        <div class="service-icon">
+                            <i class="fas fa-dna"></i>
+                        </div>
+                        <h3 class="service-title">Genetic Testing</h3>
+                        <p class="service-description">
+                            Advanced genetic analysis for hereditary conditions and personalized medicine.
+                        </p>
+                        <div class="service-price">₱2,500.00</div>
                     </div>
                 </div>
             </div>
-        </section>
-    </main>
+        </div>
+    </section>
 
     <!-- Footer -->
-    <footer class="footer-modern">
+    <footer id="contact" class="footer">
         <div class="container">
-            <div class="row">
-                <div class="col-lg-4 mb-4">
-                    <h5><i class="fas fa-microscope me-2"></i>MAES Laboratory</h5>
-                    <p class="mb-3">Leading healthcare laboratory providing accurate diagnostics and exceptional patient care with modern technology and experienced professionals.</p>
-                    <div class="d-flex gap-3">
-                        <a href="#" class="text-decoration-none">
-                            <i class="fab fa-facebook-f fa-lg"></i>
-                        </a>
-                        <a href="#" class="text-decoration-none">
-                            <i class="fab fa-twitter fa-lg"></i>
-                        </a>
-                        <a href="#" class="text-decoration-none">
-                            <i class="fab fa-instagram fa-lg"></i>
-                        </a>
-                        <a href="#" class="text-decoration-none">
-                            <i class="fab fa-linkedin-in fa-lg"></i>
-                        </a>
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-flask me-2"></i>MAES Laboratory</h4>
+                    <p>Advanced healthcare solutions powered by Firebase technology. Your health, our priority.</p>
+                    <div class="mt-3">
+                        <i class="fab fa-facebook me-3"></i>
+                        <i class="fab fa-twitter me-3"></i>
+                        <i class="fab fa-instagram me-3"></i>
+                        <i class="fab fa-linkedin"></i>
                     </div>
                 </div>
                 
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <h5>Services</h5>
-                    <ul class="list-unstyled">
-                        <li class="mb-2"><a href="#">Blood Tests</a></li>
-                        <li class="mb-2"><a href="#">X-Ray</a></li>
-                        <li class="mb-2"><a href="#">Ultrasound</a></li>
-                        <li class="mb-2"><a href="#">ECG</a></li>
-                        <li class="mb-2"><a href="#">CT Scan</a></li>
-                    </ul>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <p><a href="#home">Home</a></p>
+                    <p><a href="#features">Features</a></p>
+                    <p><a href="#services">Services</a></p>
+                    <p><a href="#about">About Us</a></p>
                 </div>
                 
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <h5>Quick Links</h5>
-                    <ul class="list-unstyled">
-                        <li class="mb-2"><a href="#home">Home</a></li>
-                        <li class="mb-2"><a href="#about">About Us</a></li>
-                        <li class="mb-2"><a href="#services">Services</a></li>
-                        <li class="mb-2"><a href="#contact">Contact</a></li>
-                        <li class="mb-2"><a href="#">FAQ</a></li>
-                    </ul>
+                <div class="footer-section">
+                    <h4>Services</h4>
+                    <p><a href="#">Blood Tests</a></p>
+                    <p><a href="#">X-Ray Imaging</a></p>
+                    <p><a href="#">Ultrasound</a></p>
+                    <p><a href="#">ECG/EKG</a></p>
                 </div>
                 
-                <div class="col-lg-4 mb-4">
-                    <h5>Contact Info</h5>
-                    <div class="mb-2">
-                        <i class="fas fa-map-marker-alt me-2"></i>
-                        Batangas City, Philippines
-                    </div>
-                    <div class="mb-2">
-                        <i class="fas fa-phone me-2"></i>
-                        (043) 286-2531
-                    </div>
-                    <div class="mb-2">
-                        <i class="fas fa-envelope me-2"></i>
-                        info@maeslaboratory.com
-                    </div>
-                    <div class="mb-2">
-                        <i class="fas fa-clock me-2"></i>
-                        Mon-Sat: 8:00 AM - 6:00 PM
-                    </div>
+                <div class="footer-section">
+                    <h4>Contact Info</h4>
+                    <p><i class="fas fa-phone me-2"></i>(043) 286-2531</p>
+                    <p><i class="fas fa-envelope me-2"></i>info@maeslaboratory.com</p>
+                    <p><i class="fas fa-map-marker-alt me-2"></i>Batangas City, Philippines</p>
+                    <p><i class="fas fa-clock me-2"></i>Mon-Sat: 8AM-6PM</p>
                 </div>
             </div>
             
-            <hr class="my-4" style="border-color: rgba(255, 255, 255, 0.2);">
-            
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <p class="mb-0">&copy; 2024 MAES Laboratory Management System. All rights reserved.</p>
-                </div>
-                <div class="col-md-6 text-md-end">
-                    <a href="#" class="me-3">Privacy Policy</a>
-                    <a href="#" class="me-3">Terms of Service</a>
-                    <a href="#">Support</a>
-                </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 MAES Laboratory Management System. All rights reserved. | Powered by Firebase & Django</p>
             </div>
         </div>
     </footer>
@@ -805,131 +929,153 @@
     <div class="chatbot-container">
         <div class="chatbot-window" id="chatbotWindow">
             <div class="chatbot-header">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <i class="fas fa-robot me-2"></i>
-                        MAES Assistant
-                    </div>
-                    <button class="btn btn-sm text-white" onclick="toggleChatbot()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
+                <i class="fas fa-robot me-2"></i>MAES Assistant
             </div>
-            
             <div class="chatbot-messages" id="chatbotMessages">
                 <div class="message bot">
-                    <i class="fas fa-robot me-2"></i>
                     Hello! I'm your MAES Laboratory assistant. How can I help you today?
                 </div>
             </div>
-            
             <div class="chatbot-input">
-                <div class="input-group">
-                    <input type="text" class="form-control" id="chatbotInput" placeholder="Type your message...">
-                    <button class="btn btn-gradient-primary" onclick="sendMessage()">
-                        <i class="fas fa-paper-plane"></i>
-                    </button>
-                </div>
+                <input type="text" id="chatbotInput" placeholder="Type your message..." onkeypress="handleChatbotEnter(event)">
             </div>
         </div>
-        
         <button class="chatbot-toggle" onclick="toggleChatbot()">
             <i class="fas fa-comments"></i>
         </button>
     </div>
 
     <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    
     <script>
         // Initialize AOS
         AOS.init({
-            duration: 800,
-            easing: 'ease-in-out',
+            duration: 1000,
             once: true
         });
 
-        // Chatbot functionality
-        function toggleChatbot() {
-            const chatbotWindow = document.getElementById('chatbotWindow');
-            if (chatbotWindow.style.display === 'none' || chatbotWindow.style.display === '') {
-                chatbotWindow.style.display = 'flex';
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
             } else {
-                chatbotWindow.style.display = 'none';
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Counter animation
+        function animateCounters() {
+            const counters = document.querySelectorAll('.stat-number');
+            counters.forEach(counter => {
+                const target = parseFloat(counter.getAttribute('data-count'));
+                const increment = target / 100;
+                let current = 0;
+                
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        counter.textContent = target % 1 === 0 ? target : target.toFixed(1);
+                        clearInterval(timer);
+                    } else {
+                        counter.textContent = current % 1 === 0 ? Math.floor(current) : current.toFixed(1);
+                    }
+                }, 20);
+            });
+        }
+
+        // Trigger counter animation when stats section is visible
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounters();
+                    observer.unobserve(entry.target);
+                }
+            });
+        });
+
+        observer.observe(document.querySelector('.stats-section'));
+
+        // Chatbot functionality
+        let chatbotOpen = false;
+
+        function toggleChatbot() {
+            const window = document.getElementById('chatbotWindow');
+            chatbotOpen = !chatbotOpen;
+            window.style.display = chatbotOpen ? 'flex' : 'none';
+        }
+
+        function handleChatbotEnter(event) {
+            if (event.key === 'Enter') {
+                sendChatbotMessage();
             }
         }
 
-        function sendMessage() {
+        function sendChatbotMessage() {
             const input = document.getElementById('chatbotInput');
             const messages = document.getElementById('chatbotMessages');
             const message = input.value.trim();
             
-            if (message) {
-                // Add user message
-                const userMessage = document.createElement('div');
-                userMessage.className = 'message user';
-                userMessage.innerHTML = `<i class="fas fa-user me-2"></i>${message}`;
-                messages.appendChild(userMessage);
+            if (!message) return;
+
+            // Add user message
+            const userMessage = document.createElement('div');
+            userMessage.className = 'message user';
+            userMessage.textContent = message;
+            messages.appendChild(userMessage);
+
+            // Clear input
+            input.value = '';
+
+            // Add loading indicator
+            const loadingMessage = document.createElement('div');
+            loadingMessage.className = 'message bot';
+            loadingMessage.innerHTML = '<div class="loading"></div>';
+            messages.appendChild(loadingMessage);
+
+            // Scroll to bottom
+            messages.scrollTop = messages.scrollHeight;
+
+            // Simulate bot response
+            setTimeout(() => {
+                messages.removeChild(loadingMessage);
                 
-                // Clear input
-                input.value = '';
+                const botMessage = document.createElement('div');
+                botMessage.className = 'message bot';
+                botMessage.textContent = getBotResponse(message.toLowerCase());
+                messages.appendChild(botMessage);
                 
-                // Show typing indicator
-                const typingIndicator = document.createElement('div');
-                typingIndicator.className = 'message bot';
-                typingIndicator.innerHTML = '<i class="fas fa-robot me-2"></i><span class="loading-spinner"></span> Typing...';
-                messages.appendChild(typingIndicator);
-                
-                // Scroll to bottom
                 messages.scrollTop = messages.scrollHeight;
-                
-                // Simulate bot response
-                setTimeout(() => {
-                    // Remove typing indicator
-                    messages.removeChild(typingIndicator);
-                    
-                    // Simple responses
-                    const responses = {
-                        'hello': 'Hello! How can I help you today?',
-                        'hi': 'Hi there! What can I do for you?',
-                        'appointment': 'To book an appointment, please visit our booking page or call (043) 286-2531.',
-                        'hours': 'We are open Monday to Saturday, 8:00 AM to 6:00 PM.',
-                        'location': 'We are located at Batangas City. You can find our exact address on our contact page.',
-                        'services': 'We offer various laboratory services including blood tests, X-rays, ultrasound, and more.',
-                        'payment': 'We accept cash, GCash, PayMaya, bank transfers, and major credit cards.',
-                        'results': 'Test results are usually available within 24-48 hours. You will be notified when ready.',
-                    };
-                    
-                    let response = 'I\'m sorry, I didn\'t understand that. Please contact our staff for more information.';
-                    
-                    for (const [keyword, reply] of Object.entries(responses)) {
-                        if (message.toLowerCase().includes(keyword)) {
-                            response = reply;
-                            break;
-                        }
-                    }
-                    
-                    // Add bot response
-                    const botMessage = document.createElement('div');
-                    botMessage.className = 'message bot';
-                    botMessage.innerHTML = `<i class="fas fa-robot me-2"></i>${response}`;
-                    messages.appendChild(botMessage);
-                    
-                    // Scroll to bottom
-                    messages.scrollTop = messages.scrollHeight;
-                }, 1500);
-            }
+            }, 1000);
         }
 
-        // Enter key to send message
-        document.getElementById('chatbotInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
-        });
+        function getBotResponse(message) {
+            const responses = {
+                'hello': 'Hello! How can I help you with your healthcare needs today?',
+                'hi': 'Hi there! What can I assist you with?',
+                'appointment': 'To book an appointment, please call (043) 286-2531 or visit our booking page. What type of service do you need?',
+                'hours': 'We are open Monday to Saturday, 8:00 AM to 6:00 PM. We\'re closed on Sundays.',
+                'location': 'We are located in Batangas City, Philippines. Would you like directions?',
+                'services': 'We offer blood tests, X-rays, ultrasound, ECG, urinalysis, and genetic testing. Which service interests you?',
+                'payment': 'We accept cash, GCash, PayMaya, bank transfers, and major credit cards.',
+                'results': 'Test results are usually available within 24-48 hours. You will be notified when ready.',
+                'price': 'Our prices range from ₱200 for basic tests to ₱2,500 for genetic testing. What specific test are you interested in?',
+                'covid': 'Yes, we offer COVID-19 testing. Please call ahead to schedule your appointment.',
+                'insurance': 'We accept most major insurance plans and HMO coverage. Please bring your insurance card.',
+                'emergency': 'For medical emergencies, please call 911 or go to the nearest emergency room immediately.'
+            };
 
-        // Smooth scrolling for anchor links
+            for (let keyword in responses) {
+                if (message.includes(keyword)) {
+                    return responses[keyword];
+                }
+            }
+
+            return 'I\'m sorry, I didn\'t understand that. Please contact our staff at (043) 286-2531 for more information, or try asking about appointments, services, hours, or location.';
+        }
+
+        // Smooth scrolling for navigation links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -939,49 +1085,6 @@
                         behavior: 'smooth',
                         block: 'start'
                     });
-                }
-            });
-        });
-
-        // Animate counters
-        function animateCounter(element, target) {
-            let current = 0;
-            const increment = target / 100;
-            const timer = setInterval(() => {
-                current += increment;
-                if (current >= target) {
-                    current = target;
-                    clearInterval(timer);
-                }
-                element.textContent = Math.floor(current);
-            }, 20);
-        }
-
-        // Initialize counter animations when in viewport
-        const observerOptions = {
-            threshold: 0.5,
-            rootMargin: '0px 0px -100px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const element = entry.target;
-                    const target = parseInt(element.textContent);
-                    if (!isNaN(target)) {
-                        animateCounter(element, target);
-                    }
-                    observer.unobserve(element);
-                }
-            });
-        }, observerOptions);
-
-        // Observe counter elements
-        document.addEventListener('DOMContentLoaded', () => {
-            const counters = document.querySelectorAll('.stats-number');
-            counters.forEach(counter => {
-                if (!counter.textContent.includes('%') && !counter.textContent.includes('/')) {
-                    observer.observe(counter);
                 }
             });
         });
