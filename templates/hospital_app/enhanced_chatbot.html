@@ -1,0 +1,487 @@
+<!-- Enhanced Chatbot Widget -->
+<div class="chatbot-container" id="chatbotContainer">
+    <div class="chatbot-window" id="chatbotWindow">
+        <div class="chatbot-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="fas fa-robot me-2"></i>
+                    MAES Assistant
+                    <span class="badge bg-success ms-2" id="chatbotStatus">Online</span>
+                </div>
+                <div>
+                    <button class="btn btn-sm text-white me-2" onclick="showFAQs()" title="Frequently Asked Questions">
+                        <i class="fas fa-question-circle"></i>
+                    </button>
+                    <button class="btn btn-sm text-white me-2" onclick="requestLiveAdmin()" title="Talk to Live Admin">
+                        <i class="fas fa-user-tie"></i>
+                    </button>
+                    <button class="btn btn-sm text-white" onclick="toggleChatbot()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chatbot-messages" id="chatbotMessages">
+            <div class="message bot">
+                <div class="message-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="message-content">
+                    <p>Hello! I'm your MAES Laboratory assistant. How can I help you today?</p>
+                    <div class="quick-actions">
+                        <button class="quick-btn" onclick="sendQuickMessage('Book appointment')">📅 Book Appointment</button>
+                        <button class="quick-btn" onclick="sendQuickMessage('Services')">🔬 Our Services</button>
+                        <button class="quick-btn" onclick="sendQuickMessage('Hours')">⏰ Operating Hours</button>
+                        <button class="quick-btn" onclick="sendQuickMessage('FAQ')">❓ FAQ</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chatbot-input">
+            <div class="input-group">
+                <input type="text" class="form-control" id="chatbotInput" placeholder="Type your message...">
+                <button class="btn btn-primary" onclick="sendMessage()" id="sendBtn">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <button class="chatbot-toggle" onclick="toggleChatbot()" id="chatbotToggle">
+        <i class="fas fa-comments"></i>
+        <span class="notification-badge" id="notificationBadge" style="display: none;">1</span>
+    </button>
+</div>
+
+<!-- Live Admin Request Modal -->
+<div class="modal fade" id="liveAdminModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-user-tie me-2"></i>Request Live Admin Support
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="liveAdminForm">
+                    <div class="mb-3">
+                        <label class="form-label">Your Name *</label>
+                        <input type="text" class="form-control" id="adminRequestName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phone Number *</label>
+                        <input type="tel" class="form-control" id="adminRequestPhone" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="adminRequestEmail">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">How can we help you? *</label>
+                        <textarea class="form-control" id="adminRequestMessage" rows="3" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="submitLiveAdminRequest()">
+                    <i class="fas fa-paper-plane me-2"></i>Send Request
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.chatbot-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1050;
+}
+
+.chatbot-toggle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.chatbot-toggle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6);
+}
+
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #dc3545;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chatbot-window {
+    position: absolute;
+    bottom: 80px;
+    right: 0;
+    width: 400px;
+    height: 600px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+}
+
+.chatbot-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1rem;
+    font-weight: 600;
+}
+
+.chatbot-messages {
+    flex: 1;
+    padding: 1rem;
+    overflow-y: auto;
+    background: #f8fafc;
+}
+
+.chatbot-input {
+    padding: 1rem;
+    border-top: 1px solid #e2e8f0;
+    background: white;
+}
+
+.message {
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.message.user {
+    flex-direction: row-reverse;
+}
+
+.message-avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.message.bot .message-avatar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.message.user .message-avatar {
+    background: #28a745;
+    color: white;
+}
+
+.message-content {
+    background: white;
+    padding: 0.75rem 1rem;
+    border-radius: 18px;
+    max-width: 80%;
+    word-wrap: break-word;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.message.user .message-content {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.quick-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.quick-btn {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 15px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.quick-btn:hover {
+    background: #e2e8f0;
+    transform: translateY(-1px);
+}
+
+.typing-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: #6b7280;
+    font-style: italic;
+}
+
+.typing-dots {
+    display: flex;
+    gap: 2px;
+}
+
+.typing-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #6b7280;
+    animation: typing 1.4s infinite ease-in-out;
+}
+
+.typing-dot:nth-child(1) { animation-delay: -0.32s; }
+.typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes typing {
+    0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+    40% { transform: scale(1); opacity: 1; }
+}
+
+@media (max-width: 768px) {
+    .chatbot-window {
+        width: 320px;
+        height: 500px;
+    }
+}
+</style>
+
+<script>
+let chatbotOpen = false;
+let messageCount = 0;
+
+function toggleChatbot() {
+    const window = document.getElementById('chatbotWindow');
+    const badge = document.getElementById('notificationBadge');
+    chatbotOpen = !chatbotOpen;
+    window.style.display = chatbotOpen ? 'flex' : 'none';
+    
+    if (chatbotOpen) {
+        badge.style.display = 'none';
+        document.getElementById('chatbotInput').focus();
+    }
+}
+
+function sendMessage() {
+    const input = document.getElementById('chatbotInput');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    addUserMessage(message);
+    input.value = '';
+    
+    // Show typing indicator
+    showTypingIndicator();
+    
+    // Send to API
+    fetch('/api/chatbot/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({ message: message })
+    })
+    .then(response => response.json())
+    .then(data => {
+        hideTypingIndicator();
+        addBotMessage(data.response, data.suggestions, data.faqs);
+        
+        if (data.action === 'request_live_admin') {
+            setTimeout(() => {
+                new bootstrap.Modal(document.getElementById('liveAdminModal')).show();
+            }, 1000);
+        }
+    })
+    .catch(error => {
+        hideTypingIndicator();
+        addBotMessage('Sorry, I encountered an error. Please try again or contact our staff at (043) 286-2531.');
+    });
+}
+
+function sendQuickMessage(message) {
+    document.getElementById('chatbotInput').value = message;
+    sendMessage();
+}
+
+function addUserMessage(message) {
+    const messages = document.getElementById('chatbotMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'message user';
+    messageDiv.innerHTML = `
+        <div class="message-avatar">
+            <i class="fas fa-user"></i>
+        </div>
+        <div class="message-content">
+            <p>${message}</p>
+        </div>
+    `;
+    messages.appendChild(messageDiv);
+    scrollToBottom();
+}
+
+function addBotMessage(message, suggestions = [], faqs = []) {
+    const messages = document.getElementById('chatbotMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'message bot';
+    
+    let suggestionsHtml = '';
+    if (suggestions && suggestions.length > 0) {
+        suggestionsHtml = `
+            <div class="quick-actions">
+                ${suggestions.map(s => `<button class="quick-btn" onclick="sendQuickMessage('${s}')">${s}</button>`).join('')}
+            </div>
+        `;
+    }
+    
+    let faqsHtml = '';
+    if (faqs && faqs.length > 0) {
+        faqsHtml = `
+            <div class="mt-2">
+                <small class="text-muted">Click on any question to get more details:</small>
+                <div class="quick-actions">
+                    ${faqs.map(faq => `<button class="quick-btn" onclick="sendQuickMessage('${faq.question}')">${faq.question}</button>`).join('')}
+                </div>
+            </div>
+        `;
+    }
+    
+    messageDiv.innerHTML = `
+        <div class="message-avatar">
+            <i class="fas fa-robot"></i>
+        </div>
+        <div class="message-content">
+            <p>${message.replace(/\n/g, '<br>')}</p>
+            ${suggestionsHtml}
+            ${faqsHtml}
+        </div>
+    `;
+    messages.appendChild(messageDiv);
+    scrollToBottom();
+}
+
+function showTypingIndicator() {
+    const messages = document.getElementById('chatbotMessages');
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'message bot typing-indicator';
+    typingDiv.id = 'typingIndicator';
+    typingDiv.innerHTML = `
+        <div class="message-avatar">
+            <i class="fas fa-robot"></i>
+        </div>
+        <div class="message-content">
+            <div class="typing-indicator">
+                <span>MAES Assistant is typing</span>
+                <div class="typing-dots">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            </div>
+        </div>
+    `;
+    messages.appendChild(typingDiv);
+    scrollToBottom();
+}
+
+function hideTypingIndicator() {
+    const typingIndicator = document.getElementById('typingIndicator');
+    if (typingIndicator) {
+        typingIndicator.remove();
+    }
+}
+
+function scrollToBottom() {
+    const messages = document.getElementById('chatbotMessages');
+    messages.scrollTop = messages.scrollHeight;
+}
+
+function showFAQs() {
+    sendQuickMessage('FAQ');
+}
+
+function requestLiveAdmin() {
+    const modal = new bootstrap.Modal(document.getElementById('liveAdminModal'));
+    modal.show();
+}
+
+function submitLiveAdminRequest() {
+    const form = document.getElementById('liveAdminForm');
+    const formData = new FormData(form);
+    
+    // Here you would send the request to your backend
+    // For now, just show a success message
+    addBotMessage('Thank you for your request! A live administrator will contact you within 15 minutes at the provided contact information.');
+    
+    bootstrap.Modal.getInstance(document.getElementById('liveAdminModal')).hide();
+}
+
+// Enter key to send message
+document.getElementById('chatbotInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        sendMessage();
+    }
+});
+
+// Show notification badge when chatbot is closed
+function showNotification() {
+    if (!chatbotOpen) {
+        const badge = document.getElementById('notificationBadge');
+        badge.style.display = 'flex';
+        badge.textContent = '1';
+    }
+}
+
+// Initialize chatbot
+document.addEventListener('DOMContentLoaded', function() {
+    // Show welcome notification after 5 seconds
+    setTimeout(showNotification, 5000);
+});
+
+// Helper function to get CSRF token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>

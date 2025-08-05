@@ -1,0 +1,281 @@
+{% extends 'base.html' %}
+
+{% block title %}Financial Assistance - MAES Laboratory{% endblock %}
+
+{% block content %}
+<section class="py-5" style="background: white; min-height: 100vh;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card-modern p-4" data-aos="fade-up">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-hand-holding-usd fa-3x mb-3" style="color: var(--primary-color);"></i>
+                        <h2 class="fw-bold mb-2">Financial Assistance Application</h2>
+                        <p class="text-muted">We offer various financial assistance options to help make healthcare accessible</p>
+                    </div>
+
+                    <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- Patient Information -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0"><i class="fas fa-user me-2"></i>Patient Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Full Name</label>
+                                        <input type="text" class="form-control" value="{{ user.get_full_name }}" readonly>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Email</label>
+                                        <input type="email" class="form-control" value="{{ user.email }}" readonly>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Phone Number</label>
+                                        <input type="tel" class="form-control" value="{{ user.userprofile.phone_number }}" readonly>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Address</label>
+                                        <input type="text" class="form-control" value="{{ user.userprofile.address|default:'Not provided' }}" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Financial Assistance Type -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0"><i class="fas fa-percentage me-2"></i>Assistance Type</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Type of Financial Assistance *</label>
+                                    {{ form.financial_assistance_type }}
+                                    <div class="form-text">Select the type of financial assistance you are requesting</div>
+                                </div>
+
+                                <!-- HMO/Insurance Details (hidden by default) -->
+                                <div id="hmoDetails" class="d-none">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">HMO Provider</label>
+                                            {{ form.hmo_provider }}
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">HMO Card Number</label>
+                                            {{ form.hmo_card_number }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Installment Details (hidden by default) -->
+                                <div id="installmentDetails" class="d-none">
+                                    <div class="mb-3">
+                                        <label class="form-label">Number of Installment Months</label>
+                                        {{ form.installment_months }}
+                                        <div class="form-text">Choose between 2-12 months</div>
+                                    </div>
+                                </div>
+
+                                <!-- Discount Information -->
+                                <div class="alert alert-info">
+                                    <h6><i class="fas fa-info-circle me-2"></i>Available Discounts:</h6>
+                                    <ul class="mb-0">
+                                        <li><strong>HMO/Insurance:</strong> Up to 80% coverage</li>
+                                        <li><strong>Senior Citizens:</strong> 20% discount</li>
+                                        <li><strong>PWD (Persons with Disability):</strong> 20% discount</li>
+                                        <li><strong>Students:</strong> 10% discount (with valid school ID)</li>
+                                        <li><strong>Government Employees:</strong> Special rates available</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Payment Information -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0"><i class="fas fa-credit-card me-2"></i>Payment Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Preferred Payment Method *</label>
+                                    {{ form.preferred_payment_method }}
+                                </div>
+
+                                <!-- GCash Details (hidden by default) -->
+                                <div id="gcashDetails" class="d-none">
+                                    <div class="mb-3">
+                                        <label class="form-label">GCash Number</label>
+                                        {{ form.gcash_number }}
+                                        <div class="form-text">Enter your GCash mobile number</div>
+                                    </div>
+                                </div>
+
+                                <!-- Payment Options Info -->
+                                <div class="alert alert-success">
+                                    <h6><i class="fas fa-check-circle me-2"></i>We Accept:</h6>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <ul class="mb-0">
+                                                <li>Cash payments</li>
+                                                <li>GCash (0995-123-4567)</li>
+                                                <li>PayMaya</li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <ul class="mb-0">
+                                                <li>Bank transfers</li>
+                                                <li>Credit/Debit cards</li>
+                                                <li>Post-dated cheques</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Document Upload -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0"><i class="fas fa-upload me-2"></i>Supporting Documents</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Guarantee Letter (if applicable)</label>
+                                    {{ form.guarantee_letter }}
+                                    <div class="form-text">Upload company guarantee letter, scholarship certificate, etc.</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Additional Documents</label>
+                                    {{ form.additional_documents }}
+                                    <div class="form-text">Upload HMO card, senior citizen ID, PWD ID, student ID, etc.</div>
+                                </div>
+
+                                <div class="alert alert-warning">
+                                    <h6><i class="fas fa-exclamation-triangle me-2"></i>Required Documents:</h6>
+                                    <ul class="mb-0">
+                                        <li><strong>HMO/Insurance:</strong> HMO card copy and valid ID</li>
+                                        <li><strong>Senior Citizens:</strong> Senior citizen ID or birth certificate</li>
+                                        <li><strong>PWD:</strong> PWD ID card</li>
+                                        <li><strong>Students:</strong> Current school ID or enrollment certificate</li>
+                                        <li><strong>Government Employees:</strong> Government office ID</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Terms and Conditions -->
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="acceptTerms" required>
+                                    <label class="form-check-label" for="acceptTerms">
+                                        I agree to the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">terms and conditions</a> 
+                                        for financial assistance and understand that approval is subject to verification of submitted documents.
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-gradient-primary btn-lg px-5">
+                                <i class="fas fa-paper-plane me-2"></i>Submit Application
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Terms and Conditions Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Financial Assistance Terms and Conditions</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <h6>1. Eligibility Requirements</h6>
+                <p>Financial assistance is available to patients who meet specific criteria and provide required documentation.</p>
+                
+                <h6>2. Documentation</h6>
+                <p>All submitted documents must be valid and current. False information may result in denial of services.</p>
+                
+                <h6>3. Approval Process</h6>
+                <p>Applications are reviewed within 2-3 business days. Approval is not guaranteed and depends on verification.</p>
+                
+                <h6>4. Payment Terms</h6>
+                <p>Approved payment plans must be adhered to. Failure to make payments may result in suspension of services.</p>
+                
+                <h6>5. Confidentiality</h6>
+                <p>All information provided will be kept confidential and used only for assistance evaluation purposes.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">I Understand</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Show/hide relevant fields based on assistance type
+    document.getElementById('id_financial_assistance_type').addEventListener('change', function() {
+        const assistanceType = this.value;
+        const hmoDetails = document.getElementById('hmoDetails');
+        const installmentDetails = document.getElementById('installmentDetails');
+        
+        // Hide all conditional fields
+        hmoDetails.classList.add('d-none');
+        installmentDetails.classList.add('d-none');
+        
+        // Show relevant fields
+        if (assistanceType === 'hmo') {
+            hmoDetails.classList.remove('d-none');
+        } else if (assistanceType === 'installment') {
+            installmentDetails.classList.remove('d-none');
+        }
+    });
+
+    // Show/hide payment method specific fields
+    document.getElementById('id_preferred_payment_method').addEventListener('change', function() {
+        const paymentMethod = this.value;
+        const gcashDetails = document.getElementById('gcashDetails');
+        
+        // Hide all conditional fields
+        gcashDetails.classList.add('d-none');
+        
+        // Show relevant fields
+        if (paymentMethod === 'gcash') {
+            gcashDetails.classList.remove('d-none');
+        }
+    });
+
+    // Form validation
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            var forms = document.getElementsByClassName('needs-validation');
+            var validation = Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>
+{% endblock %}

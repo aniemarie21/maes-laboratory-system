@@ -1,0 +1,463 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - MAES Laboratory{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<section class="py-5" style="background: #f8fafc;">
+    <div class="container-fluid">
+        <!-- Header with Logout -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="display-5 fw-bold mb-2">Admin Dashboard</h1>
+                        <p class="lead text-muted">Welcome back, {{ user.get_full_name }}! Here's what's happening today.</p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'export_reports' %}" class="btn btn-gradient-primary">
+                            <i class="fas fa-download me-2"></i>Export Reports
+                        </a>
+                        <a href="{% url 'logout' %}" class="btn btn-outline-danger">
+                            <i class="fas fa-sign-out-alt me-2"></i>Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Cards with Charts -->
+        <div class="row g-4 mb-5">
+            <div class="col-lg-3 col-md-6">
+                <div class="card-modern p-4 h-100">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="stats-number text-primary">{{ stats.total_patients }}</div>
+                            <div class="stats-label">Total Patients</div>
+                            <small class="text-success">
+                                <i class="fas fa-arrow-up me-1"></i>+12% from last month
+                            </small>
+                        </div>
+                        <div class="stats-icon bg-primary">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="card-modern p-4 h-100">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="stats-number text-info">{{ stats.total_appointments }}</div>
+                            <div class="stats-label">Total Appointments</div>
+                            <small class="text-success">
+                                <i class="fas fa-arrow-up me-1"></i>+8% from last week
+                            </small>
+                        </div>
+                        <div class="stats-icon bg-info">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="card-modern p-4 h-100">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="stats-number text-warning">{{ stats.today_appointments }}</div>
+                            <div class="stats-label">Today's Appointments</div>
+                            <small class="text-info">
+                                <i class="fas fa-calendar-day me-1"></i>{{ stats.pending_appointments }} pending
+                            </small>
+                        </div>
+                        <div class="stats-icon bg-warning">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="card-modern p-4 h-100">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="stats-number text-success">₱{{ stats.monthly_revenue|floatformat:0 }}</div>
+                            <div class="stats-label">Monthly Revenue</div>
+                            <small class="text-success">
+                                <i class="fas fa-arrow-up me-1"></i>+15% from last month
+                            </small>
+                        </div>
+                        <div class="stats-icon bg-success">
+                            <i class="fas fa-peso-sign"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="row g-4 mb-5">
+            <div class="col-lg-8">
+                <div class="card-modern p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-bold mb-0">Revenue & Appointments Trend</h5>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-outline-primary btn-sm active" data-period="7days">7 Days</button>
+                            <button type="button" class="btn btn-outline-primary btn-sm" data-period="30days">30 Days</button>
+                            <button type="button" class="btn btn-outline-primary btn-sm" data-period="3months">3 Months</button>
+                        </div>
+                    </div>
+                    <canvas id="revenueChart" height="100"></canvas>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="card-modern p-4">
+                    <h5 class="fw-bold mb-4">Service Distribution</h5>
+                    <canvas id="serviceChart" height="150"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Patient Demographics & Payment Status -->
+        <div class="row g-4 mb-5">
+            <div class="col-lg-6">
+                <div class="card-modern p-4">
+                    <h5 class="fw-bold mb-4">Patient Demographics</h5>
+                    <canvas id="demographicsChart" height="120"></canvas>
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="card-modern p-4">
+                    <h5 class="fw-bold mb-4">Payment Status Overview</h5>
+                    <canvas id="paymentChart" height="120"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Tables -->
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="card-modern p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-bold mb-0">Recent Appointments</h5>
+                        <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+                    </div>
+                    
+                    {% if recent_appointments %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Patient</th>
+                                        <th>Service</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for appointment in recent_appointments %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar-sm bg-primary rounded-circle d-flex align-items-center justify-content-center me-3">
+                                                    <i class="fas fa-user text-white"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="fw-semibold">{{ appointment.patient.get_full_name }}</div>
+                                                    <small class="text-muted">{{ appointment.patient.email }}</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>{{ appointment.service.name }}</td>
+                                        <td>{{ appointment.appointment_date|date:"M d, H:i" }}</td>
+                                        <td>
+                                            <span class="badge bg-{% if appointment.status == 'completed' %}success{% elif appointment.status == 'pending' %}warning{% elif appointment.status == 'confirmed' %}info{% else %}secondary{% endif %}">
+                                                {{ appointment.get_status_display }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                                    Actions
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <li><a class="dropdown-item" href="#"><i class="fas fa-eye me-2"></i>View</a></li>
+                                                    <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i>Edit</a></li>
+                                                    <li><a class="dropdown-item" href="#"><i class="fas fa-check me-2"></i>Complete</a></li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No recent appointments</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="card-modern p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-bold mb-0">Recent Payments</h5>
+                        <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+                    </div>
+                    
+                    {% if recent_payments %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Patient</th>
+                                        <th>Amount</th>
+                                        <th>Method</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for payment in recent_payments %}
+                                    <tr>
+                                        <td>
+                                            <div class="fw-semibold">{{ payment.appointment.patient.get_full_name }}</div>
+                                            <small class="text-muted">{{ payment.appointment.service.name }}</small>
+                                        </td>
+                                        <td>₱{{ payment.amount }}</td>
+                                        <td>
+                                            <span class="badge bg-light text-dark">{{ payment.get_payment_method_display }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-{% if payment.is_verified %}success{% else %}warning{% endif %}">
+                                                {% if payment.is_verified %}Verified{% else %}Pending{% endif %}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" onclick="viewPayment('{{ payment.id }}')">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-credit-card fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No recent payments</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.stats-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+}
+
+.avatar-sm {
+    width: 40px;
+    height: 40px;
+}
+
+.card-modern {
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+}
+
+.card-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.stats-number {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.stats-label {
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Revenue and Appointments Trend Chart
+const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+const revenueChart = new Chart(revenueCtx, {
+    type: 'line',
+    data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+        datasets: [{
+            label: 'Revenue (₱)',
+            data: [12000, 19000, 15000, 25000, 22000, 30000, 28000],
+            borderColor: '#667eea',
+            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+            tension: 0.4,
+            fill: true
+        }, {
+            label: 'Appointments',
+            data: [45, 65, 55, 80, 75, 90, 85],
+            borderColor: '#f093fb',
+            backgroundColor: 'rgba(240, 147, 251, 0.1)',
+            tension: 0.4,
+            yAxisID: 'y1'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'top',
+            },
+        },
+        scales: {
+            y: {
+                type: 'linear',
+                display: true,
+                position: 'left',
+            },
+            y1: {
+                type: 'linear',
+                display: true,
+                position: 'right',
+                grid: {
+                    drawOnChartArea: false,
+                },
+            }
+        }
+    }
+});
+
+// Service Distribution Chart
+const serviceCtx = document.getElementById('serviceChart').getContext('2d');
+const serviceChart = new Chart(serviceCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Blood Tests', 'X-Ray', 'Ultrasound', 'ECG', 'Other'],
+        datasets: [{
+            data: [35, 25, 20, 15, 5],
+            backgroundColor: [
+                '#667eea',
+                '#f093fb',
+                '#4facfe',
+                '#43e97b',
+                '#ffa726'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+
+// Demographics Chart
+const demographicsCtx = document.getElementById('demographicsChart').getContext('2d');
+const demographicsChart = new Chart(demographicsCtx, {
+    type: 'bar',
+    data: {
+        labels: ['18-25', '26-35', '36-45', '46-55', '56-65', '65+'],
+        datasets: [{
+            label: 'Male',
+            data: [120, 190, 300, 250, 200, 150],
+            backgroundColor: '#667eea'
+        }, {
+            label: 'Female',
+            data: [150, 220, 280, 300, 180, 120],
+            backgroundColor: '#f093fb'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'top'
+            }
+        },
+        scales: {
+            x: {
+                stacked: true
+            },
+            y: {
+                stacked: true
+            }
+        }
+    }
+});
+
+// Payment Status Chart
+const paymentCtx = document.getElementById('paymentChart').getContext('2d');
+const paymentChart = new Chart(paymentCtx, {
+    type: 'pie',
+    data: {
+        labels: ['Paid', 'Pending', 'Overdue', 'Partially Paid'],
+        datasets: [{
+            data: [65, 20, 10, 5],
+            backgroundColor: [
+                '#28a745',
+                '#ffc107',
+                '#dc3545',
+                '#6c757d'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+
+function viewPayment(paymentId) {
+    // Implementation for viewing payment details
+    console.log('Viewing payment:', paymentId);
+}
+
+// Refresh data every 30 seconds
+setInterval(function() {
+    // You can implement auto-refresh of dashboard data here
+    console.log('Refreshing dashboard data...');
+}, 30000);
+</script>
+{% endblock %}
