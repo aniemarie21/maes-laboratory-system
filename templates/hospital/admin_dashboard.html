@@ -1,121 +1,502 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Admin Dashboard - MAES Laboratory{% endblock %}
 
+{% block extra_css %}
+<style>
+    .dashboard-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+        border-radius: 0 0 25px 25px;
+    }
+    
+    .stats-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        border: none;
+        height: 100%;
+    }
+    
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    .stats-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stats-label {
+        color: #718096;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 0.85rem;
+    }
+    
+    .chart-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+        border: none;
+    }
+    
+    .chart-container {
+        position: relative;
+        height: 300px;
+        margin-top: 1rem;
+    }
+    
+    .chart-image {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+    }
+    
+    .activity-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+        border: none;
+    }
+    
+    .activity-item {
+        padding: 1rem;
+        border-left: 4px solid #667eea;
+        background: #f8fafc;
+        border-radius: 0 10px 10px 0;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .activity-item:hover {
+        background: #e2e8f0;
+        transform: translateX(5px);
+    }
+    
+    .quick-actions {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+    
+    .action-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        margin: 0.25rem;
+    }
+    
+    .action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        color: white;
+    }
+    
+    .logout-btn {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+    
+    .logout-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(240, 147, 251, 0.4);
+        color: white;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<section class="py-5" style="background: white;">
+&lt;!-- Dashboard Header -->
+<div class="dashboard-header">
     <div class="container">
-        <div class="row mb-4">
-            <div class="col-12">
-                <h1 class="display-5 fw-bold mb-2">Admin Dashboard</h1>
-                <p class="lead text-muted">Monitor and manage laboratory operations</p>
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="fw-bold mb-2">
+                    <i class="fas fa-chart-line me-3"></i>Admin Dashboard
+                </h1>
+                <p class="mb-0 opacity-90">Welcome back, {{ user.get_full_name }}! Here's your laboratory overview.</p>
             </div>
-        </div>
-
-        &lt;!-- Statistics Cards -->
-        <div class="row g-4 mb-5">
-            <div class="col-lg-3 col-md-6">
-                <div class="stats-card">
-                    <div class="stats-number">{{ stats.total_patients }}</div>
-                    <div class="stats-label">Total Patients</div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="stats-card">
-                    <div class="stats-number">{{ stats.total_appointments }}</div>
-                    <div class="stats-label">Total Appointments</div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="stats-card">
-                    <div class="stats-number">{{ stats.today_appointments }}</div>
-                    <div class="stats-label">Today's Appointments</div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="stats-card">
-                    <div class="stats-number">₱{{ stats.monthly_revenue|floatformat:0 }}</div>
-                    <div class="stats-label">Monthly Revenue</div>
-                </div>
-            </div>
-        </div>
-
-        &lt;!-- Recent Activities -->
-        <div class="row g-4">
-            <div class="col-lg-6">
-                <div class="card-modern p-4">
-                    <h3 class="fw-bold mb-4">Recent Appointments</h3>
-                    
-                    {% if recent_appointments %}
-                        <div class="table-responsive">
-                            <table class="table table-sm">
-                                <thead>
-                                    <tr>
-                                        <th>Patient</th>
-                                        <th>Service</th>
-                                        <th>Date</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for appointment in recent_appointments %}
-                                    <tr>
-                                        <td>{{ appointment.patient.get_full_name }}</td>
-                                        <td>{{ appointment.service.name }}</td>
-                                        <td>{{ appointment.appointment_date|date:"M d" }}</td>
-                                        <td>
-                                            <span class="badge bg-{% if appointment.status == 'completed' %}success{% elif appointment.status == 'pending' %}warning{% else %}info{% endif %} badge-sm">
-                                                {{ appointment.get_status_display }}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    {% else %}
-                        <p class="text-muted">No recent appointments</p>
-                    {% endif %}
-                </div>
-            </div>
-            
-            <div class="col-lg-6">
-                <div class="card-modern p-4">
-                    <h3 class="fw-bold mb-4">Recent Payments</h3>
-                    
-                    {% if recent_payments %}
-                        <div class="table-responsive">
-                            <table class="table table-sm">
-                                <thead>
-                                    <tr>
-                                        <th>Patient</th>
-                                        <th>Amount</th>
-                                        <th>Method</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for payment in recent_payments %}
-                                    <tr>
-                                        <td>{{ payment.appointment.patient.get_full_name }}</td>
-                                        <td>₱{{ payment.amount }}</td>
-                                        <td>{{ payment.get_payment_method_display }}</td>
-                                        <td>
-                                            <span class="badge bg-{% if payment.is_verified %}success{% else %}warning{% endif %} badge-sm">
-                                                {% if payment.is_verified %}Verified{% else %}Pending{% endif %}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    {% else %}
-                        <p class="text-muted">No recent payments</p>
-                    {% endif %}
+            <div class="col-md-4 text-md-end">
+                <div class="d-flex gap-2 justify-content-md-end">
+                    <a href="{% url 'logout' %}" class="logout-btn">
+                        <i class="fas fa-sign-out-alt me-2"></i>Logout
+                    </a>
                 </div>
             </div>
         </div>
     </div>
-</section>
+</div>
+
+&lt;!-- Statistics Cards -->
+<div class="container">
+    <div class="row g-4 mb-4">
+        <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+            <div class="stats-card">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <div class="bg-primary bg-opacity-10 rounded-circle p-3">
+                            <i class="fas fa-users fa-2x text-primary"></i>
+                        </div>
+                    </div>
+                    <div class="ms-3">
+                        <div class="stats-number text-primary">{{ stats.total_patients }}</div>
+                        <div class="stats-label">Total Patients</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+            <div class="stats-card">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <div class="bg-success bg-opacity-10 rounded-circle p-3">
+                            <i class="fas fa-calendar-check fa-2x text-success"></i>
+                        </div>
+                    </div>
+                    <div class="ms-3">
+                        <div class="stats-number text-success">{{ stats.total_appointments }}</div>
+                        <div class="stats-label">Total Appointments</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+            <div class="stats-card">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <div class="bg-warning bg-opacity-10 rounded-circle p-3">
+                            <i class="fas fa-clock fa-2x text-warning"></i>
+                        </div>
+                    </div>
+                    <div class="ms-3">
+                        <div class="stats-number text-warning">{{ stats.pending_appointments }}</div>
+                        <div class="stats-label">Pending</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
+            <div class="stats-card">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <div class="bg-info bg-opacity-10 rounded-circle p-3">
+                            <i class="fas fa-peso-sign fa-2x text-info"></i>
+                        </div>
+                    </div>
+                    <div class="ms-3">
+                        <div class="stats-number text-info">₱{{ stats.total_revenue|floatformat:0 }}</div>
+                        <div class="stats-label">Total Revenue</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    &lt;!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12" data-aos="fade-up">
+            <div class="quick-actions">
+                <h5 class="fw-bold mb-3">
+                    <i class="fas fa-bolt me-2"></i>Quick Actions
+                </h5>
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="/admin/" class="action-btn">
+                        <i class="fas fa-cog me-2"></i>Django Admin
+                    </a>
+                    <a href="{% url 'export_appointments_csv' %}" class="action-btn">
+                        <i class="fas fa-download me-2"></i>Export CSV
+                    </a>
+                    <a href="{% url 'export_appointments_excel' %}" class="action-btn">
+                        <i class="fas fa-file-excel me-2"></i>Export Excel
+                    </a>
+                    <button class="action-btn" onclick="refreshDashboard()">
+                        <i class="fas fa-sync-alt me-2"></i>Refresh Data
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    &lt;!-- Charts Section -->
+    <div class="row mb-4">
+        <div class="col-lg-6" data-aos="fade-up">
+            <div class="chart-card">
+                <h5 class="fw-bold mb-3">
+                    <i class="fas fa-chart-line me-2"></i>Monthly Appointments
+                </h5>
+                {% if charts.monthly_appointments %}
+                    <img src="data:image/png;base64,{{ charts.monthly_appointments }}" 
+                         alt="Monthly Appointments Chart" class="chart-image">
+                {% else %}
+                    <div class="text-center text-muted py-5">
+                        <i class="fas fa-chart-line fa-3x mb-3"></i>
+                        <p>No appointment data available</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+            <div class="chart-card">
+                <h5 class="fw-bold mb-3">
+                    <i class="fas fa-chart-bar me-2"></i>Monthly Revenue
+                </h5>
+                {% if charts.revenue_chart %}
+                    <img src="data:image/png;base64,{{ charts.revenue_chart }}" 
+                         alt="Revenue Chart" class="chart-image">
+                {% else %}
+                    <div class="text-center text-muted py-5">
+                        <i class="fas fa-chart-bar fa-3x mb-3"></i>
+                        <p>No revenue data available</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-lg-6" data-aos="fade-up">
+            <div class="chart-card">
+                <h5 class="fw-bold mb-3">
+                    <i class="fas fa-chart-pie me-2"></i>Patient Demographics
+                </h5>
+                {% if charts.patient_demographics %}
+                    <img src="data:image/png;base64,{{ charts.patient_demographics }}" 
+                         alt="Patient Demographics Chart" class="chart-image">
+                {% else %}
+                    <div class="text-center text-muted py-5">
+                        <i class="fas fa-chart-pie fa-3x mb-3"></i>
+                        <p>No demographic data available</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+            <div class="chart-card">
+                <h5 class="fw-bold mb-3">
+                    <i class="fas fa-star me-2"></i>Popular Services
+                </h5>
+                {% if charts.service_popularity %}
+                    <img src="data:image/png;base64,{{ charts.service_popularity }}" 
+                         alt="Service Popularity Chart" class="chart-image">
+                {% else %}
+                    <div class="text-center text-muted py-5">
+                        <i class="fas fa-star fa-3x mb-3"></i>
+                        <p>No service data available</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    &lt;!-- Recent Activities -->
+    <div class="row">
+        <div class="col-lg-6" data-aos="fade-up">
+            <div class="activity-card">
+                <h5 class="fw-bold mb-3">
+                    <i class="fas fa-calendar-alt me-2"></i>Recent Appointments
+                </h5>
+                {% for appointment in recent_appointments %}
+                <div class="activity-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="fw-bold mb-1">{{ appointment.patient.get_full_name }}</h6>
+                            <p class="mb-1 text-muted">{{ appointment.service.name }}</p>
+                            <small class="text-muted">
+                                <i class="fas fa-clock me-1"></i>
+                                {{ appointment.appointment_date|date:"M d, Y H:i" }}
+                            </small>
+                        </div>
+                        <span class="badge bg-{% if appointment.status == 'completed' %}success{% elif appointment.status == 'pending' %}warning{% elif appointment.status == 'cancelled' %}danger{% else %}info{% endif %}">
+                            {{ appointment.get_status_display }}
+                        </span>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center text-muted py-4">
+                    <i class="fas fa-calendar-alt fa-3x mb-3"></i>
+                    <p>No recent appointments</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+            <div class="activity-card">
+                <h5 class="fw-bold mb-3">
+                    <i class="fas fa-money-bill-wave me-2"></i>Recent Payments
+                </h5>
+                {% for payment in recent_payments %}
+                <div class="activity-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="fw-bold mb-1">{{ payment.appointment.patient.get_full_name }}</h6>
+                            <p class="mb-1 text-muted">{{ payment.get_payment_method_display }}</p>
+                            <small class="text-muted">
+                                <i class="fas fa-clock me-1"></i>
+                                {{ payment.payment_date|date:"M d, Y H:i" }}
+                            </small>
+                        </div>
+                        <div class="text-end">
+                            <div class="fw-bold text-success">₱{{ payment.amount }}</div>
+                            <span class="badge bg-{% if payment.payment_status == 'completed' %}success{% elif payment.payment_status == 'pending' %}warning{% else %}info{% endif %}">
+                                {{ payment.get_payment_status_display }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center text-muted py-4">
+                    <i class="fas fa-money-bill-wave fa-3x mb-3"></i>
+                    <p>No recent payments</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    &lt;!-- Department Statistics -->
+    <div class="row mt-4">
+        <div class="col-12" data-aos="fade-up">
+            <div class="activity-card">
+                <h5 class="fw-bold mb-3">
+                    <i class="fas fa-hospital me-2"></i>Department Performance
+                </h5>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Department</th>
+                                <th>Head Doctor</th>
+                                <th>Appointments</th>
+                                <th>Revenue</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for dept in department_stats %}
+                            <tr>
+                                <td>
+                                    <div class="fw-bold">{{ dept.name }}</div>
+                                    <small class="text-muted">{{ dept.services.count }} services</small>
+                                </td>
+                                <td>
+                                    {% if dept.head_doctor %}
+                                        Dr. {{ dept.head_doctor.get_full_name }}
+                                    {% else %}
+                                        <span class="text-muted">Not assigned</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">{{ dept.appointment_count|default:0 }}</span>
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-success">₱{{ dept.revenue|default:0|floatformat:0 }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-{% if dept.is_active %}success{% else %}secondary{% endif %}">
+                                        {% if dept.is_active %}Active{% else %}Inactive{% endif %}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">No departments found</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Refresh dashboard data
+    function refreshDashboard() {
+        const refreshBtn = document.querySelector('button[onclick="refreshDashboard()"]');
+        const originalText = refreshBtn.innerHTML;
+        
+        refreshBtn.innerHTML = '<span class="loading-spinner me-2"></span>Refreshing...';
+        refreshBtn.disabled = true;
+        
+        // Simulate refresh (in real implementation, you'd make an AJAX call)
+        setTimeout(() => {
+            location.reload();
+        }, 1000);
+    }
+
+    // Auto-refresh dashboard every 5 minutes
+    setInterval(() => {
+        console.log('Auto-refreshing dashboard data...');
+        // You can implement AJAX refresh here instead of full page reload
+    }, 300000); // 5 minutes
+
+    // Real-time notifications (if WebSocket is implemented)
+    function initializeRealTimeUpdates() {
+        // WebSocket connection for real-time updates
+        // This would be implemented with Django Channels
+        console.log('Real-time updates initialized');
+    }
+
+    // Initialize dashboard
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeRealTimeUpdates();
+        
+        // Add tooltips to charts
+        const chartImages = document.querySelectorAll('.chart-image');
+        chartImages.forEach(img => {
+            img.addEventListener('click', function() {
+                // You could implement a modal to show larger chart
+                console.log('Chart clicked:', this.alt);
+            });
+        });
+    });
+
+    // Export functions with loading states
+    document.querySelectorAll('a[href*="export"]').forEach(link => {
+        link.addEventListener('click', function(e) {
+            const originalText = this.innerHTML;
+            this.innerHTML = '<span class="loading-spinner me-2"></span>Exporting...';
+            
+            setTimeout(() => {
+                this.innerHTML = originalText;
+            }, 3000);
+        });
+    });
+</script>
 {% endblock %}

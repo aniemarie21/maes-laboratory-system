@@ -1,25 +1,30 @@
 from django.urls import path
-from . import views, firebase_views
+from . import views
 
 urlpatterns = [
-    # Original Django views
+    # Main pages
     path('', views.home, name='home'),
     path('login/', views.login_view, name='login'),
     path('register/', views.register_view, name='register'),
     path('logout/', views.logout_view, name='logout'),
+    
+    # Dashboards
     path('patient-dashboard/', views.patient_dashboard, name='patient_dashboard'),
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    
+    # Appointments
     path('book-appointment/', views.book_appointment, name='book_appointment'),
+    path('medical-certificate-request/', views.medical_certificate_request, name='medical_certificate_request'),
+    
+    # API endpoints
     path('api/chatbot/', views.chatbot_api, name='chatbot_api'),
+    path('api/services/<int:department_id>/', views.get_services_by_department, name='get_services_by_department'),
+    path('api/check-availability/', views.check_appointment_availability, name='check_appointment_availability'),
     
-    # Firebase views
-    path('firebase/', firebase_views.firebase_home, name='firebase_home'),
-    path('firebase/register/', firebase_views.firebase_register, name='firebase_register'),
-    path('firebase/book-appointment/', firebase_views.firebase_book_appointment, name='firebase_book_appointment'),
-    path('firebase/patient-appointments/<str:patient_id>/', firebase_views.firebase_patient_appointments, name='firebase_patient_appointments'),
-    path('firebase/create-payment/', firebase_views.firebase_create_payment, name='firebase_create_payment'),
+    # Export functions
+    path('export/appointments/csv/', views.export_appointments_csv, name='export_appointments_csv'),
+    path('export/appointments/excel/', views.export_appointments_excel, name='export_appointments_excel'),
     
-    # Firebase APIs
-    path('api/firebase/services/', firebase_views.firebase_services_api, name='firebase_services_api'),
-    path('api/firebase/departments/', firebase_views.firebase_departments_api, name='firebase_departments_api'),
+    # Password reset
+    path('password-reset/', views.password_reset_request, name='password_reset_request'),
 ]
